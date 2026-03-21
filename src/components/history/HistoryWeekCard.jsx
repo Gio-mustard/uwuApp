@@ -71,8 +71,8 @@ export function HistoryWeekCard({ history, label, defaultExpanded = false }) {
         </div>
       </button>
 
-      {/* Task snapshot list — only visible when expanded */}
-      {expanded && (
+      {/* Task snapshot list — animates open/closed via CSS grid-template-rows */}
+      <div className={`history-card__body${expanded ? ' history-card__body--open' : ''}`}>
         <ul className="history-card__list" role="list">
           {taskSnapshots.map((snap) => (
             <li key={snap.taskId} className="history-card__snap-item">
@@ -96,7 +96,7 @@ export function HistoryWeekCard({ history, label, defaultExpanded = false }) {
             </li>
           ))}
         </ul>
-      )}
+      </div>
     </div>
   );
 }

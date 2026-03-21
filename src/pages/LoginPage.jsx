@@ -7,6 +7,7 @@
 
 import { useState } from 'react';
 import { useSession } from '../context/SessionContext';
+import { AUTH_TEXTS } from '../constants/texts/auth.texts';
 import './LoginPage.css';
 
 export function LoginPage() {
@@ -30,11 +31,11 @@ export function LoginPage() {
     e.preventDefault();
     setLocalError('');
     if (!email || !password) {
-      setLocalError('Completa todos los campos.');
+      setLocalError(AUTH_TEXTS.errorEmptyFields);
       return;
     }
     if (mode === 'register' && !displayName) {
-      setLocalError('Ingresa tu nombre.');
+      setLocalError(AUTH_TEXTS.errorNoName);
       return;
     }
 
@@ -72,26 +73,26 @@ export function LoginPage() {
             className={`login-page__toggle-btn${mode === 'login' ? ' login-page__toggle-btn--active' : ''}`}
             onClick={() => switchMode('login')}
           >
-            Iniciar sesión
+            {AUTH_TEXTS.loginTab}
           </button>
           <button
             id="login-mode-register"
             className={`login-page__toggle-btn${mode === 'register' ? ' login-page__toggle-btn--active' : ''}`}
             onClick={() => switchMode('register')}
           >
-            Registrarse
+            {AUTH_TEXTS.registerTab}
           </button>
         </div>
 
         <form className="login-page__form" onSubmit={handleSubmit} noValidate>
           {mode === 'register' && (
             <div className="form-field">
-              <label className="form-label" htmlFor="ln-name">Nombre</label>
+              <label className="form-label" htmlFor="ln-name">{AUTH_TEXTS.labelName}</label>
               <input
                 id="ln-name"
                 className="form-input"
                 type="text"
-                placeholder="Tu nombre"
+                placeholder={AUTH_TEXTS.placeholderName}
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 autoComplete="name"
@@ -101,12 +102,12 @@ export function LoginPage() {
           )}
 
           <div className="form-field">
-            <label className="form-label" htmlFor="ln-email">Correo</label>
+            <label className="form-label" htmlFor="ln-email">{AUTH_TEXTS.labelEmail}</label>
             <input
               id="ln-email"
               className="form-input"
               type="email"
-              placeholder="correo@ejemplo.com"
+              placeholder={AUTH_TEXTS.placeholderEmail}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
@@ -114,12 +115,12 @@ export function LoginPage() {
           </div>
 
           <div className="form-field">
-            <label className="form-label" htmlFor="ln-password">Contraseña</label>
+            <label className="form-label" htmlFor="ln-password">{AUTH_TEXTS.labelPassword}</label>
             <input
               id="ln-password"
               className="form-input"
               type="password"
-              placeholder="••••••••"
+              placeholder={AUTH_TEXTS.placeholderPassword}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
@@ -135,16 +136,16 @@ export function LoginPage() {
             disabled={loading}
           >
             {loading
-              ? 'Cargando…'
+              ? AUTH_TEXTS.submitting
               : mode === 'login'
-              ? 'Iniciar sesión'
-              : 'Crear cuenta'}
+              ? AUTH_TEXTS.submitLogin
+              : AUTH_TEXTS.submitRegister}
           </button>
         </form>
 
         {mode === 'login' && (
           <p className="login-page__hint">
-            <strong>Demo:</strong> giomus@uwu.app / 123456
+            <strong>{AUTH_TEXTS.demoLabel}</strong> {AUTH_TEXTS.demoHint.split(': ')[1]}
           </p>
         )}
       </div>

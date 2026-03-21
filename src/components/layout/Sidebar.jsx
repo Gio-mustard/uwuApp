@@ -8,11 +8,14 @@
 
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useSession } from '../../context/SessionContext';
+import { ROUTES } from '../../constants/routes';
+import { HOME_TEXTS } from '../../constants/texts/home.texts';
+import { COMMON_TEXTS } from '../../constants/texts/common.texts';
 import './Sidebar.css';
 
 const NAV_ITEMS = [
-  { label: 'Inicio',    path: '/',          icon: HomeIcon },
-  { label: 'Historial', path: '/historial', icon: HistoryIcon },
+  { label: HOME_TEXTS.navHome,    path: ROUTES.HOME,    icon: HomeIcon },
+  { label: HOME_TEXTS.navHistory, path: ROUTES.HISTORY, icon: HistoryIcon },
 ];
 
 export function Sidebar() {
@@ -67,10 +70,10 @@ export function Sidebar() {
         id="sidebar-logout"
         className="sidebar__logout"
         onClick={logout}
-        aria-label="Cerrar sesión"
+        aria-label={COMMON_TEXTS.logout}
       >
         <LogoutIcon />
-        <span>Cerrar sesión</span>
+        <span>{COMMON_TEXTS.logout}</span>
       </button>
     </aside>
   );

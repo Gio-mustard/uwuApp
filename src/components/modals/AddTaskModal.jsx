@@ -8,6 +8,7 @@
 
 import { useState } from 'react';
 import { ALL_DAYS, DAY_LABELS } from '../../domain/enums/DayOfWeek';
+import { Modal } from './Modal';
 import './AddTaskModal.css';
 
 /**
@@ -63,8 +64,7 @@ export function AddTaskModal({ onAdd, onClose,initialType = 'daily' }) {
   }
 
   return (
-    <div className="modal-overlay" role="dialog" aria-modal="true" aria-label="Agregar pendiente">
-      <div className="modal">
+    <Modal onClose={onClose} overlayClass="modal-overlay" sheetClass="modal">
         <div className="modal__header">
           <h2 className="modal__title">Nuevo pendiente</h2>
           <button id="modal-close" className="modal__close" onClick={onClose} aria-label="Cerrar">
@@ -170,7 +170,6 @@ export function AddTaskModal({ onAdd, onClose,initialType = 'daily' }) {
             Agregar pendiente
           </button>
         </form>
-      </div>
-    </div>
+    </Modal>
   );
 }

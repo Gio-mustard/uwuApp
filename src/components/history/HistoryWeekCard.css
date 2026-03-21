@@ -69,15 +69,33 @@
   transform: rotate(180deg);
 }
 
-/* Snapshot list */
+/* Expand/collapse body using CSS grid trick — no JS height calculation needed */
+.history-card__body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.history-card__body--open {
+  grid-template-rows: 1fr;
+}
+
+/* Snapshot list — overflow:hidden is required for the grid trick to work */
 .history-card__list {
   list-style: none;
-  padding: 4px 16px 12px;
+  padding: 0 16px;
   margin: 0;
   display: flex;
   flex-direction: column;
   gap: 0;
-  border-top: 1px solid var(--color-border);
+  overflow: hidden;
+  border-top: 0px solid var(--color-border);
+  transition: border-top-width 0s, padding 0.28s;
+}
+
+.history-card__body--open .history-card__list {
+  padding: 4px 16px 12px;
+  border-top-width: 1px;
 }
 
 .history-card__snap-item {

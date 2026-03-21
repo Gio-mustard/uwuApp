@@ -112,3 +112,57 @@ body {
   background: var(--color-surface-3);
   border-radius: 4px;
 }
+
+/* ── Global Animations ─────────────────────────────────────────────────────── */
+
+/* Spinner used by SessionLoader, TaskContext loading state */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Sections and cards fade + slide up gently when mounted */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Modal overlays fade in */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Modal bottom-sheets slide up */
+@keyframes slide-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+/* FAB entrance */
+@keyframes pop-in {
+  from { opacity: 0; transform: scale(0.7); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Apply subtle entrance animation to all section cards */
+.section-card,
+.history-card,
+.next-event-card {
+  animation: fade-up 0.28s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* Stagger history cards (each card slightly delayed) */
+.history-card:nth-child(2) { animation-delay: 0.04s; }
+.history-card:nth-child(3) { animation-delay: 0.08s; }
+.history-card:nth-child(4) { animation-delay: 0.12s; }
+
+/* FAB pop-in */
+.fab {
+  animation: pop-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}

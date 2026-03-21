@@ -6,6 +6,7 @@
  */
 
 import { useSession } from '../../context/SessionContext';
+import { Modal } from './Modal';
 import './ProfileModal.css';
 
 /**
@@ -23,15 +24,8 @@ export function ProfileModal({ onClose }) {
   const initial = user?.displayName?.[0]?.toUpperCase() ?? '?';
 
   return (
-    <div
-      className="profile-overlay"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Perfil de usuario"
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
-      <div className="profile-sheet">
-        {/* Drag handle */}
+    <Modal onClose={onClose} overlayClass="profile-overlay" sheetClass="profile-sheet">
+      {/* Drag handle */}
         <div className="profile-sheet__handle" aria-hidden="true" />
 
         {/* Avatar */}
@@ -66,8 +60,7 @@ export function ProfileModal({ onClose }) {
         >
           Cancelar
         </button>
-      </div>
-    </div>
+    </Modal>
   );
 }
 

@@ -235,7 +235,7 @@
 .fab {
   position: fixed;
   bottom: 80px;
-  right: calc(50% - 210px + 16px);
+  right: calc(50% - 210px + 36px);
   width: 52px;
   height: 52px;
   border-radius: 16px;

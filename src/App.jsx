@@ -12,6 +12,7 @@
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { SessionProvider } from './context/SessionContext';
+import { ROUTES } from './constants/routes';
 import { HomePage } from './pages/HomePage';
 import { HistoryPage } from './pages/HistoryPage';
 
@@ -29,9 +30,9 @@ export function App({ authRepository, taskRepositoryFactory }) {
     >
       <BrowserRouter>
         <Routes>
-          <Route path="/"          element={<HomePage />} />
-          <Route path="/historial" element={<HistoryPage />} />
-          <Route path="*"          element={<Navigate to="/" replace />} />
+          <Route path={ROUTES.HOME}     element={<HomePage />} />
+          <Route path={ROUTES.HISTORY}  element={<HistoryPage />} />
+          <Route path="*"               element={<Navigate to={ROUTES.HOME} replace />} />
         </Routes>
       </BrowserRouter>
     </SessionProvider>

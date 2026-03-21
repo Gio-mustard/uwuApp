@@ -10,7 +10,7 @@
  * - FAB for adding new tasks
  */
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useSession } from '../context/SessionContext';
 import { AppShell } from '../components/layout/AppShell';
 import { DaySelector } from '../components/days/DaySelector';
@@ -18,7 +18,9 @@ import { DailyTaskItem } from '../components/tasks/DailyTaskItem';
 import { WeeklyTaskItem } from '../components/tasks/WeeklyTaskItem';
 import { AddTaskModal } from '../components/modals/AddTaskModal';
 import { ProfileModal } from '../components/modals/ProfileModal';
-import { getDailyTasksForDay, getNextEvent } from '../services/TaskService';
+import { getDailyTasksForDay, getNextEvent, isWeeklyTaskComplete, isDailyTaskDoneOnDay } from '../services/TaskService';
+import { getDynamicGreeting } from '../constants/texts/greetings.texts';
+import { HOME_TEXTS } from '../constants/texts/home.texts';
 import './HomePage.css';
 
 export function HomePage() {
@@ -47,12 +49,27 @@ export function HomePage() {
   const now = new Date();
   const nextEvent = getNextEvent([...dailyTasks, ...weeklyTasks], now, todayDay, currentWeekId);
 
+  /** Weekly completion % for the dynamic greeting. */
+  const weeklyCompletionPct = useMemo(() => {
+    const dailyCompleted = dailyTasks.filter((t) =>
+      t.assignedDays.includes(todayDay) && isDailyTaskDoneOnDay(t, currentWeekId, todayDay)
+    ).length;
+    const dailyTotal = dailyTasks.filter((t) => t.assignedDays.includes(todayDay)).length;
+    const weeklyCompleted = weeklyTasks.filter((t) => isWeeklyTaskComplete(t, currentWeekId)).length;
+    const total = dailyTotal + weeklyTasks.length;
+    if (total === 0) return 0;
+    return Math.round(((dailyCompleted + weeklyCompleted) / total) * 100);
+  }, [dailyTasks, weeklyTasks, currentWeekId, todayDay]);
+
+  const greeting = getDynamicGreeting(weeklyCompletionPct, user?.displayName ?? 'Usuario');
+
   async function handleAdd(type, data) {
     if (type === 'daily') await addDailyTask(data);
     else await addWeeklyTask(data);
   }
 
-  const greeting = user?.displayName?.split(' ')[0] ?? 'Usuario';
+  // Avatar shows first letter of the user's display name (independent of the greeting sentence).
+  const avatarInitial = (user?.displayName ?? 'U')[0].toUpperCase();
 
   return (
     <AppShell>
@@ -60,15 +77,15 @@ export function HomePage() {
         {/* Header */}
         <header className="home-header">
           <div className="home-header__brand">
-            <span className="home-header__app-name">UWU App</span>
-            <button id="home-profile-btn" className="home-header__user" onClick={() => setShowProfile(true)} aria-label="Ver perfil">
+            <span className="home-header__app-name">{HOME_TEXTS.appName}</span>
+            <button id="home-profile-btn" className="home-header__user" onClick={() => setShowProfile(true)} aria-label={HOME_TEXTS.ariaViewProfile}>
               <span className="home-header__username">{user?.username}</span>
               <div className="home-header__avatar" aria-hidden="true">
-                {greeting[0]?.toUpperCase()}
+                {avatarInitial}
               </div>
             </button>
           </div>
-          <h1 className="home-header__greeting">Hola, {greeting}</h1>
+          <h1 className="home-header__greeting">{greeting}</h1>
         </header>
 
         {/* Day selector */}
@@ -90,7 +107,7 @@ export function HomePage() {
             {nextEvent && (
               <section className="home-section" aria-label="Siguiente evento">
                 <div className="next-event-card">
-                  <div className="next-event-card__badge">Siguiente evento</div>
+                  <div className="next-event-card__badge">{HOME_TEXTS.nextEventBadge}</div>
                   <div className="next-event-card__body">
                     <div className="next-event-card__left">
                       <div className="next-event-card__icon" aria-hidden="true">
@@ -103,7 +120,7 @@ export function HomePage() {
                       <div className="next-event-card__info">
                         <span className="next-event-card__name">{nextEvent.title}</span>
                         <span className="next-event-card__meta">
-                          {nextEvent.description || (nextEvent.type === 'daily' ? 'Pendiente diario' : 'Pendiente semanal')}
+                          {nextEvent.description || (nextEvent.type === 'daily' ? HOME_TEXTS.nextEventDailyMeta : HOME_TEXTS.nextEventWeeklyMeta)}
                         </span>
                       </div>
                     </div>
@@ -129,11 +146,11 @@ export function HomePage() {
                   </button>
                 </div>
                 {dailyForDay.length === 0 ? (
-                  <p className="section-card__empty">No hay pendientes para este día.</p>
+                  <p className="section-card__empty">{HOME_TEXTS.noDailyTasksForDay}</p>
                 ) : (
                   dailyForDay.map((task) => (
                     <DailyTaskItem
-                      key={task.id}
+                      key={`${task.id}-${selectedDay}`}
                       task={task}
                       weekId={currentWeekId}
                       selectedDay={selectedDay}
@@ -160,7 +177,7 @@ export function HomePage() {
                   </button>
                 </div>
                 {weeklyTasks.length === 0 ? (
-                  <p className="section-card__empty">No tienes pendientes semanales.</p>
+                  <p className="section-card__empty">{HOME_TEXTS.noWeeklyTasks}</p>
                 ) : (
                   weeklyTasks.map((task) => (
                     <WeeklyTaskItem

@@ -10,6 +10,7 @@ import { useSession } from '../context/SessionContext';
 import { AppShell } from '../components/layout/AppShell';
 import { HistoryWeekCard } from '../components/history/HistoryWeekCard';
 import { buildWeekHistorySnapshot } from '../services/WeekService';
+import { HISTORY_TEXTS } from '../constants/texts/history.texts';
 import './HistoryPage.css';
 
 export function HistoryPage() {
@@ -23,7 +24,7 @@ export function HistoryPage() {
     <AppShell>
       <div className="history-page">
         <header className="history-header">
-          <h1 className="history-header__title">Historial</h1>
+          <h1 className="history-header__title">{HISTORY_TEXTS.pageTitle}</h1>
         </header>
 
         {loading ? (
@@ -35,7 +36,7 @@ export function HistoryPage() {
             {/* Current week */}
             <HistoryWeekCard
               history={currentSnapshot}
-              label="Semana actual"
+              label={HISTORY_TEXTS.cardLabelCurrentWeek}
               defaultExpanded={true}
             />
 
@@ -44,15 +45,13 @@ export function HistoryPage() {
               <HistoryWeekCard
                 key={week.weekId}
                 history={week}
-                label="Semana pasada"
+                label={HISTORY_TEXTS.cardLabelPastWeek}
                 defaultExpanded={false}
               />
             ))}
 
             {history.length === 0 && (
-              <p className="history-empty">
-                Aún no hay historial de semanas pasadas.
-              </p>
+              <p className="history-empty">{HISTORY_TEXTS.noHistory}</p>
             )}
           </div>
         )}

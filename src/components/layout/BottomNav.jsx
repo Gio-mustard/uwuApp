@@ -4,11 +4,13 @@
  */
 
 import { useLocation, useNavigate } from 'react-router-dom';
+import { ROUTES } from '../../constants/routes';
+import { HOME_TEXTS } from '../../constants/texts/home.texts';
 import './BottomNav.css';
 
 const tabs = [
-  { label: 'Inicio', path: '/', icon: HomeIcon },
-  { label: 'Historial', path: '/historial', icon: HistoryIcon },
+  { label: HOME_TEXTS.navHome,    path: ROUTES.HOME,    icon: HomeIcon },
+  { label: HOME_TEXTS.navHistory, path: ROUTES.HISTORY, icon: HistoryIcon },
 ];
 
 export function BottomNav() {
