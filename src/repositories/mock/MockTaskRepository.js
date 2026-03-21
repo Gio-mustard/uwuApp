@@ -157,7 +157,8 @@ export class MockTaskRepository extends ITaskRepository {
   /** @override */
   async getDailyTasks() {
     await delay();
-    return [...this.#dailyTasks];
+    // Return deep-enough copies so React state holds independent objects.
+    return this.#dailyTasks.map((t) => ({ ...t, completions: { ...t.completions } }));
   }
 
   /** @override */
@@ -181,21 +182,31 @@ export class MockTaskRepository extends ITaskRepository {
   /** @override */
   async completeDailyTask(taskId, weekId, day) {
     await delay();
-    const task = this.#dailyTasks.find((t) => t.id === taskId);
-    if (!task) throw new Error(`DailyTask "${taskId}" not found.`);
-    if (!task.completions[weekId]) task.completions[weekId] = [];
-    if (!task.completions[weekId].includes(day)) task.completions[weekId].push(day);
+    const idx = this.#dailyTasks.findIndex((t) => t.id === taskId);
+    if (idx === -1) throw new Error(`DailyTask "${taskId}" not found.`);
+    const task = this.#dailyTasks[idx];
+    const days = task.completions[weekId] ?? [];
+    if (!days.includes(day)) {
+      // Create a new object — never mutate in place.
+      this.#dailyTasks[idx] = {
+        ...task,
+        completions: { ...task.completions, [weekId]: [...days, day] },
+      };
+    }
     this.#persist();
   }
 
   /** @override */
   async uncompleteDailyTask(taskId, weekId, day) {
     await delay();
-    const task = this.#dailyTasks.find((t) => t.id === taskId);
-    if (!task) throw new Error(`DailyTask "${taskId}" not found.`);
-    if (task.completions[weekId]) {
-      task.completions[weekId] = task.completions[weekId].filter((d) => d !== day);
-    }
+    const idx = this.#dailyTasks.findIndex((t) => t.id === taskId);
+    if (idx === -1) throw new Error(`DailyTask "${taskId}" not found.`);
+    const task = this.#dailyTasks[idx];
+    const days = task.completions[weekId] ?? [];
+    this.#dailyTasks[idx] = {
+      ...task,
+      completions: { ...task.completions, [weekId]: days.filter((d) => d !== day) },
+    };
     this.#persist();
   }
 
@@ -204,7 +215,8 @@ export class MockTaskRepository extends ITaskRepository {
   /** @override */
   async getWeeklyTasks() {
     await delay();
-    return [...this.#weeklyTasks];
+    // Return deep-enough copies so React state holds independent objects.
+    return this.#weeklyTasks.map((t) => ({ ...t, completions: { ...t.completions } }));
   }
 
   /** @override */
@@ -228,18 +240,27 @@ export class MockTaskRepository extends ITaskRepository {
   /** @override */
   async completeWeeklyTask(taskId, weekId) {
     await delay();
-    const task = this.#weeklyTasks.find((t) => t.id === taskId);
-    if (!task) throw new Error(`WeeklyTask "${taskId}" not found.`);
-    task.completions[weekId] = (task.completions[weekId] ?? 0) + 1;
+    const idx = this.#weeklyTasks.findIndex((t) => t.id === taskId);
+    if (idx === -1) throw new Error(`WeeklyTask "${taskId}" not found.`);
+    const task = this.#weeklyTasks[idx];
+    // Create a new object — never mutate in place so React state stays independent.
+    this.#weeklyTasks[idx] = {
+      ...task,
+      completions: { ...task.completions, [weekId]: (task.completions[weekId] ?? 0) + 1 },
+    };
     this.#persist();
   }
 
   /** @override */
   async uncompleteWeeklyTask(taskId, weekId) {
     await delay();
-    const task = this.#weeklyTasks.find((t) => t.id === taskId);
-    if (!task) throw new Error(`WeeklyTask "${taskId}" not found.`);
-    task.completions[weekId] = Math.max(0, (task.completions[weekId] ?? 0) - 1);
+    const idx = this.#weeklyTasks.findIndex((t) => t.id === taskId);
+    if (idx === -1) throw new Error(`WeeklyTask "${taskId}" not found.`);
+    const task = this.#weeklyTasks[idx];
+    this.#weeklyTasks[idx] = {
+      ...task,
+      completions: { ...task.completions, [weekId]: Math.max(0, (task.completions[weekId] ?? 0) - 1) },
+    };
     this.#persist();
   }
 

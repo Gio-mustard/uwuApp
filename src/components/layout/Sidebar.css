@@ -27,6 +27,7 @@
   gap: 5px;
   padding: 0 4px;
   margin-bottom: 28px;
+  display: none; /*TODO : Drop this element*/
 }
 
 .sidebar__brand-text {
