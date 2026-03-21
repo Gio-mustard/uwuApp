@@ -45,7 +45,7 @@ export function HomePage() {
 
   const dailyForDay = getDailyTasksForDay(dailyTasks, selectedDay);
   const now = new Date();
-  const nextEvent = getNextEvent([...dailyTasks, ...weeklyTasks], now);
+  const nextEvent = getNextEvent([...dailyTasks, ...weeklyTasks], now, todayDay, currentWeekId);
 
   async function handleAdd(type, data) {
     if (type === 'daily') await addDailyTask(data);
@@ -86,6 +86,34 @@ export function HomePage() {
           </div>
         ) : (
           <>
+          {/* Next event */}
+            {nextEvent && (
+              <section className="home-section" aria-label="Siguiente evento">
+                <div className="next-event-card">
+                  <div className="next-event-card__badge">Siguiente evento</div>
+                  <div className="next-event-card__body">
+                    <div className="next-event-card__left">
+                      <div className="next-event-card__icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="12" r="9" />
+                          <polyline points="12 7 12 12 15 15" />
+                        </svg>
+                      </div>
+                      <div className="next-event-card__info">
+                        <span className="next-event-card__name">{nextEvent.title}</span>
+                        <span className="next-event-card__meta">
+                          {nextEvent.description || (nextEvent.type === 'daily' ? 'Pendiente diario' : 'Pendiente semanal')}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="next-event-card__time-pill">
+                      {nextEvent.suggestedTime ?? '—'}
+                    </div>
+                  </div>
+                </div>
+              </section>
+            )}
             {/* Daily tasks */}
             <section className="home-section" aria-label="Pendientes diarios">
               <div className="section-card">
@@ -146,34 +174,7 @@ export function HomePage() {
               </div>
             </section>
 
-            {/* Next event */}
-            {nextEvent && (
-              <section className="home-section" aria-label="Siguiente evento">
-                <div className="next-event-card">
-                  <div className="next-event-card__badge">Siguiente evento</div>
-                  <div className="next-event-card__body">
-                    <div className="next-event-card__left">
-                      <div className="next-event-card__icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                          strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <circle cx="12" cy="12" r="9" />
-                          <polyline points="12 7 12 12 15 15" />
-                        </svg>
-                      </div>
-                      <div className="next-event-card__info">
-                        <span className="next-event-card__name">{nextEvent.title}</span>
-                        <span className="next-event-card__meta">
-                          {nextEvent.description || (nextEvent.type === 'daily' ? 'Pendiente diario' : 'Pendiente semanal')}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="next-event-card__time-pill">
-                      {nextEvent.suggestedTime ?? '—'}
-                    </div>
-                  </div>
-                </div>
-              </section>
-            )}
+            
           </>
         )}
       </div>

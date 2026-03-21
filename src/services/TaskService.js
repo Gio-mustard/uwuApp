@@ -67,27 +67,50 @@ export function getDailyTasksForDay(tasks, day) {
 }
 
 /**
- * Finds the next upcoming task by suggested time on the current day.
- * Returns null if no task has a suggestedTime.
+ * Finds the next upcoming task by suggested time, relative to the current moment.
+ *
+ * Rules:
+ * - Only tasks with a `suggestedTime` are considered.
+ * - Completed tasks are excluded (daily done today, weekly at required count).
+ * - Daily tasks are only shown if today is one of their assigned days.
+ * - A task is "upcoming" when its time ≥ the current time.
+ * - Returns null when nothing is upcoming today.
  *
  * @param {Array<import('../domain/models/DailyTask').DailyTask | import('../domain/models/WeeklyTask').WeeklyTask>} allTasks
- * @param {Date} now
+ * @param {Date}   now
+ * @param {number} todayIsoDay - ISO day of today (1=Mon…7=Sun)
+ * @param {string} weekId      - Current week identifier
  * @returns {import('../domain/models/DailyTask').DailyTask | import('../domain/models/WeeklyTask').WeeklyTask | null}
  */
-export function getNextEvent(allTasks, now) {
+export function getNextEvent(allTasks, now, todayIsoDay, weekId) {
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
-  const withTime = allTasks.filter((t) => t.suggestedTime);
-  const upcoming = withTime.filter((t) => {
+  const candidates = allTasks.filter((t) => {
+    if (!t.suggestedTime) return false;
+
+    if (t.type === 'daily') {
+      // Must be assigned to today.
+      if (!t.assignedDays.includes(todayIsoDay)) return false;
+      // Skip if already completed today.
+      if (isDailyTaskDoneOnDay(t, weekId, todayIsoDay)) return false;
+    } else {
+      // Weekly: skip if already met the required count.
+      if (isWeeklyTaskComplete(t, weekId)) return false;
+    }
+
     const [h, m] = t.suggestedTime.split(':').map(Number);
     return h * 60 + m >= currentMinutes;
   });
 
-  upcoming.sort((a, b) => {
+  if (candidates.length === 0) return null;
+
+  candidates.sort((a, b) => {
     const [ah, am] = a.suggestedTime.split(':').map(Number);
     const [bh, bm] = b.suggestedTime.split(':').map(Number);
     return ah * 60 + am - (bh * 60 + bm);
   });
 
-  return upcoming[0] ?? withTime[withTime.length - 1] ?? null;
+  return candidates[0];
 }
+
+
