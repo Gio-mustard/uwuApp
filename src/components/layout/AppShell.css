@@ -1,0 +1,47 @@
+/* ── Mobile‑first base (< 768px) ──────────────────────────────────────────── */
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 430px;
+  min-height: 100svh;
+  margin: 0 auto;
+  position: relative;
+  background: var(--color-bg);
+}
+
+.app-shell__content {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 80px; /* space for BottomNav */
+}
+
+.app-shell__inner {
+  width: 100%;
+}
+
+/* ── Desktop layout (≥ 768px) ─────────────────────────────────────────────── */
+@media (min-width: 768px) {
+  .app-shell {
+    flex-direction: row;       /* sidebar + content side by side */
+    max-width: 100%;
+    min-height: 100svh;
+    margin: 0;
+    background: transparent;
+    align-items: stretch;
+  }
+
+  .app-shell__content {
+    flex: 1;
+    padding-bottom: 0;         /* No bottom nav on desktop */
+    overflow-y: auto;
+    background: var(--color-bg);
+    min-height: 100svh;
+  }
+
+  .app-shell__inner {
+    max-width: 680px;          /* Content readable width */
+    margin: 0 auto;
+  }
+}

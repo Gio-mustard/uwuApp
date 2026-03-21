@@ -1,0 +1,134 @@
+.history-card {
+  background: var(--color-surface);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--color-border);
+}
+
+/* Colored header button */
+.history-card__header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 16px 16px 18px;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: filter 0.15s ease;
+}
+
+.history-card__header:hover {
+  filter: brightness(0.94);
+}
+
+.history-card__header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.history-card__label {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.history-card__range {
+  font-size: 0.73rem;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.history-card__subtitle {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.82);
+  margin-top: 2px;
+  font-weight: 500;
+}
+
+.history-card__header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.history-card__chevron {
+  width: 18px;
+  height: 18px;
+  color: rgba(255, 255, 255, 0.9);
+  transition: transform 0.22s ease;
+  flex-shrink: 0;
+}
+
+.history-card__chevron--open {
+  transform: rotate(180deg);
+}
+
+/* Snapshot list */
+.history-card__list {
+  list-style: none;
+  padding: 4px 16px 12px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.history-card__snap-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.history-card__snap-item:last-child {
+  border-bottom: none;
+}
+
+.history-card__snap-icon {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-success);
+  flex-shrink: 0;
+  width: 16px;
+  text-align: center;
+}
+
+.history-card__snap-icon--fail {
+  color: var(--color-danger);
+}
+
+.history-card__snap-title {
+  flex: 1;
+  font-size: 0.88rem;
+  color: var(--color-text);
+}
+
+.history-card__snap-count {
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+}
+
+.history-card__snap-req {
+  color: var(--color-danger);
+  font-size: 0.78rem;
+}
+
+.history-card__snap-check {
+  font-size: 0.8rem;
+  color: var(--color-success);
+  flex-shrink: 0;
+}
+
+/* Circular progress SVG wrapper */
+.circ-progress {
+  flex-shrink: 0;
+  filter: drop-shadow(0 1px 4px rgba(0,0,0,0.18));
+}

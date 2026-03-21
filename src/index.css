@@ -1,0 +1,114 @@
+/* ==========================================================================
+   UwuApp — Global Design System
+   All spacing, color, and typography tokens are defined here as CSS custom
+   properties so they can be referenced from any component stylesheet.
+   Units: svh / svw for viewport-relative, rem for text, px for borders only.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+/* ── Reset ────────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Design Tokens ─────────────────────────────────────────────────────────── */
+:root {
+  /* Palette */
+  --color-primary:        #E85D5D;
+  --color-primary-hover:  #d94848;
+  --color-primary-bg:     #fdf0f0;
+  --color-success:        #34a853;
+  --color-danger:         #E85D5D;
+
+  /* Surface */
+  --color-bg:             #f5f4f2;
+  --color-surface:        #ffffff;
+  --color-surface-2:      #f2f1ef;
+  --color-surface-3:      #e9e8e6;
+
+  /* Text */
+  --color-text:           #1a1917;
+  --color-text-muted:     #8a8680;
+
+  /* Borders */
+  --color-border:         #eae9e6;
+  --color-border-strong:  #c8c7c3;
+
+  /* Shadows */
+  --shadow-card:          0 1px 3px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04);
+
+  /* Typography */
+  --font-body:            'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Layout */
+  --max-width:            430px;
+}
+
+/* ── Base ──────────────────────────────────────────────────────────────────── */
+html, body {
+  height: 100%;
+  background: #e8e7e4;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #e8e7e4;
+}
+
+/* ── Desktop background ───────────────────────────────────────────────────── */
+@media (min-width: 768px) {
+  body {
+    background: #eceae6;
+  }
+
+  #root {
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: flex-start;
+    /* Subtle dot grid */
+    background-color: #eceae6;
+    background-image: radial-gradient(circle, #c8c6c0 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+}
+
+/* ── Utility classes ────────────────────────────────────────────────────────── */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Scrollbars ─────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-3);
+  border-radius: 4px;
+}

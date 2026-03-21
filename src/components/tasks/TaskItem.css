@@ -1,0 +1,140 @@
+/* Shared styles for DailyTaskItem and WeeklyTaskItem */
+
+.task-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border);
+  transition: opacity 0.2s ease;
+}
+
+.task-item:last-child {
+  border-bottom: none;
+}
+
+.task-item--done .task-item__title {
+  text-decoration: line-through;
+  color: var(--color-text-muted);
+}
+
+.task-item--disabled {
+  opacity: 0.45;
+}
+
+.task-item__check {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  transition: transform 0.1s ease;
+}
+
+/* When rendered as a div (weekly task visual-only indicator) */
+div.task-item__check {
+  cursor: default;
+  pointer-events: none;
+}
+
+button.task-item__check:not(:disabled):hover {
+  transform: scale(1.1);
+}
+
+button.task-item__check:disabled {
+  cursor: not-allowed;
+}
+
+.task-item__check svg {
+  width: 18px;
+  height: 18px;
+}
+
+.task-item__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.task-item__title {
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--color-text);
+  line-height: 1.3;
+  transition: color 0.15s ease;
+}
+
+.task-item__desc {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  line-height: 1.3;
+}
+
+.task-item__time {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+/* Weekly task counter */
+
+.task-item__weekly-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.weekly-counter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-surface-2);
+  border-radius: 20px;
+  padding: 3px 8px;
+}
+
+.weekly-counter__btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  padding: 0 2px;
+  line-height: 1;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+}
+
+.weekly-counter__btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.weekly-counter__btn:not(:disabled):hover {
+  transform: scale(1.15);
+}
+
+.weekly-counter__label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-text);
+  min-width: 28px;
+  text-align: center;
+}
+
+.weekly-counter__req {
+  font-weight: 400;
+  color: var(--color-text-muted);
+}

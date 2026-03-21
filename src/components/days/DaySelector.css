@@ -1,0 +1,49 @@
+.day-selector {
+  display: flex;
+  gap: 6px;
+  padding: 2px 0;
+}
+
+.day-selector__pill {
+  flex: 1;
+  aspect-ratio: 1;
+  min-width: 36px;
+  max-width: 44px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.01em;
+  padding: 0;
+}
+
+.day-selector__pill:hover {
+  background: var(--color-surface-3);
+  color: var(--color-text);
+}
+
+.day-selector__pill--today {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 2px 8px rgba(232, 93, 93, 0.35);
+}
+
+.day-selector__pill--today:hover {
+  background: var(--color-primary-hover);
+  color: #fff;
+}
+
+.day-selector__pill--selected {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: var(--color-primary-bg);
+}
