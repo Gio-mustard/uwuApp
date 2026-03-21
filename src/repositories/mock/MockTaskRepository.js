@@ -1,9 +1,14 @@
 /**
  * @fileoverview MockTaskRepository — Development implementation of ITaskRepository.
  *
- * Uses an in-memory store (seeded with example tasks) and persists state to
- * localStorage so that data survives page refreshes during development.
- * Replace with ApiTaskRepository or similar once a real backend is available.
+ * All data is scoped to the authenticated user via localStorage keys that
+ * include `user.id`. This ensures two different users on the same device
+ * cannot access each other's tasks.
+ *
+ * Keys used:
+ *   - `uwu_{user.id}_daily`
+ *   - `uwu_{user.id}_weekly`
+ *   - `uwu_{user.id}_history`
  *
  * @extends {ITaskRepository}
  */
@@ -16,31 +21,43 @@ import { DayOfWeek } from '../../domain/enums/DayOfWeek';
 import { getWeekId, getWeekBounds } from '../../services/WeekService';
 
 const MOCK_DELAY = 250;
-const STORAGE_KEY_DAILY = 'uwu_daily_tasks';
-const STORAGE_KEY_WEEKLY = 'uwu_weekly_tasks';
-const STORAGE_KEY_HISTORY = 'uwu_week_history';
 
+/** @param {number} ms */
 function delay(ms = MOCK_DELAY) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-/** Seed data for a fresh installation. */
-function buildSeedData() {
-  const weekId = getWeekId(new Date());
+/** Builds user-scoped localStorage key names. */
+function buildKeys(userId) {
+  return {
+    daily:   `uwu_${userId}_daily`,
+    weekly:  `uwu_${userId}_weekly`,
+    history: `uwu_${userId}_history`,
+  };
+}
 
-  const daily = [
+/**
+ * Builds seed data for a first-time user.
+ * @param {string} weekId
+ * @returns {{ daily: DailyTask[], weekly: WeeklyTask[], history: WeekHistory[] }}
+ */
+function buildSeedData(weekId) {
+  let daily = [
     createDailyTask({
       id: 'dt-001',
       title: 'Tomar 2L de ácido',
       description: 'Mantenerse hidratado durante todo el día.',
       suggestedTime: '13:00',
-      assignedDays: [DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY,
-                     DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY],
+      assignedDays: [
+        DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY,
+        DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY,
+      ],
       completions: { [weekId]: [] },
     }),
   ];
+  daily = []
 
-  const weekly = [
+  let weekly = [
     createWeeklyTask({
       id: 'wt-001',
       title: 'Lavar carro',
@@ -66,8 +83,8 @@ function buildSeedData() {
       completions: { [weekId]: 0 },
     }),
   ];
+  weekly = []
 
-  /** Build a past week example for the history page. */
   const pastDate = new Date();
   pastDate.setDate(pastDate.getDate() - 7);
   const pastWeekId = getWeekId(pastDate);
@@ -81,11 +98,11 @@ function buildSeedData() {
       totalTasks: 5,
       completedTasks: 4,
       taskSnapshots: [
-        { taskId: 'wt-001', title: 'Lavar carro', type: 'weekly', completed: true,  completedCount: 3, requiredCount: 3 },
-        { taskId: 'wt-002', title: 'Ver película', type: 'weekly', completed: true,  completedCount: 1, requiredCount: 1 },
-        { taskId: 'wt-003', title: 'Estudiar',    type: 'weekly', completed: true,  completedCount: 2, requiredCount: 2 },
-        { taskId: 'dt-001', title: 'Tomar 2L de ácido', type: 'daily', completed: true, completedCount: 7, requiredCount: 7 },
-        { taskId: 'dt-002', title: 'Comer',        type: 'daily', completed: false, completedCount: 5, requiredCount: 7 },
+        { taskId: 'wt-001', title: 'Lavar carro',       type: 'weekly', completed: true,  completedCount: 3, requiredCount: 3 },
+        { taskId: 'wt-002', title: 'Ver película',       type: 'weekly', completed: true,  completedCount: 1, requiredCount: 1 },
+        { taskId: 'wt-003', title: 'Estudiar',           type: 'weekly', completed: true,  completedCount: 2, requiredCount: 2 },
+        { taskId: 'dt-001', title: 'Tomar 2L de ácido',  type: 'daily',  completed: true,  completedCount: 7, requiredCount: 7 },
+        { taskId: 'dt-002', title: 'Comer',              type: 'daily',  completed: false, completedCount: 5, requiredCount: 7 },
       ],
     }),
   ];
@@ -100,31 +117,39 @@ export class MockTaskRepository extends ITaskRepository {
   #weeklyTasks;
   /** @type {import('../../domain/models/WeekHistory').WeekHistory[]} */
   #history;
+  /** @type {{ daily: string, weekly: string, history: string }} */
+  #keys;
 
-  constructor() {
-    super();
-    const rawDaily = localStorage.getItem(STORAGE_KEY_DAILY);
-    const rawWeekly = localStorage.getItem(STORAGE_KEY_WEEKLY);
-    const rawHistory = localStorage.getItem(STORAGE_KEY_HISTORY);
+  /**
+   * @param {import('../../domain/models/User').User} user - The authenticated user.
+   *   All data is stored under keys scoped to `user.id`.
+   */
+  constructor(user) {
+    super(user); // Stores this.user and validates the user object.
+    this.#keys = buildKeys(user.id);
+
+    const rawDaily   = localStorage.getItem(this.#keys.daily);
+    const rawWeekly  = localStorage.getItem(this.#keys.weekly);
+    const rawHistory = localStorage.getItem(this.#keys.history);
 
     if (rawDaily && rawWeekly && rawHistory) {
-      this.#dailyTasks = JSON.parse(rawDaily);
+      this.#dailyTasks  = JSON.parse(rawDaily);
       this.#weeklyTasks = JSON.parse(rawWeekly);
-      this.#history = JSON.parse(rawHistory);
+      this.#history     = JSON.parse(rawHistory);
     } else {
-      const seed = buildSeedData();
-      this.#dailyTasks = seed.daily;
+      const seed = buildSeedData(getWeekId(new Date()));
+      this.#dailyTasks  = seed.daily;
       this.#weeklyTasks = seed.weekly;
-      this.#history = seed.history;
+      this.#history     = seed.history;
       this.#persist();
     }
   }
 
-  /** Writes the current state to localStorage. */
+  /** Writes the current state to user-scoped localStorage keys. */
   #persist() {
-    localStorage.setItem(STORAGE_KEY_DAILY, JSON.stringify(this.#dailyTasks));
-    localStorage.setItem(STORAGE_KEY_WEEKLY, JSON.stringify(this.#weeklyTasks));
-    localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(this.#history));
+    localStorage.setItem(this.#keys.daily,   JSON.stringify(this.#dailyTasks));
+    localStorage.setItem(this.#keys.weekly,  JSON.stringify(this.#weeklyTasks));
+    localStorage.setItem(this.#keys.history, JSON.stringify(this.#history));
   }
 
   // ─── Daily Tasks ────────────────────────────────────────────────────────────
@@ -159,9 +184,7 @@ export class MockTaskRepository extends ITaskRepository {
     const task = this.#dailyTasks.find((t) => t.id === taskId);
     if (!task) throw new Error(`DailyTask "${taskId}" not found.`);
     if (!task.completions[weekId]) task.completions[weekId] = [];
-    if (!task.completions[weekId].includes(day)) {
-      task.completions[weekId].push(day);
-    }
+    if (!task.completions[weekId].includes(day)) task.completions[weekId].push(day);
     this.#persist();
   }
 

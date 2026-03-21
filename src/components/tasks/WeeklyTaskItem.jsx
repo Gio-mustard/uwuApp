@@ -20,6 +20,7 @@ export function WeeklyTaskItem({ task, weekId, onToggle }) {
   const done = isWeeklyTaskComplete(task, weekId);
   const count = getWeeklyTaskCount(task, weekId);
   const canDecrement = count > 0;
+  const canIncrement = count < task.requiredCount;
 
   return (
     <div className={`task-item${done ? ' task-item--done' : ''}`}>
@@ -62,6 +63,7 @@ export function WeeklyTaskItem({ task, weekId, onToggle }) {
             id={`weekly-task-inc-${task.id}`}
             className="weekly-counter__btn"
             aria-label={`Sumar completado de ${task.title}`}
+            disabled = {!canIncrement}
             onClick={() => onToggle(task.id, true)}
           >
             +

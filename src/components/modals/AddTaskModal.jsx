@@ -14,10 +14,11 @@ import './AddTaskModal.css';
  * @param {{
  *   onAdd: (type: 'daily'|'weekly', data: object) => void,
  *   onClose: () => void,
+ *   initialType : string 
  * }} props
  */
-export function AddTaskModal({ onAdd, onClose }) {
-  const [type, setType] = useState('daily');
+export function AddTaskModal({ onAdd, onClose,initialType = 'daily' }) {
+  const [type, setType] = useState(initialType);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [time, setTime] = useState('');

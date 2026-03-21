@@ -6,13 +6,14 @@
  * expanded or collapsed to view the full task snapshot list.
  */
 
-import { useTasks } from '../context/TaskContext';
+import { useSession } from '../context/SessionContext';
 import { AppShell } from '../components/layout/AppShell';
 import { HistoryWeekCard } from '../components/history/HistoryWeekCard';
 import { buildWeekHistorySnapshot } from '../services/WeekService';
 import './HistoryPage.css';
 
 export function HistoryPage() {
+  const { useTasks } = useSession();
   const { dailyTasks, weeklyTasks, history, currentWeekId, loading } = useTasks();
 
   // Build live current-week snapshot from in-memory state (not yet archived).

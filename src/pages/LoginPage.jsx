@@ -6,11 +6,13 @@
  */
 
 import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useSession } from '../context/SessionContext';
 import './LoginPage.css';
 
 export function LoginPage() {
+  const { useAuth } = useSession();
   const { login, register, error, setError } = useAuth();
+
   const [mode, setMode] = useState('login'); // 'login' | 'register'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

@@ -1,33 +1,36 @@
 /**
  * @fileoverview main.jsx — Application entry point.
  *
- * This is where the concrete repository implementations are instantiated and
- * injected into the application via the AuthProvider and App component.
+ * Instantiates the concrete repository implementations and injects them
+ * into the app via {SessionProvider}.
  *
- * To switch from mock repositories to real ones (e.g. Supabase, REST API),
- * simply swap the imports and instantiations here — no other files need to change.
+ * To swap from mock repositories to production ones (e.g. Supabase, REST API),
+ * only change the imports/factories here — no other files need to change.
  *
- * Development repositories used:
- *   - MockAuthRepository  → simulates login/register with in-memory users
- *   - MockTaskRepository  → simulates data persistence via localStorage
+ * `taskRepositoryFactory` is a function `(user) => ITaskRepository` called by
+ * {SessionProvider} after a successful login. This ensures each repository
+ * instance is scoped to the authenticated user.
  */
 
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import { App } from './App';
-import { AuthProvider } from './context/AuthContext';
 import { MockAuthRepository } from './repositories/mock/MockAuthRepository';
 import { MockTaskRepository } from './repositories/mock/MockTaskRepository';
 
-// ── Instantiate repositories (swap these for production implementations) ──────
+// ── Instantiate auth repository (stateless, created once) ─────────────────────
 const authRepository = new MockAuthRepository();
-const taskRepository = new MockTaskRepository();
+
+// ── Task repository factory (called per login with the authenticated user) ─────
+// Swap for: (user) => new ApiTaskRepository(user) for production.
+const taskRepositoryFactory = (user) => new MockTaskRepository(user);
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <AuthProvider repository={authRepository}>
-      <App authRepository={authRepository} taskRepository={taskRepository} />
-    </AuthProvider>
+    <App
+      authRepository={authRepository}
+      taskRepositoryFactory={taskRepositoryFactory}
+    />
   </StrictMode>,
 );

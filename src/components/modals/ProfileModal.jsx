@@ -5,13 +5,14 @@
  * with a logout button. Triggered by tapping the profile icon in the header.
  */
 
-import { useAuth } from '../../context/AuthContext';
+import { useSession } from '../../context/SessionContext';
 import './ProfileModal.css';
 
 /**
  * @param {{ onClose: () => void }} props
  */
 export function ProfileModal({ onClose }) {
+  const { useAuth } = useSession();
   const { user, logout } = useAuth();
 
   async function handleLogout() {

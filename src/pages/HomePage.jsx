@@ -11,8 +11,7 @@
  */
 
 import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useTasks } from '../context/TaskContext';
+import { useSession } from '../context/SessionContext';
 import { AppShell } from '../components/layout/AppShell';
 import { DaySelector } from '../components/days/DaySelector';
 import { DailyTaskItem } from '../components/tasks/DailyTaskItem';
@@ -23,7 +22,8 @@ import { getDailyTasksForDay, getNextEvent } from '../services/TaskService';
 import './HomePage.css';
 
 export function HomePage() {
-  const { user, logout } = useAuth();
+  const { useAuth, useTasks } = useSession();
+  const { user } = useAuth();
   const {
     dailyTasks,
     weeklyTasks,
@@ -37,7 +37,10 @@ export function HomePage() {
   } = useTasks();
 
   const [selectedDay, setSelectedDay] = useState(todayDay);
+  // --- Add task modal
   const [showModal, setShowModal] = useState(false);
+  const [typeModal,setTypeModal] = useState('daily');
+
   const [showProfile, setShowProfile] = useState(false);
 
   const dailyForDay = getDailyTasksForDay(dailyTasks, selectedDay);
@@ -91,7 +94,7 @@ export function HomePage() {
                   <button
                     id="add-daily-btn"
                     className="section-card__add"
-                    onClick={() => setShowModal(true)}
+                    onClick={() => {setShowModal(true) ; setTypeModal('daily')}}
                     aria-label="Agregar pendiente diario"
                   >
                     +
@@ -122,7 +125,7 @@ export function HomePage() {
                   <button
                     id="add-weekly-btn"
                     className="section-card__add"
-                    onClick={() => setShowModal(true)}
+                    onClick={() => {setShowModal(true) ; setTypeModal('weekly')}}
                     aria-label="Agregar pendiente semanal"
                   >
                     +
@@ -186,7 +189,7 @@ export function HomePage() {
       </button>
 
       {showModal && (
-        <AddTaskModal onAdd={handleAdd} onClose={() => setShowModal(false)} />
+        <AddTaskModal onAdd={handleAdd} onClose={() => setShowModal(false)} initialType={typeModal} />
       )}
 
       {showProfile && (

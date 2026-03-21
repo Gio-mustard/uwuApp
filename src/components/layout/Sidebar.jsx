@@ -7,7 +7,7 @@
  */
 
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useSession } from '../../context/SessionContext';
 import './Sidebar.css';
 
 const NAV_ITEMS = [
@@ -18,6 +18,7 @@ const NAV_ITEMS = [
 export function Sidebar() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const { useAuth } = useSession();
   const { user, logout } = useAuth();
 
   const initial = user?.displayName?.[0]?.toUpperCase() ?? '?';

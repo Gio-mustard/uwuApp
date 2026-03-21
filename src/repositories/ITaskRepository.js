@@ -9,7 +9,19 @@
  */
 
 export class ITaskRepository {
+  /**
+   * @param {import('../domain/models/User').User} user - The currently authenticated user.
+   */
+  constructor(user) {
+    if (!user || !user.id) {
+      throw new Error('ITaskRepository requires a valid authenticated user.');
+    }
+    /** @type {import('../domain/models/User').User} */
+    this.user = user;
+  }
+
   // ─── Daily Tasks ────────────────────────────────────────────────────────────
+
 
   /**
    * Fetches all daily tasks for the current user.
