@@ -136,7 +136,7 @@ export function HomePage() {
             <section className="home-section" aria-label="Pendientes diarios">
               <div className="section-card">
                 <div className="section-card__header">
-                  <h2 className="section-card__title">Pendientes diarios</h2>
+                  <h2 className="section-card__title">{HOME_TEXTS.dailyTasksTitle}</h2>
                   <button
                     id="add-daily-btn"
                     className="section-card__add"
@@ -167,7 +167,7 @@ export function HomePage() {
             <section className="home-section" aria-label="Pendientes semanales">
               <div className="section-card">
                 <div className="section-card__header">
-                  <h2 className="section-card__title">Pendientes semanales</h2>
+                  <h2 className="section-card__title">{HOME_TEXTS.weeklyTasksTitle}</h2>
                   <button
                     id="add-weekly-btn"
                     className="section-card__add"

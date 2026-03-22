@@ -36,21 +36,25 @@
 
 @media (min-width: 768px) {
   .login-page__top {
-    background: linear-gradient(160deg, var(--color-primary) 0%, #c0392b 100%);
-    flex: 0 0 340px;
-    padding: 48px 36px;
-    align-items: flex-start;
-    justify-content: flex-end;
-    border-radius: 0;
+    background: linear-gradient(160deg, var(--color-primary) 0%, #c0392b 100%); 
+    background-color: #030303;
+    background-image: url('https://cdn.britannica.com/70/234870-050-D4D024BB/Orange-colored-cat-yawns-displaying-teeth.jpg');
+    background-size: contain;
+    background-position: bottom;
+    background-repeat: no-repeat;
+    background-blend-mode: lighten;
   }
   .login-page__tagline {
-    color: #fff;
+    display: none;
+    
   }
   .login-page__logo-text {
-    color: rgba(255,255,255,0.9);
+    display: none;
+    
   }
   .login-page__logo-dot {
     background: rgba(255,255,255,0.9);
+    display: none;
   }
 }
 
