@@ -69,7 +69,7 @@ export function LoginPage() {
           <span className="login-page__logo-text">UWU</span>
           <span className="login-page__logo-dot" />
         </div>
-        <h1 className="login-page__tagline">Tus pendientes,<br />tu ritmo.</h1>
+        <h1 className="login-page__tagline">Tienes tus pendientes<br />o te vale?</h1>
       </div>
 
       <div className="login-page__card">
