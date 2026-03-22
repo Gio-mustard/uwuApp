@@ -6,6 +6,7 @@
  * and increment/decrement controls.
  */
 
+import { useEffect, useState } from 'react';
 import { isWeeklyTaskComplete, getWeeklyTaskCount } from '../../services/TaskService';
 import './TaskItem.css';
 
@@ -19,8 +20,23 @@ import './TaskItem.css';
 export function WeeklyTaskItem({ task, weekId, onToggle }) {
   const done = isWeeklyTaskComplete(task, weekId);
   const count = getWeeklyTaskCount(task, weekId);
-  const canDecrement = count > 0;
-  const canIncrement = count < task.requiredCount;
+  
+  const [internalCount,setInternalCount] = useState(count);
+  const [canDecrement,setCanDecrement] = useState(internalCount>0);
+  const [canIncrement,setCanIncrement] = useState(internalCount < task.requiredCount);
+  
+
+  useEffect(()=>{
+    if (count != internalCount){
+      console.log("update internal value")
+      setInternalCount(count);
+    }
+  },[count])
+
+  useEffect(()=>{
+      setCanDecrement(internalCount>0);
+      setCanIncrement(internalCount < task.requiredCount);
+  },[internalCount])
 
   return (
     <div className={`task-item${done ? ' task-item--done' : ''}`}>
@@ -32,7 +48,7 @@ export function WeeklyTaskItem({ task, weekId, onToggle }) {
         aria-checked={done}
         aria-label={done ? `${task.title} completado` : `${task.title} pendiente`}
       >
-        {done ? <CheckIcon /> : <EmptyCheckIcon />}
+        {done ? <CheckIcon /> : null}
       </div>
 
       <div className="task-item__body">
@@ -52,19 +68,25 @@ export function WeeklyTaskItem({ task, weekId, onToggle }) {
             className="weekly-counter__btn"
             aria-label={`Restar completado de ${task.title}`}
             disabled={!canDecrement}
-            onClick={() => onToggle(task.id, false)}
+            onClick={() => {
+              setInternalCount(internalCount-1);
+              onToggle(task.id, false)
+            }}
           >
             −
           </button>
           <span className="weekly-counter__label">
-            {count}<span className="weekly-counter__req">/{task.requiredCount}</span>
+            {internalCount}<span className="weekly-counter__req">/{task.requiredCount}</span>
           </span>
           <button
             id={`weekly-task-inc-${task.id}`}
             className="weekly-counter__btn"
             aria-label={`Sumar completado de ${task.title}`}
             disabled = {!canIncrement}
-            onClick={() => onToggle(task.id, true)}
+            onClick={() => {
+              setInternalCount(internalCount+1)
+              onToggle(task.id, true)
+            }}
           >
             +
           </button>
