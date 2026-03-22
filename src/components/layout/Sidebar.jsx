@@ -12,6 +12,9 @@ import { ROUTES } from '../../constants/routes';
 import { HOME_TEXTS } from '../../constants/texts/home.texts';
 import { COMMON_TEXTS } from '../../constants/texts/common.texts';
 import './Sidebar.css';
+import { Avatar } from '../common/Avatar';
+import { ProfileModal } from '../modals/ProfileModal';
+import { useState } from 'react';
 
 const NAV_ITEMS = [
   { label: HOME_TEXTS.navHome,    path: ROUTES.HOME,    icon: HomeIcon },
@@ -23,10 +26,12 @@ export function Sidebar() {
   const navigate = useNavigate();
   const { useAuth } = useSession();
   const { user, logout } = useAuth();
+  const [showProfile,setShowProfile] = useState(false);
 
   const initial = user?.displayName?.[0]?.toUpperCase() ?? '?';
 
   return (
+    <>
     <aside className="sidebar" aria-label="Navigation">
       {/* Brand */}
       <div className="sidebar__brand">
@@ -35,8 +40,8 @@ export function Sidebar() {
       </div>
 
       {/* User card */}
-      <div className="sidebar__user">
-        <div className="sidebar__avatar" aria-hidden="true">{initial}</div>
+      <div className="sidebar__user" onClick={()=>setShowProfile(true)} style={{cursor:'pointer'}}>
+        <Avatar path={user?.avatarUrl} size={30} fallback={initial} />
         <div className="sidebar__user-info">
           <span className="sidebar__display-name">{user?.displayName}</span>
           <span className="sidebar__username">{user?.username}</span>
@@ -75,7 +80,13 @@ export function Sidebar() {
         <LogoutIcon />
         <span>{COMMON_TEXTS.logout}</span>
       </button>
+
+      
     </aside>
+    {showProfile && (
+        <ProfileModal onClose={() => setShowProfile(false)} />
+      )}
+      </>
   );
 }
 

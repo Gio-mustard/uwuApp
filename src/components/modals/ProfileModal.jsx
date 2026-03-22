@@ -42,8 +42,6 @@ export function ProfileModal({ onClose }) {
 
   return (
     <Modal onClose={onClose} overlayClass="profile-overlay" sheetClass="profile-sheet">
-      {/* Drag handle */}
-        <div className="profile-sheet__handle" aria-hidden="true" />
 
         {/* Avatar Upload */}
         <label className="profile-sheet__avatar-label" aria-label="Cambiar foto de perfil">
