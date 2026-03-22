@@ -5,6 +5,7 @@
  * with a logout button. Triggered by tapping the profile icon in the header.
  */
 
+import { useState } from 'react';
 import { useSession } from '../../context/SessionContext';
 import { Modal } from './Modal';
 import './ProfileModal.css';
@@ -14,11 +15,26 @@ import './ProfileModal.css';
  */
 export function ProfileModal({ onClose }) {
   const { useAuth } = useSession();
-  const { user, logout } = useAuth();
+  const { user, logout, uploadAvatar } = useAuth();
+  const [uploading, setUploading] = useState(false);
 
   async function handleLogout() {
     onClose();
     await logout();
+  }
+
+  async function handleFileChange(e) {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    try {
+      setUploading(true);
+      await uploadAvatar(file, user.id);
+    } catch (err) {
+      console.error('Avatar upload failed:', err);
+      // Optional: set some local error state here if needed
+    } finally {
+      setUploading(false);
+    }
   }
 
   const initial = user?.displayName?.[0]?.toUpperCase() ?? '?';
@@ -28,10 +44,29 @@ export function ProfileModal({ onClose }) {
       {/* Drag handle */}
         <div className="profile-sheet__handle" aria-hidden="true" />
 
-        {/* Avatar */}
-        <div className="profile-sheet__avatar" aria-hidden="true">
-          {initial}
-        </div>
+        {/* Avatar Upload */}
+        <label className="profile-sheet__avatar-label" aria-label="Cambiar foto de perfil">
+          <input 
+            type="file" 
+            accept="image/*" 
+            className="visually-hidden" 
+            onChange={handleFileChange}
+            disabled={uploading}
+          />
+          <div className={`profile-sheet__avatar${uploading ? ' profile-sheet__avatar--uploading' : ''}`}>
+             {user?.avatarUrl ? (
+               <img src={user.avatarUrl} alt="Avatar" className="profile-sheet__avatar-img" />
+             ) : (
+               initial
+             )}
+             {uploading && <div className="profile-sheet__avatar-spinner" />}
+             {!uploading && (
+               <div className="profile-sheet__avatar-overlay">
+                 <CameraIcon />
+               </div>
+             )}
+          </div>
+        </label>
 
         {/* Info */}
         <div className="profile-sheet__info">
@@ -71,6 +106,15 @@ function LogoutIcon() {
       <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
       <polyline points="16 17 21 12 16 7" />
       <line x1="21" y1="12" x2="9" y2="12" />
+    </svg>
+  );
+}
+
+function CameraIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+      <circle cx="12" cy="13" r="4" />
     </svg>
   );
 }

@@ -20,6 +20,7 @@ const AuthContext = createContext(null);
  * @property {(email: string, password: string) => Promise<void>} login
  * @property {(email: string, password: string, displayName: string) => Promise<void>} register
  * @property {() => Promise<void>} logout
+ * @property {(file: File, userId: string) => Promise<void>} uploadAvatar
  */
 
 /**
@@ -63,8 +64,17 @@ export function AuthProvider({ children, repository }) {
     setUser(null);
   }, [repository]);
 
+  const uploadAvatar = useCallback(
+    async (file, userId) => {
+      setError(null);
+      const newUrl = await repository.uploadAvatar(file, userId);
+      setUser((prev) => prev ? { ...prev, avatarUrl: newUrl } : null);
+    },
+    [repository]
+  );
+
   return (
-    <AuthContext.Provider value={{ user, loading, error, setError, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, error, setError, login, register, logout, uploadAvatar }}>
       {children}
     </AuthContext.Provider>
   );

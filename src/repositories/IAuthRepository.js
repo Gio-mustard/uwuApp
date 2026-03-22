@@ -49,4 +49,16 @@ export class IAuthRepository {
   async getCurrentUser() {
     throw new Error('IAuthRepository.getCurrentUser() must be implemented.');
   }
+
+  /**
+   * Uploads a new avatar image for the user and updates their profile.
+   * @param {File} file - The image file to upload.
+   * @param {string} userId - The ID of the authenticated user.
+   * @returns {Promise<string>} The public URL of the uploaded image.
+   * @throws {Error} If upload fails.
+   */
+  // eslint-disable-next-line no-unused-vars
+  async uploadAvatar(file, userId) {
+    throw new Error('IAuthRepository.uploadAvatar() must be implemented.');
+  }
 }

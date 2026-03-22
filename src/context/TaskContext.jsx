@@ -53,43 +53,48 @@ export function TaskProvider({ children, repository }) {
   /** Initial data load and optional week-reset check. */
   useEffect(() => {
     async function load() {
-      const [daily, weekly, hist] = await Promise.all([
-        repository.getDailyTasks(),
-        repository.getWeeklyTasks(),
-        repository.getWeekHistory(),
-      ]);
+      try {
+        const [daily, weekly, hist] = await Promise.all([
+          repository.getDailyTasks(),
+          repository.getWeeklyTasks(),
+          repository.getWeekHistory(),
+        ]);
 
-      // ── Week reset: if no completion data exists for currentWeekId,
-      //    a new week has started. Save a snapshot of the old completions
-      //    if there are any tasks with prior data, then the new week starts fresh.
-      const hasCurrentWeekData =
-        daily.some((t) => t.completions[currentWeekId] !== undefined) ||
-        weekly.some((t) => t.completions[currentWeekId] !== undefined);
+        // ── Week reset: if no completion data exists for currentWeekId,
+        //    a new week has started. Save a snapshot of the old completions
+        //    if there are any tasks with prior data, then the new week starts fresh.
+        const hasCurrentWeekData =
+          daily.some((t) => t.completions[currentWeekId] !== undefined) ||
+          weekly.some((t) => t.completions[currentWeekId] !== undefined);
 
-      if (!hasCurrentWeekData && (daily.length > 0 || weekly.length > 0)) {
-        // Find the most recent previous weekId from completions.
-        const allWeekIds = new Set();
-        [...daily, ...weekly].forEach((t) =>
-          Object.keys(t.completions).forEach((wid) => allWeekIds.add(wid)),
-        );
-        if (allWeekIds.size > 0) {
-          const sortedIds = [...allWeekIds].sort().reverse();
-          const prevWeekId = sortedIds[0];
-          if (prevWeekId && prevWeekId !== currentWeekId) {
-            const snapshot = buildWeekHistorySnapshot(daily, weekly, prevWeekId);
-            const alreadySaved = hist.some((h) => h.weekId === prevWeekId);
-            if (!alreadySaved) {
-              await repository.saveWeekHistory(snapshot);
-              hist.unshift(snapshot);
+        if (!hasCurrentWeekData && (daily.length > 0 || weekly.length > 0)) {
+          // Find the most recent previous weekId from completions.
+          const allWeekIds = new Set();
+          [...daily, ...weekly].forEach((t) =>
+            Object.keys(t.completions).forEach((wid) => allWeekIds.add(wid)),
+          );
+          if (allWeekIds.size > 0) {
+            const sortedIds = [...allWeekIds].sort().reverse();
+            const prevWeekId = sortedIds[0];
+            if (prevWeekId && prevWeekId !== currentWeekId) {
+              const snapshot = buildWeekHistorySnapshot(daily, weekly, prevWeekId);
+              const alreadySaved = hist.some((h) => h.weekId === prevWeekId);
+              if (!alreadySaved) {
+                await repository.saveWeekHistory(snapshot);
+                hist.unshift(snapshot);
+              }
             }
           }
         }
-      }
 
-      setDailyTasks(daily);
-      setWeeklyTasks(weekly);
-      setHistory(hist);
-      setLoading(false);
+        setDailyTasks(daily);
+        setWeeklyTasks(weekly);
+        setHistory(hist);
+      } catch (err) {
+        console.error('TaskContext failed to load data:', err);
+      } finally {
+        setLoading(false);
+      }
     }
     load();
   }, [repository, currentWeekId]);

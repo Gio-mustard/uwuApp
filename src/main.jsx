@@ -16,15 +16,15 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import { App } from './App';
-import { MockAuthRepository } from './repositories/mock/MockAuthRepository';
-import { MockTaskRepository } from './repositories/mock/MockTaskRepository';
+import { SupabaseAuthRepository } from './repositories/supabase/SupabaseAuthRepository';
+import { SupabaseTaskRepository } from './repositories/supabase/SupabaseTaskRepository';
 
 // ── Instantiate auth repository (stateless, created once) ─────────────────────
-const authRepository = new MockAuthRepository();
+const authRepository = new SupabaseAuthRepository();
 
 // ── Task repository factory (called per login with the authenticated user) ─────
-// Swap for: (user) => new ApiTaskRepository(user) for production.
-const taskRepositoryFactory = (user) => new MockTaskRepository(user);
+// The SessionProvider calls this when a user logs in, ensuring a scoped boundary.
+const taskRepositoryFactory = (user) => new SupabaseTaskRepository(user);
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
