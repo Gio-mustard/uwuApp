@@ -8,6 +8,7 @@
 import { useState } from 'react';
 import { useSession } from '../../context/SessionContext';
 import { Modal } from './Modal';
+import { Avatar } from '../common/Avatar';
 import './ProfileModal.css';
 
 /**
@@ -54,11 +55,7 @@ export function ProfileModal({ onClose }) {
             disabled={uploading}
           />
           <div className={`profile-sheet__avatar${uploading ? ' profile-sheet__avatar--uploading' : ''}`}>
-             {user?.avatarUrl ? (
-               <img src={user.avatarUrl} alt="Avatar" className="profile-sheet__avatar-img" />
-             ) : (
-               initial
-             )}
+             <Avatar path={user?.avatarUrl} size={72} fallback={initial} />
              {uploading && <div className="profile-sheet__avatar-spinner" />}
              {!uploading && (
                <div className="profile-sheet__avatar-overlay">

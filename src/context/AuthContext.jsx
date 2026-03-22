@@ -21,6 +21,7 @@ const AuthContext = createContext(null);
  * @property {(email: string, password: string, displayName: string) => Promise<void>} register
  * @property {() => Promise<void>} logout
  * @property {(file: File, userId: string) => Promise<void>} uploadAvatar
+ * @property {() => Promise<void>} signInWithGoogle
  */
 
 /**
@@ -33,12 +34,19 @@ export function AuthProvider({ children, repository }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Restore session on mount.
+  // Restore session on mount and listen to changes.
   useEffect(() => {
     repository.getCurrentUser().then((u) => {
       setUser(u);
       setLoading(false);
     });
+
+    if (repository.onAuthStateChange) {
+      return repository.onAuthStateChange((u) => {
+        setUser(u);
+        setLoading(false);
+      });
+    }
   }, [repository]);
 
   const login = useCallback(
@@ -73,8 +81,18 @@ export function AuthProvider({ children, repository }) {
     [repository]
   );
 
+  const signInWithGoogle = useCallback(async () => {
+    setError(null);
+    try {
+      await repository.signInWithGoogle();
+      // Supabase OAuth redirects the page, so no state setting is strictly required here.
+    } catch (err) {
+      setError(err.message);
+    }
+  }, [repository]);
+
   return (
-    <AuthContext.Provider value={{ user, loading, error, setError, login, register, logout, uploadAvatar }}>
+    <AuthContext.Provider value={{ user, loading, error, setError, login, register, logout, uploadAvatar, signInWithGoogle }}>
       {children}
     </AuthContext.Provider>
   );

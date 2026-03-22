@@ -18,6 +18,7 @@ import { DailyTaskItem } from '../components/tasks/DailyTaskItem';
 import { WeeklyTaskItem } from '../components/tasks/WeeklyTaskItem';
 import { AddTaskModal } from '../components/modals/AddTaskModal';
 import { ProfileModal } from '../components/modals/ProfileModal';
+import { Avatar } from '../components/common/Avatar';
 import { getDailyTasksForDay, getNextEvent, isWeeklyTaskComplete, isDailyTaskDoneOnDay } from '../services/TaskService';
 import { getDynamicGreeting } from '../constants/texts/greetings.texts';
 import { HOME_TEXTS } from '../constants/texts/home.texts';
@@ -81,7 +82,7 @@ export function HomePage() {
             <button id="home-profile-btn" className="home-header__user" onClick={() => setShowProfile(true)} aria-label={HOME_TEXTS.ariaViewProfile}>
               <span className="home-header__username">{user?.username}</span>
               <div className="home-header__avatar" aria-hidden="true">
-                {avatarInitial}
+                <Avatar path={user?.avatarUrl} size={30} fallback={avatarInitial} />
               </div>
             </button>
           </div>

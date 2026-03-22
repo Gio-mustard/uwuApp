@@ -61,4 +61,14 @@ export class IAuthRepository {
   async uploadAvatar(file, userId) {
     throw new Error('IAuthRepository.uploadAvatar() must be implemented.');
   }
+
+  /**
+   * Subscribes to authentication state changes.
+   * @param {(user: import('../domain/models/User').User | null) => void} callback
+   * @returns {function(): void} An unsubscribe function.
+   */
+  // eslint-disable-next-line no-unused-vars
+  onAuthStateChange(callback) {
+    throw new Error('IAuthRepository.onAuthStateChange() must be implemented.');
+  }
 }

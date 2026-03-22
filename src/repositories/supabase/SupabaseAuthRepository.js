@@ -53,6 +53,14 @@ export class SupabaseAuthRepository extends IAuthRepository {
     return this._mapUser(session.user);
   }
 
+  onAuthStateChange(callback) {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      const user = session?.user ? this._mapUser(session.user) : null;
+      callback(user);
+    });
+    return () => subscription.unsubscribe();
+  }
+
   async uploadAvatar(file, userId) {
     if (!file) throw new Error('No file provided');
 
@@ -67,19 +75,17 @@ export class SupabaseAuthRepository extends IAuthRepository {
 
     if (uploadError) throw new Error(`Upload failed: ${uploadError.message}`);
 
-    // Get public URL
-    const { data: { publicUrl } } = supabase.storage
-      .from('avatars')
-      .getPublicUrl(filePath);
-
-    // Update the user metadata in auth.users
+    // Update the user metadata in auth.users with the relative path
     const { error: updateError } = await supabase.auth.updateUser({
-      data: { avatar_url: publicUrl },
+      data: { avatar_url: filePath },
     });
 
-    if (updateError) throw new Error(`Metadata update failed: ${updateError.message}`);
+    if (updateError) {
+      console.warn(`[SupabaseAuthRepository] Metadata update failed. Please ensure 'Allow users to update their email/data' is enabled in your Supabase Auth settings. Details: ${updateError.message}`);
+    }
 
-    return publicUrl;
+    // Return the path so the UI can fetch it
+    return filePath;
   }
 
   /**
