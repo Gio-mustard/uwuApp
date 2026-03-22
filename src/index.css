@@ -50,7 +50,7 @@
 
 /* ── Base ──────────────────────────────────────────────────────────────────── */
 html, body {
-  height: 100%;
+  height: 100svh;
   background: #e8e7e4;
 }
 
@@ -66,10 +66,15 @@ body {
 
 #root {
   min-height: 100svh;
+  max-height: 100svh;
+  position: relative;
+  max-width: 100svw;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: #e8e7e4;
+  background-color: #eceae6;
+  background-image: radial-gradient(circle, #c8c6c0 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
 /* ── Desktop background ───────────────────────────────────────────────────── */

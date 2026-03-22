@@ -8,7 +8,6 @@
   min-height: 100svh;
   margin: 0 auto;
   position: relative;
-  background: var(--color-bg);
   overflow-x: hidden;
   overflow-y: auto;
 }
@@ -38,7 +37,6 @@
     flex: 1;
     padding-bottom: 0;         /* No bottom nav on desktop */
     overflow-y: auto;
-    background: var(--color-bg);
     min-height: 100svh;
   }
 
