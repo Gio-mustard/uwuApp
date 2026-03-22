@@ -9,6 +9,8 @@
   margin: 0 auto;
   position: relative;
   background: var(--color-bg);
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .app-shell__content {
