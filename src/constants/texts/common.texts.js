@@ -5,7 +5,7 @@
 export const COMMON_TEXTS = {
   appName: 'UWU App',
   brandName: 'UWU',
-  tagline: 'Tus pendientes, tu ritmo.',
+  tagline: 'Tienes tus pendientes o te vale?',
   loading: 'Cargando…',
   cancel: 'Cancelar',
   close: 'Cerrar',
