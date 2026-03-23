@@ -26,6 +26,7 @@ export function AddTaskModal({ onAdd, onClose,initialType = 'daily' }) {
   const [assignedDays, setAssignedDays] = useState([]);
   const [requiredCount, setRequiredCount] = useState(1);
   const [error, setError] = useState('');
+  const [isRecurring,setIsRecurring] = useState(false)
 
   function toggleDay(day) {
     setAssignedDays((prev) =>
@@ -57,8 +58,8 @@ export function AddTaskModal({ onAdd, onClose,initialType = 'daily' }) {
       ...(type === 'daily'
         ? { assignedDays }
         : { requiredCount: Number(requiredCount) }),
+      isRecurring:isRecurring
     };
-
     onAdd(type, data);
     onClose();
   }
@@ -163,6 +164,16 @@ export function AddTaskModal({ onAdd, onClose,initialType = 'daily' }) {
               />
             </div>
           )}
+          <div className="form-field">
+            <label className="form-label" htmlFor="task-recurring">Es recurrente</label>
+            <input
+              id="task-recurring"
+              className="form-input"
+              type="checkbox"
+              value={isRecurring}
+              onChange={(e) => setIsRecurring(e.target.checked)}
+            />
+          </div>
 
           {error && <p className="form-error">{error}</p>}
 

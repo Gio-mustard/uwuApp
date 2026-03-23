@@ -1,208 +1,225 @@
 /**
- * @fileoverview SupabaseTaskRepository — Implements ITaskRepository.
+ * @fileoverview SupabaseTaskRepository — Concrete implementation of ITaskRepository.
  *
- * Connects to the normalized Supabase SQL Schema (Class Table Inheritance).
- * Uses the `all_tasks` view for unified queries and the `create_new_task` RPC
- * for atomic inserts across the multiple related tables.
+ * Connects to the normalized Supabase schema (Class Table Inheritance + user_weeks).
+ * All write operations go through security-definer RPCs; reads go through
+ * typed RPC functions that enforce RLS server-side.
+ *
+ * The active week is resolved internally on initialization. Use the static
+ * factory method instead of the constructor directly:
+ *
+ * @example
+ * const repo = await SupabaseTaskRepository.create(user);
  */
 
 import { ITaskRepository } from '../ITaskRepository';
 import { supabase } from '../../lib/supabaseClient';
 
 export class SupabaseTaskRepository extends ITaskRepository {
-  constructor(user) {
+  /**
+   * @param {import('../domain/models/User').User} user
+   * @param {{ id: string, week_id: string }} activeWeek - Resolved internally by create().
+   */
+  constructor(user, activeWeek) {
     super(user);
+
+    /** @type {string} UUID of the active user_weeks row */
+    this.userWeekId = activeWeek.id;
+
+    /** @type {string} Human-readable identifier, e.g. "2025-W12" */
+    this.weekId = activeWeek.week_id;
+  }
+
+  // ─── Factory ─────────────────────────────────────────────────────────────────
+
+  /**
+   * Resolves the active week from the DB and returns a ready-to-use repository.
+   * This is the only intended way to instantiate this class.
+   *
+   * @param {import('../domain/models/User').User} user
+   * @returns {Promise<SupabaseTaskRepository>}
+   */
+  static async create(user) {
+    const { data, error } = await supabase
+      .from('user_weeks')
+      .select('id, week_id')
+      .eq('user_id', user.id)
+      .eq('status', 'active')
+      .maybeSingle();
+
+    if (error) throw new Error(error.message);
+    if (!data)  throw new Error('No active week found for this user.');
+
+    return new SupabaseTaskRepository(user, data);
   }
 
   // ─── Daily Tasks ────────────────────────────────────────────────────────────
 
   async getDailyTasks() {
-    // 1. Fetch base tasks from the view
-    const { data: tasksData, error: taskError } = await supabase
-      .from('all_tasks')
-      .select('*')
-      .eq('type', 'daily');
-
-    if (taskError) throw new Error(taskError.message);
-
-    // 2. Fetch completions for this user
-    const { data: completionsData, error: compError } = await supabase
-      .from('daily_task_completions')
-      .select('task_id, week_id, day_id');
-
-    if (compError) throw new Error(compError.message);
-
-    // 3. Reconstruct the frontend domain model
-    return tasksData.map((t) => {
-      const taskCompletions = {};
-      completionsData
-        .filter((c) => c.task_id === t.id)
-        .forEach((c) => {
-          if (!taskCompletions[c.week_id]) taskCompletions[c.week_id] = [];
-          taskCompletions[c.week_id].push(c.day_id);
-        });
-
-      return {
-        id: t.id,
-        title: t.title,
-        description: t.description || null,
-        suggestedTime: t.suggested_time ? t.suggested_time.substring(0, 5) : null,
-        assignedDays: t.assigned_days || [],
-        completions: taskCompletions,
-      };
+    const { data, error } = await supabase.rpc('get_daily_tasks', {
+      p_user_week_id: this.userWeekId,
     });
+
+    if (error) throw new Error(error.message);
+
+    return (data ?? []).map((t) => ({
+      id:            t.id,
+      title:         t.title,
+      description:   t.description   ?? null,
+      suggestedTime: t.suggested_time ? t.suggested_time.substring(0, 5) : null,
+      assignedDays:  t.assigned_days  ?? [],
+      // Preserve the { [weekId]: day[] } domain shape.
+      completions: t.completed_days.length > 0
+        ? { [this.weekId]: t.completed_days }
+        : {},
+    }));
   }
 
+  /**
+   * @param {import('../domain/models/DailyTask').DailyTask} task
+   */
   async addDailyTask(task) {
-    const { data: newId, error } = await supabase.rpc('create_new_task', {
-      p_title: task.title,
-      p_description: task.description || null,
-      p_type: 'daily',
-      p_suggested_time: task.suggestedTime || null,
-      p_assigned_days: task.assignedDays,
+    const { data: newId, error } = await supabase.rpc('add_daily_task', {
+      p_user_week_id:   this.userWeekId,
+      p_title:          task.title,
+      p_description:    task.description  ?? null,
+      p_suggested_time: task.suggestedTime ?? null,
+      p_assigned_days:  task.assignedDays,
+      p_is_recurring:   task.isRecurring  ?? false,
     });
 
     if (error) throw new Error(error.message);
     return { ...task, id: newId };
   }
 
+  /**
+   * @param {string} id
+   * @param {Partial<import('../domain/models/DailyTask').DailyTask>} updates
+   */
   async updateDailyTask(id, updates) {
-    // Basic update on the parent table only for now (title, description, time)
-    // Assigned days updates would require deleting and re-inserting daily_task_assigned_days.
-    const { error } = await supabase
-      .from('tasks')
-      .update({
-        title: updates.title,
-        description: updates.description,
-        suggested_time: updates.suggestedTime,
-      })
-      .eq('id', id);
+    const { error } = await supabase.rpc('update_daily_task', {
+      p_task_id:        id,
+      p_title:          updates.title         ?? null,
+      p_description:    updates.description   ?? null,
+      p_suggested_time: updates.suggestedTime ?? null,
+      p_assigned_days:  updates.assignedDays  ?? null,
+    });
 
     if (error) throw new Error(error.message);
-    return { id, ...updates }; // Stub return
+    return { id, ...updates };
   }
 
-  async completeDailyTask(taskId, weekId, day) {
-    const { error } = await supabase.from('daily_task_completions').insert({
-      task_id: taskId,
-      week_id: weekId,
-      day_id: day,
+  /**
+   * @param {string} taskId
+   * @param {string} _weekId - Ignored; the repo always uses the active week.
+   * @param {number} day     - ISO day number (1 = Mon … 7 = Sun).
+   */
+  async completeDailyTask(taskId, _weekId, day) {
+    const { error } = await supabase.rpc('complete_daily_task', {
+      p_task_id:      taskId,
+      p_user_week_id: this.userWeekId,
+      p_day_id:       day,
     });
-    // Ignore duplicate key errors (PGRST116/23505) in case they furiously click
+
+    // 23505 = unique_violation: user clicked twice before UI updated — safe to ignore.
     if (error && error.code !== '23505') throw new Error(error.message);
   }
 
-  async uncompleteDailyTask(taskId, weekId, day) {
-    const { error } = await supabase
-      .from('daily_task_completions')
-      .delete()
-      .eq('task_id', taskId)
-      .eq('week_id', weekId)
-      .eq('day_id', day);
+  /**
+   * @param {string} taskId
+   * @param {string} _weekId
+   * @param {number} day
+   */
+  async uncompleteDailyTask(taskId, _weekId, day) {
+    const { error } = await supabase.rpc('uncomplete_daily_task', {
+      p_task_id:      taskId,
+      p_user_week_id: this.userWeekId,
+      p_day_id:       day,
+    });
+
     if (error) throw new Error(error.message);
   }
 
   // ─── Weekly Tasks ───────────────────────────────────────────────────────────
 
   async getWeeklyTasks() {
-    const { data: tasksData, error: taskError } = await supabase
-      .from('all_tasks')
-      .select('*')
-      .eq('type', 'weekly');
-
-    if (taskError) throw new Error(taskError.message);
-
-    const { data: completionsData, error: compError } = await supabase
-      .from('weekly_task_completions')
-      .select('task_id, week_id, completed_count');
-
-    if (compError) throw new Error(compError.message);
-
-    return tasksData.map((t) => {
-      const taskCompletions = {};
-      completionsData
-        .filter((c) => c.task_id === t.id)
-        .forEach((c) => {
-          taskCompletions[c.week_id] = c.completed_count;
-        });
-
-      return {
-        id: t.id,
-        title: t.title,
-        description: t.description || null,
-        suggestedTime: t.suggested_time ? t.suggested_time.substring(0, 5) : null,
-        requiredCount: t.required_count,
-        completions: taskCompletions,
-      };
+    const { data, error } = await supabase.rpc('get_weekly_tasks', {
+      p_user_week_id: this.userWeekId,
     });
+
+    if (error) throw new Error(error.message);
+
+    return (data ?? []).map((t) => ({
+      id:            t.id,
+      title:         t.title,
+      description:   t.description   ?? null,
+      suggestedTime: t.suggested_time ? t.suggested_time.substring(0, 5) : null,
+      requiredCount: t.required_count,
+      // Preserve the { [weekId]: count } domain shape.
+      completions: t.completed_count > 0
+        ? { [this.weekId]: t.completed_count }
+        : {},
+    }));
   }
 
+  /**
+   * @param {import('../domain/models/WeeklyTask').WeeklyTask} task
+   */
   async addWeeklyTask(task) {
-    const { data: newId, error } = await supabase.rpc('create_new_task', {
-      p_title: task.title,
-      p_description: task.description || null,
-      p_type: 'weekly',
-      p_suggested_time: task.suggestedTime || null,
+    console.log(task)
+    const { data: newId, error } = await supabase.rpc('add_weekly_task', {
+      p_user_week_id:   this.userWeekId,
+      p_title:          task.title,
+      p_description:    task.description  ?? null,
+      p_suggested_time: task.suggestedTime ?? null,
       p_required_count: task.requiredCount,
+      p_is_recurring:   task.isRecurring  ?? false,
+
     });
 
     if (error) throw new Error(error.message);
     return { ...task, id: newId };
   }
 
+  /**
+   * @param {string} id
+   * @param {Partial<import('../domain/models/WeeklyTask').WeeklyTask>} updates
+   */
   async updateWeeklyTask(id, updates) {
-    const { error } = await supabase
-      .from('tasks')
-      .update({
-        title: updates.title,
-        description: updates.description,
-        suggested_time: updates.suggestedTime,
-      })
-      .eq('id', id);
+    const { error } = await supabase.rpc('update_weekly_task', {
+      p_task_id:        id,
+      p_title:          updates.title         ?? null,
+      p_description:    updates.description   ?? null,
+      p_suggested_time: updates.suggestedTime ?? null,
+      p_required_count: updates.requiredCount ?? null,
+    });
 
     if (error) throw new Error(error.message);
     return { id, ...updates };
   }
 
-  async completeWeeklyTask(taskId, weekId) {
-    // Read-then-write approach for atomic increments
-    const { data: currentData } = await supabase
-      .from('weekly_task_completions')
-      .select('completed_count')
-      .eq('task_id', taskId)
-      .eq('week_id', weekId)
-      .maybeSingle();
-
-    const currentCount = currentData ? currentData.completed_count : 0;
-
-    const { error } = await supabase.from('weekly_task_completions').upsert(
-      {
-        task_id: taskId,
-        week_id: weekId,
-        completed_count: currentCount + 1,
-      },
-      { onConflict: 'task_id, week_id' },
-    );
+  /**
+   * @param {string} taskId
+   * @param {string} _weekId - Ignored; the repo always uses the active week.
+   */
+  async completeWeeklyTask(taskId, _weekId) {
+    const { error } = await supabase.rpc('complete_weekly_task', {
+      p_task_id:      taskId,
+      p_user_week_id: this.userWeekId,
+    });
 
     if (error) throw new Error(error.message);
   }
 
-  async uncompleteWeeklyTask(taskId, weekId) {
-    const { data: currentData } = await supabase
-      .from('weekly_task_completions')
-      .select('completed_count')
-      .eq('task_id', taskId)
-      .eq('week_id', weekId)
-      .maybeSingle();
-
-    if (!currentData) return;
-
-    const currentCount = currentData.completed_count;
-    const newCount = Math.max(0, currentCount - 1);
-
-    const { error } = await supabase.from('weekly_task_completions').update({
-      completed_count: newCount,
-    }).eq('task_id', taskId).eq('week_id', weekId);
+  /**
+   * @param {string} taskId
+   * @param {string} _weekId - Ignored; the repo always uses the active week.
+   */
+  async uncompleteWeeklyTask(taskId, _weekId) {
+    const { error } = await supabase.rpc('uncomplete_weekly_task', {
+      p_task_id:      taskId,
+      p_user_week_id: this.userWeekId,
+    });
 
     if (error) throw new Error(error.message);
   }
@@ -210,45 +227,37 @@ export class SupabaseTaskRepository extends ITaskRepository {
   // ─── Delete ─────────────────────────────────────────────────────────────────
 
   async deleteTask(id) {
-    // ON DELETE CASCADE in SQL propagates this delete to child tables automatically
-    const { error } = await supabase.from('tasks').delete().eq('id', id);
+    const { error } = await supabase.rpc('delete_task', {
+      p_task_id: id,
+    });
+
     if (error) throw new Error(error.message);
   }
 
   // ─── History ────────────────────────────────────────────────────────────────
 
   async getWeekHistory() {
-    const { data, error } = await supabase
-      .from('week_history')
-      .select('*')
-      .order('week_id', { ascending: false });
+    const { data, error } = await supabase.rpc('get_week_history');
 
     if (error) throw new Error(error.message);
 
-    return data.map((db) => ({
-      weekId: db.week_id,
-      startDate: db.start_date,
-      endDate: db.end_date,
-      totalTasks: db.total_tasks,
-      completedTasks: db.completed_tasks,
-      taskSnapshots: db.snapshot_data,
+    return (data ?? []).map((row) => ({
+      weekId:         row.week_id,
+      startDate:      row.start_date,
+      endDate:        row.end_date,
+      totalTasks:     row.total_tasks,
+      completedTasks: row.completed_tasks,
+      taskSnapshots:  row.snapshot_data,
     }));
   }
 
-  async saveWeekHistory(history) {
-    const { error } = await supabase.from('week_history').upsert(
-      {
-        user_id: this.user.id,
-        week_id: history.weekId,
-        start_date: history.startDate,
-        end_date: history.endDate,
-        total_tasks: history.totalTasks,
-        completed_tasks: history.completedTasks,
-        snapshot_data: history.taskSnapshots,
-      },
-      { onConflict: 'user_id, week_id' },
-    );
-
-    if (error) throw new Error(error.message);
+  /**
+   * No-op: history is written atomically inside close_week() on the DB side.
+   * Kept to satisfy the ITaskRepository contract.
+   *
+   * @param {import('../domain/models/WeekHistory').WeekHistory} _history
+   */
+  async saveWeekHistory(_history) {
+    // Intentional no-op — see close_week() in Postgres.
   }
 }

@@ -12,19 +12,20 @@
  * instance is scoped to the authenticated user.
  */
 
-import { StrictMode } from 'react';
+import { StrictMode, use } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import { App } from './App';
 import { SupabaseAuthRepository } from './repositories/supabase/SupabaseAuthRepository';
 import { SupabaseTaskRepository } from './repositories/supabase/SupabaseTaskRepository';
+import { bootstrapWeek } from './services/WeekService';
 
 // ── Instantiate auth repository (stateless, created once) ─────────────────────
 const authRepository = new SupabaseAuthRepository();
 
 // ── Task repository factory (called per login with the authenticated user) ─────
 // The SessionProvider calls this when a user logs in, ensuring a scoped boundary.
-const taskRepositoryFactory = (user) => new SupabaseTaskRepository(user);
+const taskRepositoryFactory = (user) => bootstrapWeek(user);
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

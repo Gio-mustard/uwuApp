@@ -27,6 +27,7 @@ import { v4 as uuidv4 } from 'uuid';
  * @returns {WeeklyTask}
  */
 export function createWeeklyTask(data) {
+  console.log(data)
   return {
     id: data.id ?? uuidv4(),
     type: 'weekly',
@@ -35,5 +36,6 @@ export function createWeeklyTask(data) {
     suggestedTime: data.suggestedTime ?? null,
     requiredCount: data.requiredCount ?? 1,
     completions: data.completions ?? {},
+    isRecurring:data.isRecurring,
   };
 }

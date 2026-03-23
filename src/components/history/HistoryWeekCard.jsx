@@ -8,7 +8,7 @@
  * - All cards independently expandable / collapsible
  */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { formatWeekRange } from '../../services/WeekService';
 import { CircularProgress } from './CircularProgress';
 import './HistoryWeekCard.css';
@@ -35,9 +35,18 @@ export function HistoryWeekCard({ history, label, defaultExpanded = false }) {
   const [expanded, setExpanded] = useState(defaultExpanded);
 
   const { startDate, endDate, totalTasks, completedTasks, taskSnapshots } = history;
+  const [preparedSnapshots,setPreparedSnapshots] = useState([]);
   const range = formatWeekRange(startDate, endDate);
   const pct = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
   const headerColor = pctToHSL(pct);
+  useEffect(()=>{
+    if (taskSnapshots.tasks == undefined){
+      setPreparedSnapshots(taskSnapshots)
+    }
+    else{
+      setPreparedSnapshots(taskSnapshots.tasks)
+    }
+  },[taskSnapshots])
 
   return (
     <div className="history-card">
@@ -74,7 +83,7 @@ export function HistoryWeekCard({ history, label, defaultExpanded = false }) {
       {/* Task snapshot list — animates open/closed via CSS grid-template-rows */}
       <div className={`history-card__body${expanded ? ' history-card__body--open' : ''}`}>
         <ul className="history-card__list" role="list">
-          {taskSnapshots.map((snap) => (
+          {preparedSnapshots.map((snap) => (
             <li key={snap.taskId} className="history-card__snap-item">
               <span
                 className={`history-card__snap-icon${snap.completed ? '' : ' history-card__snap-icon--fail'}`}

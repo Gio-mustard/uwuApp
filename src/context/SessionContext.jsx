@@ -62,20 +62,35 @@ function SessionLoader() {
  */
 function SessionGateway({ children, taskRepositoryFactory }) {
   const { user, loading } = useAuth();
+  const [taskRepository, setTaskRepository] = useState(null);
+  const [repoLoading, setRepoLoading]       = useState(false);
 
-  /**
-   * Memoized task repository instance, scoped to the current user.
-   * Re-created only when the user identity changes (login/logout).
-   */
-  const taskRepository = useMemo(
-    () => (user ? taskRepositoryFactory(user) : null),
-    // Re-create when user.id changes (different user logged in).
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [user?.id, taskRepositoryFactory],
-  );
+  useEffect(() => {
+    if (!user) {
+      setTaskRepository(null);
+      return;
+    }
 
-  if (loading) return <SessionLoader />;
-  if (!user)   return <LoginPage />;
+    let cancelled = false;
+    setRepoLoading(true);
+
+    taskRepositoryFactory(user)
+      .then((repo) => {
+        if (!cancelled) setTaskRepository(repo);
+      })
+      .catch((err) => {
+        console.error('Failed to initialize task repository:', err);
+      })
+      .finally(() => {
+        if (!cancelled) setRepoLoading(false);
+      });
+
+    return () => { cancelled = true; };
+  }, [user?.id]);
+
+  if (loading || repoLoading) return <SessionLoader />;
+  if (!user)                  return <LoginPage />;
+  if (!taskRepository)        return <SessionLoader />;
 
   return (
     <TaskProvider repository={taskRepository}>

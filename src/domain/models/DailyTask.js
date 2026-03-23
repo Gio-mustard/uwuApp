@@ -35,5 +35,6 @@ export function createDailyTask(data) {
     suggestedTime: data.suggestedTime ?? null,
     assignedDays: data.assignedDays ?? [],
     completions: data.completions ?? {},
+    isRecurring:data.isRecurring
   };
 }
