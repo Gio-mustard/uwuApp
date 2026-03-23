@@ -9,26 +9,27 @@
 import { useEffect, useState } from 'react';
 import { isWeeklyTaskComplete, getWeeklyTaskCount } from '../../services/TaskService';
 import './TaskItem.css';
+import { TrashIcon } from '../common/Icons';
 
 /**
  * @param {{
  *   task: import('../../domain/models/WeeklyTask').WeeklyTask,
  *   weekId: string,
  *   onToggle: (taskId: string, increment: boolean) => void,
+ *   onDelete: (taskId: string) => void
  * }} props
  */
-export function WeeklyTaskItem({ task, weekId, onToggle }) {
+export function WeeklyTaskItem({ task, weekId, onToggle,onDelete }) {
   const done = isWeeklyTaskComplete(task, weekId);
   const count = getWeeklyTaskCount(task, weekId);
   
   const [internalCount,setInternalCount] = useState(count);
   const [canDecrement,setCanDecrement] = useState(internalCount>0);
   const [canIncrement,setCanIncrement] = useState(internalCount < task.requiredCount);
-  
+  const [isDeleting,setIsDeleting] = useState(false);  
 
   useEffect(()=>{
     if (count != internalCount){
-      console.log("update internal value")
       setInternalCount(count);
     }
   },[count])
@@ -37,6 +38,18 @@ export function WeeklyTaskItem({ task, weekId, onToggle }) {
       setCanDecrement(internalCount>0);
       setCanIncrement(internalCount < task.requiredCount);
   },[internalCount])
+
+  const handleDelete = (taskId,onDelete) =>{
+    setIsDeleting(true);
+    return onDelete(taskId);
+  }
+
+  useEffect(()=>{
+    if (!(isDeleting)) return;
+    setCanDecrement(false);
+    setCanIncrement(false);
+
+  },[isDeleting])
 
   return (
     <div className={`task-item${done ? ' task-item--done' : ''}`}>
@@ -59,10 +72,15 @@ export function WeeklyTaskItem({ task, weekId, onToggle }) {
       </div>
 
       <div className="task-item__weekly-controls">
+        
         {task.suggestedTime && (
           <span className="task-item__time">{task.suggestedTime}</span>
         )}
         <div className="weekly-counter">
+          <button style={{border:'none',cursor:'pointer'}} onClick={()=>handleDelete(task.id,onDelete)}>
+            <TrashIcon></TrashIcon>
+          </button>
+          <br />
           <button
             id={`weekly-task-dec-${task.id}`}
             className="weekly-counter__btn"

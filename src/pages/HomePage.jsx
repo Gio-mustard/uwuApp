@@ -37,6 +37,7 @@ export function HomePage() {
     addWeeklyTask,
     toggleDailyTask,
     toggleWeeklyTask,
+    deleteTask
   } = useTasks();
 
   const [selectedDay, setSelectedDay] = useState(todayDay);
@@ -157,6 +158,7 @@ export function HomePage() {
                       selectedDay={selectedDay}
                       todayDay={todayDay}
                       onToggle={toggleDailyTask}
+                      onDelete={deleteTask}
                     />
                   ))
                 )}
@@ -186,6 +188,7 @@ export function HomePage() {
                       task={task}
                       weekId={currentWeekId}
                       onToggle={toggleWeeklyTask}
+                      onDelete={deleteTask}
                     />
                   ))
                 )}
