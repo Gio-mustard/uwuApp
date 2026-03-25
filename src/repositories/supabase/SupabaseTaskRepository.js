@@ -14,6 +14,8 @@
 
 import { ITaskRepository } from '../ITaskRepository';
 import { supabase } from '../../lib/supabaseClient';
+import { createDailyTask } from '../../domain/models/DailyTask';
+import { createWeeklyTask } from '../../domain/models/WeeklyTask';
 
 export class SupabaseTaskRepository extends ITaskRepository {
   /**
@@ -62,7 +64,7 @@ export class SupabaseTaskRepository extends ITaskRepository {
 
     if (error) throw new Error(error.message);
 
-    return (data ?? []).map((t) => ({
+    return (data ?? []).map((t)=>(createDailyTask({
       id:            t.id,
       title:         t.title,
       description:   t.description   ?? null,
@@ -72,7 +74,7 @@ export class SupabaseTaskRepository extends ITaskRepository {
       completions: t.completed_days.length > 0
         ? { [this.weekId]: t.completed_days }
         : {},
-    }));
+    })))
   }
 
   /**
@@ -149,7 +151,7 @@ export class SupabaseTaskRepository extends ITaskRepository {
 
     if (error) throw new Error(error.message);
 
-    return (data ?? []).map((t) => ({
+    return (data ?? []).map((t) => (createWeeklyTask({
       id:            t.id,
       title:         t.title,
       description:   t.description   ?? null,
@@ -159,14 +161,13 @@ export class SupabaseTaskRepository extends ITaskRepository {
       completions: t.completed_count > 0
         ? { [this.weekId]: t.completed_count }
         : {},
-    }));
+    })));
   }
 
   /**
    * @param {import('../domain/models/WeeklyTask').WeeklyTask} task
    */
   async addWeeklyTask(task) {
-    console.log(task)
     const { data: newId, error } = await supabase.rpc('add_weekly_task', {
       p_user_week_id:   this.userWeekId,
       p_title:          task.title,

@@ -27,7 +27,6 @@ import { v4 as uuidv4 } from 'uuid';
  * @returns {WeeklyTask}
  */
 export function createWeeklyTask(data) {
-  console.log(data)
   return {
     id: data.id ?? uuidv4(),
     type: 'weekly',
