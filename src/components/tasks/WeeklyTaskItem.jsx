@@ -6,7 +6,7 @@
  * and increment/decrement controls.
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState,useCallback } from 'react';
 import { isWeeklyTaskComplete, getWeeklyTaskCount } from '../../services/TaskService';
 import './TaskItem.css';
 import { TrashIcon } from '../common/Icons';
@@ -39,10 +39,10 @@ export function WeeklyTaskItem({ task, weekId, onToggle,onDelete }) {
       setCanIncrement(internalCount < task.requiredCount);
   },[internalCount])
 
-  const handleDelete = (taskId,onDelete) =>{
+  const handleDelete = useCallback((task) =>{
     setIsDeleting(true);
-    return onDelete(taskId);
-  }
+    return onDelete(task);
+  }, [onDelete]);
 
   useEffect(()=>{
     if (!(isDeleting)) return;
@@ -77,7 +77,13 @@ export function WeeklyTaskItem({ task, weekId, onToggle,onDelete }) {
           <span className="task-item__time">{task.suggestedTime}</span>
         )}
         <div className="weekly-counter">
-          <button style={{border:'none',cursor:'pointer'}} onClick={()=>handleDelete(task.id,onDelete)}>
+          <button style={{
+              border:'none',
+              cursor:'pointer',
+              background:'none',
+              position:'relative',
+              top:'.2svh',
+              }} onClick={()=>handleDelete(task)}>
             <TrashIcon></TrashIcon>
           </button>
           <br />

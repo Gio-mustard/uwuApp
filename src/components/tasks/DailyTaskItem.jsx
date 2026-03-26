@@ -24,7 +24,7 @@ export function DailyTaskItem({ task, weekId, selectedDay, todayDay, onToggle,on
   const done = isDailyTaskDoneOnDay(task, weekId, selectedDay);
   const interactable = isDailyTaskInteractable(task, selectedDay, todayDay);
   const handleDelete = ()=>{
-    return onDelete(task.id)
+    return onDelete(task);
   }
   return (
     <div className={`task-item${done ? ' task-item--done' : ''}${!interactable ? ' task-item--disabled' : ''}`}>
@@ -46,7 +46,7 @@ export function DailyTaskItem({ task, weekId, selectedDay, todayDay, onToggle,on
           <span className="task-item__desc">{task.description}</span>
         )}
       </div>
-        <button  disabled={!interactable} onClick={handleDelete} style={{border:'none',padding:'4px',borderRadius:'4px',cursor:'pointer'}}>
+        <button  onClick={handleDelete} style={{border:'none',padding:'4px',borderRadius:'4px',cursor:'pointer'}}>
           <TrashIcon/>
         </button>
       {task.suggestedTime && (

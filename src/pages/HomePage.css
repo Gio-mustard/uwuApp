@@ -297,3 +297,49 @@
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+.task-delete-confirmation-overlay{
+  align-items: center;
+  padding: 5svh;
+}
+
+.task-delete-confirmation-sheet{
+  position: relative;
+  bottom: 10svh;
+  border-radius: 3.5svh;
+  padding: 2svh;
+}
+.task-delete-confirmation-sheet > footer{
+  /* confirmation buttons */
+  width: 100%;
+  display: flex;
+  gap: 5svh;
+  padding:  0 2.5svh;
+  margin-top: 5svh ;
+}
+.task-delete-confirmation-sheet > .confirmation-message{
+  /* margin: 2svh 0; */
+  margin-bottom: 4svh;
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+.task-delete-confirmation-sheet > .confirmation-task-title{
+  font-size: 20px;
+  font-weight: 700;
+}
+.task-delete-confirmation-sheet > .confirmation-message b{
+  font-weight: 700;
+  color: var(--color-primary);
+  
+}
+.task-delete-confirmation-sheet > .confirmation-task-description{
+  font-size: 15px;
+  width: 90%;
+  color: var(--color-text-muted);
+}
+.task-delete-confirmation-sheet button{
+  position: relative;
+}
+
+.task-delete-confirmation-sheet .spinner{
+  border-radius: inherit;
+}
