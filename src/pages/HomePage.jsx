@@ -10,7 +10,7 @@
  * - FAB for adding new tasks
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useSession } from '../context/SessionContext';
 import { AppShell } from '../components/layout/AppShell';
 import { DaySelector } from '../components/days/DaySelector';
@@ -23,6 +23,8 @@ import { getDailyTasksForDay, getNextEvent, isWeeklyTaskComplete, isDailyTaskDon
 import { getDynamicGreeting } from '../constants/texts/greetings.texts';
 import { HOME_TEXTS } from '../constants/texts/home.texts';
 import './HomePage.css';
+import { Modal } from '../components/modals/Modal';
+import { is } from 'date-fns/locale';
 
 export function HomePage() {
   const { useAuth, useTasks } = useSession();
@@ -46,7 +48,8 @@ export function HomePage() {
   const [typeModal,setTypeModal] = useState('daily');
 
   const [showProfile, setShowProfile] = useState(false);
-
+  const [modalTaskDeleteConfirmation,setModalTaskDeleteConfirmation] = useState({show:false,task:undefined});
+  const [isDeleting,setIsDeleting] = useState(false);
   const dailyForDay = getDailyTasksForDay(dailyTasks, selectedDay);
   const now = new Date();
   const nextEvent = getNextEvent([...dailyTasks, ...weeklyTasks], now, todayDay, currentWeekId);
@@ -70,11 +73,63 @@ export function HomePage() {
     else await addWeeklyTask(data);
   }
 
+  const handleDelete = useCallback((task)=>{
+    if (task === undefined) return 10;
+    setModalTaskDeleteConfirmation({show:true,task:task,type: task.assignedDays ? 'daily' : 'weekly'})
+    
+  });
+
   // Avatar shows first letter of the user's display name (independent of the greeting sentence).
   const avatarInitial = (user?.displayName ?? 'U')[0].toUpperCase();
 
   return (
     <AppShell>
+      {modalTaskDeleteConfirmation.show && (
+
+        <Modal
+        overlayClass='profile-overlay task-delete-confirmation-overlay'
+        sheetClass='profile-sheet task-delete-confirmation-sheet'
+        onClose={
+          ()=> setModalTaskDeleteConfirmation({show:false,task:undefined})
+        }>
+        
+        <h3 className = 'confirmation-message'>Quieres <b>eliminar</b> esta <b>tarea ?</b></h3>
+        
+        <h2 className='confirmation-task-title'>{modalTaskDeleteConfirmation.task?.title}</h2>
+        <p className='confirmation-task-description'>{modalTaskDeleteConfirmation.task?.description}</p>
+        <footer>
+          <button 
+          disabled={isDeleting}
+          onClick={async()=>{
+            setIsDeleting(true);
+            await deleteTask(modalTaskDeleteConfirmation.task.id);
+            setModalTaskDeleteConfirmation({show:false,task:undefined})
+            setIsDeleting(false);
+          }} className='modal__type-btn btn-primary'>
+              {isDeleting ? 'Eliminando...' : 'Eliminar'}
+
+              {isDeleting && (
+                        <div className='spinner' style={{
+                      position: 'absolute', inset: 0, 
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      background: 'rgba(0,0,0,0.2)'
+                    }}>
+                      <div style={{
+                        width: 14, height: 14, 
+                        border: '2px solid rgba(255,255,255,0.4)',
+                        borderTopColor: '#fff', borderRadius: '50%',
+                        animation: 'spin 0.8s linear infinite'
+                      }} />
+                    </div>
+              )}
+            </button>
+          <button onClick={()=>{
+            setModalTaskDeleteConfirmation({show:false,task:undefined})
+          }} className='modal__type-btn'>Cancelar</button>
+        </footer>
+      </Modal>
+      )}
+
       <div className="home-page">
         {/* Header */}
         <header className="home-header">
@@ -158,7 +213,7 @@ export function HomePage() {
                       selectedDay={selectedDay}
                       todayDay={todayDay}
                       onToggle={toggleDailyTask}
-                      onDelete={deleteTask}
+                      onDelete={handleDelete}
                     />
                   ))
                 )}
@@ -188,7 +243,7 @@ export function HomePage() {
                       task={task}
                       weekId={currentWeekId}
                       onToggle={toggleWeeklyTask}
-                      onDelete={deleteTask}
+                      onDelete={handleDelete}
                     />
                   ))
                 )}
