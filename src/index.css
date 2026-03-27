@@ -34,6 +34,7 @@
 
   /* Text */
   --color-text:           #1a1917;
+  --color-description:    #51504f;
   --color-text-muted:     #8a8680;
 
   /* Borders */
@@ -48,8 +49,17 @@
 
   /* Layout */
   --max-width:            430px;
+  transition:
+    background-color 200ms ease,
+    color 200ms ease,
+    box-shadow 200ms ease;
 }
-
+*{
+  transition:
+    background-color 200ms ease,
+    color 200ms ease ,
+    box-shadow 200ms ease;
+}
 /* ── Base ──────────────────────────────────────────────────────────────────── */
 html, body {
   height: 100svh;

@@ -15,4 +15,6 @@ export const ROUTES = {
   HOME: '/',
   /** Weekly history view */
   HISTORY: '/historial',
+  /** Configuration page */
+  SETTINGS: '/configuracion',
 };

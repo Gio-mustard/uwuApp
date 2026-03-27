@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import appColorPallete from "../../constants/colorPalletes";
-
+import "./ColorPalete.css"
 
 
 
@@ -17,6 +17,7 @@ export default function ColorPallete() {
     
   return (
     <div className="app-pallete-container">
+      
       {palletes.map((pallete) => {
         const isSelected = currentKeyPallete == pallete.key;
         return (
@@ -26,9 +27,14 @@ export default function ColorPallete() {
 
                 setCurrentKeyPallete(pallete.key)
             }}
-            className={`paletteCard ${isSelected ? "paletteCardActive" : ""}`}
+            style={{borderColor:pallete.colors.colorPrimaryHover,boxShadow:`0 0 1svh ${isSelected ?  pallete.colors.colorPrimary:'transparent'} `}}
+            className={`palette-card ${isSelected ? "active" : ""}`}
           >
-            {pallete.title}
+            <div className="palette-card__color" style={{backgroundColor:pallete.colors.colorPrimary}}></div>
+            <div className="palette-card__color" style={{backgroundColor:pallete.colors.colorPrimaryBg}}></div>
+            <div className="palette-card__color" style={{backgroundColor:pallete.colors.darkColorPrimary}}></div>
+            <div className="palette-card__color" style={{backgroundColor:pallete.colors.ligthColorPrimary}}></div>
+            
           </button>
         );
       })}

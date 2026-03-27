@@ -1,0 +1,181 @@
+/* SettingsPage.css */
+
+.settings-page {
+  padding: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.settings-header {
+  margin-bottom: 32px;
+}
+
+.settings-header__title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-text, #e2e8f0);
+  margin: 0 0 8px 0;
+}
+
+.settings-header__subtitle {
+  font-size: 15px;
+  color: var(--color-description);
+  margin: 0;
+}
+
+.settings-section {
+  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-section__title {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin: 0 2svh;
+  padding: .5svh 2svh;
+  border-top-left-radius:2svh ;
+  border-top-right-radius:2svh ;
+  background-color: #fff;
+  width: fit-content;
+}
+
+.settings-section.dangerous > .settings-section__title{
+  background-color: var(--color-danger);
+  color: #fff;
+}
+
+.settings-card {
+  background: var(--color-bg);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+
+
+
+.settings-card__info h3 {
+  margin: 0 0 4px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.settings-card__info p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.settings-divider {
+  border: 0;
+  height: 1px;
+  background: var(--border-color, rgba(255, 255, 255, 0.1));
+  margin: 16px 0;
+}
+
+/* Buttons */
+.settings-btn {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.settings-btn--outline {
+  background: transparent;
+  color: var(--color-text, #e2e8f0);
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.2));
+}
+
+.settings-btn--outline:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.settings-btn--danger {
+  background: rgba(248, 113, 113, 0.1);
+  color: var(--color-danger);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+}
+
+.settings-btn--danger:hover {
+  background: rgba(248, 113, 113, 0.2);
+}
+
+/* Switch UI */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--color-border, rgba(255, 255, 255, 0.1));
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #fff;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: var(--color-primary);
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px var(--color-primary);
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 2svh;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 480px) {
+  .settings-page {
+    padding: 16px;
+  }
+}

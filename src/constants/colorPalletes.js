@@ -89,53 +89,122 @@ const colorPalettes = {
   orangePallete:orangePalette
 };
 
+const darkTheme = {
+  colorBg: "#121212",
+  colorSurface: "#1A1A1A",
+  colorSurface2: "#202020",
+  colorSurface3: "#2A2A2A",
 
-class AppColorPallete{
+  colorText: "#F5F4F2",
+  colorDescription: "#C9C7C3",
+  colorTextMuted: "#9A9690",
 
-    constructor(){
-        const currentPalleteKey = this.getCurrentPallete();
-        
-        this.applyColorPalette(currentPalleteKey === null ? 'default':currentPalleteKey);
-        
+  colorBorder: "#2E2E2E",
+  colorBorderStrong: "#3A3A3A",
 
+  
+  shadowCard: "0 1px 2px rgba(0,0,0,0.6), 0 4px 12px rgba(0,0,0,0.5)"
+};
+const lightTheme = {
+  /* Surface */
+  colorBg: "#f5f4f2",
+  colorSurface: "#ffffff",
+  colorSurface2: "#f2f1ef",
+  colorSurface3: "#e9e8e6",
+
+  /* Text */
+  colorText: "#1a1917",
+  colorDescription: "#51504f",
+  colorTextMuted: "#8a8680",
+
+  /* Borders */
+  colorBorder: "#eae9e6",
+  colorBorderStrong: "#c8c7c3",
+
+  /* Shadows */
+  shadowCard: "0 1px 3px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04)"
+};
+class AppColorPallete {
+
+  constructor() {
+    const currentPalleteKey = this.getCurrentPallete();
+    const currentTheme = this.getCurrentTheme();
+
+    this.applyColorPalette(
+      currentPalleteKey === null ? "default" : currentPalleteKey
+    );
+
+    this.applyTheme(
+      currentTheme === null ? "light" : currentTheme
+    );
+  }
+
+
+  applyColorPalette(key) {
+    const colors = colorPalettes[key]?.colors;
+    if (!colors) return;
+
+    this.#applyCssVariables(colors);
+    this.#savePaletteOnLocalStorage(key);
+  }
+
+  getPalletesKeys() {
+    return Object.keys(colorPalettes).map((key) => ({
+      key,
+      preview: colorPalettes[key].colors.colorPrimary,
+      title: colorPalettes[key].title,
+      colors: colorPalettes[key].colors
+    }));
+  }
+
+  getCurrentPallete() {
+    const currentPallete = localStorage.getItem("color-pallete-key");
+    if (!colorPalettes[currentPallete]) {
+      return "default";
     }
+    return currentPallete;
+  }
 
-    applyColorPalette(key) {
-        const colors = colorPalettes[key].colors;
-        if (colors === undefined) return;
-        const root = document.documentElement;
-        Object.entries(colors).forEach(([key, value]) => {
-            const cssVariableName = `--${key
-                .replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}`;
-                
-                root.style.setProperty(cssVariableName, value);
-            });
-            this.#saveOnLocalStorage(key);
-        }
+  #savePaletteOnLocalStorage(key) {
+    localStorage.setItem("color-pallete-key", key);
+  }
 
-    getPalletesKeys(){
-        return Object.keys(colorPalettes).map((key)=>(
-            {
-                key:key,
-                preview:colorPalettes[key].colors.colorPrimary,
-                title:colorPalettes[key].title
-            }
-        ));
 
-    }
+  applyTheme(mode) {
+    const theme = mode === "dark" ? darkTheme : lightTheme;
 
-    getCurrentPallete(){
-        const currentPallete = localStorage.getItem('color-pallete-key');
-        if (!(currentPallete in this.getPalletesKeys())) {
-            this.applyColorPalette('default');
-            return 'default';
-        }
-        return currentPallete;
-    }
+    this.#applyCssVariables(theme);
+    this.#saveThemeOnLocalStorage(mode);
+  }
 
-    #saveOnLocalStorage(key){
-        localStorage.setItem('color-pallete-key',key);
-    }
+  toggleTheme() {
+    const currentTheme = this.getCurrentTheme();
+    const nextTheme = currentTheme === "dark" ? "light" : "dark";
+
+    this.applyTheme(nextTheme);
+  }
+
+  getCurrentTheme() {
+    return localStorage.getItem("app-theme");
+  }
+
+  #saveThemeOnLocalStorage(mode) {
+    localStorage.setItem("app-theme", mode);
+  }
+
+ 
+
+  #applyCssVariables(variables) {
+    const root = document.documentElement;
+
+    Object.entries(variables).forEach(([key, value]) => {
+      const cssVariableName =
+        "--" + key.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`);
+
+      root.style.setProperty(cssVariableName, value);
+    });
+  }
 }
+
 const appColorPallete = new AppColorPallete();
 export default appColorPallete;
