@@ -19,6 +19,8 @@
 :root {
   /* Palette */
   --color-primary:        #E85D5D;
+  --dark-color-primary:#c0392b;
+  --ligth-color-primary:#f7956a;
   --color-primary-hover:  #d94848;
   --color-primary-bg:     #fdf0f0;
   --color-success:        #34a853;

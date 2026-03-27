@@ -152,7 +152,7 @@
 .next-event-card {
   border-radius: 16px;
   overflow: hidden;
-  background: linear-gradient(135deg, #c0392b 0%, var(--color-primary) 55%, #f7956a 100%);
+  background: linear-gradient(135deg, var(--dark-color-primary) 0%, var(--color-primary) 55%, var(--ligth-color-primary) 100%);
   box-shadow: 0 4px 20px rgba(232, 93, 93, 0.38), 0 1px 4px rgba(0,0,0,0.08);
   padding: 0;
 }

@@ -60,7 +60,7 @@
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-primary) 0%, #f7a8a8 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--ligth-color-primary) 100%);
   color: #fff;
   font-size: 1.8rem;
   font-weight: 800;
@@ -68,7 +68,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 16px rgba(232, 93, 93, 0.35);
+  box-shadow: 0 4px 16px var(--ligth-color-primary);
   position: relative;
   overflow: hidden;
   transition: transform 0.2s ease, opacity 0.2s ease;
