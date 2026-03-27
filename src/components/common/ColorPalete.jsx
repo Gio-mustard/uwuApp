@@ -8,7 +8,7 @@ import "./ColorPalete.css"
 
 export default function ColorPallete() {
     const [palletes,setPallets] = useState(appColorPallete.getPalletesKeys());
-    const [currentKeyPallete,setCurrentKeyPallete] = useState('default');
+    const [currentKeyPallete,setCurrentKeyPallete] = useState(appColorPallete.getCurrentPallete());
 
 
     useEffect(()=>{

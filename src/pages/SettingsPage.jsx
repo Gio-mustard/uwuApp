@@ -11,7 +11,7 @@ import { Avatar } from '../components/common/Avatar';
 import './SettingsPage.css';
 import './Settings__profile.css'
 import ColorPallete from '../components/common/ColorPalete';
-import appColorPallete from '../constants/colorPalletes';
+
 
 function SettingsSection ({children,title,sectionClassName,titleClassName }){
   return (
