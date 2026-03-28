@@ -54,6 +54,15 @@ export function HomePage() {
   const now = new Date();
   const nextEvent = getNextEvent([...dailyTasks, ...weeklyTasks], now, todayDay, currentWeekId);
 
+  const [editMode,setEditMode] = useState({isEditing:false,payload:undefined});
+  const handleActivateEditMode = useCallback((task)=>{
+    setShowModal(true);
+    setEditMode({isEditing:true,payload:task});
+  },[])
+  useEffect(()=>{
+    if (showModal) return;
+    setEditMode({isEditing:false,payload:undefined});
+  },[showModal])
   /** Weekly completion % for the dynamic greeting. */
   const weeklyCompletionPct = useMemo(() => {
     const dailyCompleted = dailyTasks.filter((t) =>
@@ -77,7 +86,7 @@ export function HomePage() {
     if (task === undefined) return 10;
     setModalTaskDeleteConfirmation({show:true,task:task,type: task.assignedDays ? 'daily' : 'weekly'})
     
-  });
+  },[]);
 
   // Avatar shows first letter of the user's display name (independent of the greeting sentence).
   const avatarInitial = (user?.displayName ?? 'U')[0].toUpperCase();
@@ -214,6 +223,7 @@ export function HomePage() {
                       todayDay={todayDay}
                       onToggle={toggleDailyTask}
                       onDelete={handleDelete}
+                      onEdit = {handleActivateEditMode}
                     />
                   ))
                 )}
@@ -244,6 +254,8 @@ export function HomePage() {
                       weekId={currentWeekId}
                       onToggle={toggleWeeklyTask}
                       onDelete={handleDelete}
+                      onEdit = {handleActivateEditMode}
+
                     />
                   ))
                 )}
@@ -266,7 +278,7 @@ export function HomePage() {
       </button>
 
       {showModal && (
-        <AddTaskModal onAdd={handleAdd} onClose={() => setShowModal(false)} initialType={typeModal} />
+        <AddTaskModal onAdd={handleAdd} onClose={() => setShowModal(false)} initialType={typeModal} editMode={editMode.isEditing} payloadTask={editMode.payload} onDelete={handleDelete} />
       )}
 
       {showProfile && (

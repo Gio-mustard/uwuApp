@@ -81,7 +81,10 @@ export class SupabaseTaskRepository extends ITaskRepository {
    * @param {import('../domain/models/DailyTask').DailyTask} task
    */
   async addDailyTask(task) {
+    const task_id = task.id === undefined ? null:task.id;
+    
     const { data: newId, error } = await supabase.rpc('add_daily_task', {
+      p_task_id:task.id,
       p_user_week_id:   this.userWeekId,
       p_title:          task.title,
       p_description:    task.description  ?? null,
@@ -89,9 +92,9 @@ export class SupabaseTaskRepository extends ITaskRepository {
       p_assigned_days:  task.assignedDays,
       p_is_recurring:   task.isRecurring  ?? false,
     });
-
+    
     if (error) throw new Error(error.message);
-    return { ...task, id: newId };
+    return { ...task, id: newId,wasEditing:task_id == newId };
   }
 
   /**
@@ -168,7 +171,9 @@ export class SupabaseTaskRepository extends ITaskRepository {
    * @param {import('../domain/models/WeeklyTask').WeeklyTask} task
    */
   async addWeeklyTask(task) {
+    const task_id = task.id === undefined ? null:task.id;
     const { data: newId, error } = await supabase.rpc('add_weekly_task', {
+      p_task_id:task_id,
       p_user_week_id:   this.userWeekId,
       p_title:          task.title,
       p_description:    task.description  ?? null,
@@ -179,7 +184,7 @@ export class SupabaseTaskRepository extends ITaskRepository {
     });
 
     if (error) throw new Error(error.message);
-    return { ...task, id: newId };
+    return { ...task, id: newId,wasEditing:task_id == newId };
   }
 
   /**

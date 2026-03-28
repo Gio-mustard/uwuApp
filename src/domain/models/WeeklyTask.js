@@ -28,7 +28,7 @@ import { v4 as uuidv4 } from 'uuid';
  */
 export function createWeeklyTask(data) {
   return {
-    id: data.id ?? uuidv4(),
+    id: data.id ?? null,
     type: 'weekly',
     title: data.title ?? '',
     description: data.description ?? '',

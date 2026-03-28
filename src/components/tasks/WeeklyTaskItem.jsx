@@ -6,7 +6,7 @@
  * and increment/decrement controls.
  */
 
-import { useEffect, useState,useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { isWeeklyTaskComplete, getWeeklyTaskCount } from '../../services/TaskService';
 import './TaskItem.css';
 import { TrashIcon } from '../common/Icons';
@@ -16,10 +16,10 @@ import { TrashIcon } from '../common/Icons';
  *   task: import('../../domain/models/WeeklyTask').WeeklyTask,
  *   weekId: string,
  *   onToggle: (taskId: string, increment: boolean) => void,
- *   onDelete: (taskId: string) => void
+ *   onEdit : (task:import('../../domain/models/DailyTask').DailyTask)=>void
  * }} props
  */
-export function WeeklyTaskItem({ task, weekId, onToggle,onDelete }) {
+export function WeeklyTaskItem({ task, weekId, onToggle,onEdit,onDelete=(task)=>{}}) {
   const done = isWeeklyTaskComplete(task, weekId);
   const count = getWeeklyTaskCount(task, weekId);
   
@@ -39,10 +39,7 @@ export function WeeklyTaskItem({ task, weekId, onToggle,onDelete }) {
       setCanIncrement(internalCount < task.requiredCount);
   },[internalCount])
 
-  const handleDelete = useCallback((task) =>{
-    setIsDeleting(true);
-    return onDelete(task);
-  }, [onDelete]);
+
 
   useEffect(()=>{
     if (!(isDeleting)) return;
@@ -59,12 +56,13 @@ export function WeeklyTaskItem({ task, weekId, onToggle,onDelete }) {
         className="task-item__check"
         role="checkbox"
         aria-checked={done}
+        onClick={()=>onEdit(task)}
         aria-label={done ? `${task.title} completado` : `${task.title} pendiente`}
       >
         {done ? <CheckIcon /> : null}
       </div>
 
-      <div className="task-item__body">
+      <div className="task-item__body" onClick={()=>onEdit(task)}>
         <span className="task-item__title">{task.title}</span>
         {task.description && (
           <span className="task-item__desc">{task.description}</span>
@@ -77,16 +75,15 @@ export function WeeklyTaskItem({ task, weekId, onToggle,onDelete }) {
           <span className="task-item__time">{task.suggestedTime}</span>
         )}
         <div className="weekly-counter">
-          <button style={{
-              border:'none',
-              cursor:'pointer',
-              background:'none',
-              position:'relative',
-              top:'.2svh',
-              }} onClick={()=>handleDelete(task)}>
-            <TrashIcon></TrashIcon>
-          </button>
-          <br />
+          <button  onClick={async()=>{
+        setIsDeleting(true);
+        await onDelete(task);
+        setIsDeleting(false);
+      }
+        } style={{border:'none',padding:'4px',borderRadius:'4px',cursor:'pointer',background:'none'}}>
+          <TrashIcon/>
+      </button>
+      <br />
           <button
             id={`weekly-task-dec-${task.id}`}
             className="weekly-counter__btn"
@@ -116,6 +113,7 @@ export function WeeklyTaskItem({ task, weekId, onToggle,onDelete }) {
           </button>
         </div>
       </div>
+      
     </div>
   );
 }
@@ -130,10 +128,4 @@ function CheckIcon() {
   );
 }
 
-function EmptyCheckIcon() {
-  return (
-    <svg viewBox="0 0 18 18" fill="none">
-      <rect width="18" height="18" rx="5" stroke="var(--color-border-strong)" strokeWidth="1.5" />
-    </svg>
-  );
-}
+

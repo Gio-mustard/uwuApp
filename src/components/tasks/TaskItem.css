@@ -4,10 +4,23 @@
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  padding: 12px 0;
+  padding: 10px 8px;
   border-bottom: 1px solid var(--color-border);
-  transition: opacity 0.2s ease;
+  transition: opacity 0.2s ease,background .2s ease;
   animation: fade-up 0.22s cubic-bezier(0.4, 0, 0.2, 1) both;
+  cursor: pointer;
+  border-radius: 1svh;
+}
+.task-item * {
+  transition: opacity 0.2s ease,background .2s ease;
+
+}
+.task-item:hover{
+  background-color: var(--color-primary-bg);
+  
+}
+.task-item:hover   *{
+  color: var(--dark-color-primary) !important;
 }
 
 /* Stagger items so they enter one after another */
@@ -46,6 +59,13 @@
   transition: transform 0.1s ease;
 }
 
+.task-item__check > *{
+  stroke: var(--color-border);
+}
+.task-item:hover > .task-item__check > *{
+  stroke: var(--color-primary);
+}
+
 /* When rendered as a div (weekly task visual-only indicator) */
 div.task-item__check {
   cursor: default;
@@ -65,8 +85,8 @@ button.task-item__check:disabled {
 }
 
 .task-item__check svg {
-  width: 18px;
-  height: 18px;
+  width: 28px;
+  height: 28px;
 }
 
 .task-item__body {
@@ -117,7 +137,9 @@ button.task-item__check:disabled {
   border-radius: 20px;
   padding: 3px 8px;
 }
-
+.task-item:hover .weekly-counter{
+  background-color: var(--color-surface);
+}
 .weekly-counter__btn {
   background: none;
   border: none;

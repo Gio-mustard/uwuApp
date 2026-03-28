@@ -17,41 +17,47 @@ import './TaskItem.css';
  *   selectedDay: number,
  *   todayDay: number,
  *   onToggle: (taskId: string, day: number) => void,
- *   onDelete: (taskId: string) => void,
+ *   onEdit : (task:import('../../domain/models/DailyTask').DailyTask)=>void
  * }} props
  */
-export function DailyTaskItem({ task, weekId, selectedDay, todayDay, onToggle,onDelete }) {
+export function DailyTaskItem({ task, weekId, selectedDay, todayDay, onToggle, onEdit,onDelete }) {
   const done = isDailyTaskDoneOnDay(task, weekId, selectedDay);
   const interactable = isDailyTaskInteractable(task, selectedDay, todayDay);
-  const handleDelete = ()=>{
-    return onDelete(task);
-  }
+  
   return (
-    <div className={`task-item${done ? ' task-item--done' : ''}${!interactable ? ' task-item--disabled' : ''}`}>
+    <div 
+      className={`task-item${done ? ' task-item--done' : ''}${!interactable ? ' task-item--disabled' : ''}`}
+      
+      >
       <button
+        
         id={`daily-task-check-${task.id}`}
         className="task-item__check"
         role="checkbox"
         aria-checked={done}
         aria-label={`Completar ${task.title}`}
         disabled={!interactable}
-        onClick={() => interactable && onToggle(task.id, selectedDay)}
+        onClick={(e) => {interactable && onToggle(task.id, selectedDay)}}
+
       >
         {done ? <CheckIcon /> : <EmptyCheckIcon />}
       </button>
 
-      <div className="task-item__body">
+      <div className="task-item__body" onClick={()=>{
+        onEdit(task);
+      }}>
         <span className="task-item__title">{task.title}</span>
         {task.description && (
           <span className="task-item__desc">{task.description}</span>
         )}
       </div>
-        <button  onClick={handleDelete} style={{border:'none',padding:'4px',borderRadius:'4px',cursor:'pointer'}}>
-          <TrashIcon/>
-        </button>
+        
       {task.suggestedTime && (
         <span className="task-item__time">{task.suggestedTime}</span>
       )}
+      <button  onClick={()=>onDelete(task)} style={{border:'none',padding:'4px',borderRadius:'4px',cursor:'pointer',background:'none'}}>
+          <TrashIcon/>
+      </button>
     </div>
   );
 }
@@ -68,8 +74,8 @@ function CheckIcon() {
 
 function EmptyCheckIcon() {
   return (
-    <svg viewBox="0 0 18 18" fill="none">
-      <rect width="18" height="18" rx="5" stroke="var(--color-border-strong)" strokeWidth="1.5" />
+    <svg viewBox="0 0 18 18" fill="none" >
+      <rect width="18" height="18" rx="5"  strokeWidth="1.5" />
     </svg>
   );
 }

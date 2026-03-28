@@ -170,31 +170,54 @@
   margin: 0;
   font-weight: 500;
 }
-
-.btn-primary {
-  background: var(--color-primary);
-  color: #fff;
-  border: none;
+.modal__form >footer{
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  margin-top: 2svh;
+  gap: 2svh;
+}
+.btn-primary,.btn-secondary {
   border-radius: 14px;
-  padding: 14px;
+  padding: 1.5svh 3.5svh;
   font-family: var(--font-body);
   font-size: 0.95rem;
   font-weight: 700;
   cursor: pointer;
   transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
-  box-shadow: 0 3px 12px rgba(232, 93, 93, 0.35);
+  box-shadow: var(--shadow-card);
+}
+
+.btn-primary{
+  border: none;
+  background: var(--color-primary);
+  color: #fff;
 }
 
 .btn-primary:hover {
   background: var(--color-primary-hover);
   box-shadow: 0 4px 16px rgba(232, 93, 93, 0.45);
 }
-
+.modal__delete{
+  background-color: var(--color-danger);
+}
 .btn-primary:active {
   transform: scale(0.97);
 }
 
-.modal__submit {
-  margin-top: 4px;
-  width: 100%;
+
+/* task recurring */
+.task-recurring{
+  display: flex;
+  flex-direction: row;
+  width: fit-content;
+  align-items: center;
+  gap: 2svh;
+}
+.task-recurring  label{
+    height: fit-content;
+}
+.task-recurring > input{
+  width: 2.5svh;
+  height: 2.5svh;
+  background-color: red;
 }

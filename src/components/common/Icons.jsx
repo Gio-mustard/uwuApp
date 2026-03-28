@@ -16,3 +16,19 @@ export function TrashIcon() {
 </svg>
   )
 }
+export function EmptyCheckIcon() {
+  return (
+    <svg viewBox="0 0 18 18" fill="none">
+      <rect width="18" height="18" rx="5" stroke="var(--color-border-strong)" strokeWidth="1.5" />
+    </svg>
+  );
+}
+export function CheckIcon() {
+  return (
+    <svg viewBox="0 0 18 18" fill="none">
+      <rect width="18" height="18" rx="5" fill="var(--color-primary)" />
+      <polyline points="4,9 7.5,12.5 14,6" stroke="#fff" strokeWidth="2"
+        strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}

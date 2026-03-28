@@ -6,19 +6,23 @@
  * or for weekly tasks sets a required count (≥1).
  */
 
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ALL_DAYS, DAY_LABELS } from '../../domain/enums/DayOfWeek';
 import { Modal } from './Modal';
 import './AddTaskModal.css';
+import { CheckIcon, EmptyCheckIcon } from '../common/Icons';
 
 /**
  * @param {{
  *   onAdd: (type: 'daily'|'weekly', data: object) => void,
  *   onClose: () => void,
- *   initialType : string 
+ *   initialType : string,
+ *   editMode : boolean,
+ *   payloadTask : import('../../domain/models/WeeklyTask').WeeklyTask | import('../../domain/models/DailyTask').DailyTask,
+ *   onDelete : (import('../../domain/models/WeeklyTask').WeeklyTask|import('../../domain/models/DailyTask').DailyTask) 
  * }} props
  */
-export function AddTaskModal({ onAdd, onClose,initialType = 'daily' }) {
+export function AddTaskModal({ onAdd, onClose,initialType = 'daily',editMode = false,payloadTask,onDelete=(task)=>{} }) {
   const [type, setType] = useState(initialType);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -26,7 +30,32 @@ export function AddTaskModal({ onAdd, onClose,initialType = 'daily' }) {
   const [assignedDays, setAssignedDays] = useState([]);
   const [requiredCount, setRequiredCount] = useState(1);
   const [error, setError] = useState('');
-  const [isRecurring,setIsRecurring] = useState(false)
+
+  const [isRecurring,setIsRecurring] = useState(false);
+  const [isEditMode,setIsEditMode] = useState(editMode);
+  const injectPayload = useCallback((payload)=>{
+    if(payload === undefined) return;
+
+    setTitle(payload.title);
+    setDescription(payload.description);
+    setTime(payload.time);
+    setType(payload.type);
+    if (payload.type === 'daily'){
+      setAssignedDays(payload.assignedDays);
+    }
+    if (payload.type === 'weekly'){
+      setRequiredCount(payload.requiredCount);
+    }
+
+
+  },[])
+  useEffect(()=>{
+    setIsEditMode(editMode);
+  },[editMode]);
+
+  useEffect(()=>{
+    injectPayload(payloadTask);
+  },[isEditMode]);
 
   function toggleDay(day) {
     setAssignedDays((prev) =>
@@ -50,15 +79,16 @@ export function AddTaskModal({ onAdd, onClose,initialType = 'daily' }) {
       setError('La cantidad mínima es 1.');
       return;
     }
-
     const data = {
+      id:payloadTask===undefined ? null :payloadTask.id,
       title: title.trim(),
       description: description.trim(),
       suggestedTime: time || null,
       ...(type === 'daily'
         ? { assignedDays }
         : { requiredCount: Number(requiredCount) }),
-      isRecurring:isRecurring
+      isRecurring:isRecurring,
+      completions:payloadTask===undefined?null:payloadTask.completions
     };
     onAdd(type, data);
     onClose();
@@ -67,29 +97,33 @@ export function AddTaskModal({ onAdd, onClose,initialType = 'daily' }) {
   return (
     <Modal onClose={onClose} overlayClass="modal-overlay" sheetClass="modal">
         <div className="modal__header">
-          <h2 className="modal__title">Nuevo pendiente</h2>
+          <h2 className="modal__title">{isEditMode?'Editar pendiente':'Nuevo pendiente'}</h2>
           <button id="modal-close" className="modal__close" onClick={onClose} aria-label="Cerrar">
             ✕
           </button>
         </div>
 
         {/* Type toggle */}
-        <div className="modal__type-toggle">
-          <button
-            id="modal-type-daily"
-            className={`modal__type-btn${type === 'daily' ? ' modal__type-btn--active' : ''}`}
-            onClick={() => setType('daily')}
-          >
-            Diario
-          </button>
-          <button
-            id="modal-type-weekly"
-            className={`modal__type-btn${type === 'weekly' ? ' modal__type-btn--active' : ''}`}
-            onClick={() => setType('weekly')}
-          >
-            Semanal
-          </button>
-        </div>
+        {
+          !isEditMode&&(
+              <div className="modal__type-toggle">
+              <button
+                id="modal-type-daily"
+                className={`modal__type-btn${type === 'daily' ? ' modal__type-btn--active' : ''}`}
+                onClick={() => setType('daily')}
+                >
+                Diario
+              </button>
+              <button
+                id="modal-type-weekly"
+                className={`modal__type-btn${type === 'weekly' ? ' modal__type-btn--active' : ''}`}
+                onClick={() => setType('weekly')}
+                >
+                Semanal
+              </button>
+            </div>
+          )
+        }
 
         <form className="modal__form" onSubmit={handleSubmit} noValidate>
           <div className="form-field">
@@ -164,22 +198,43 @@ export function AddTaskModal({ onAdd, onClose,initialType = 'daily' }) {
               />
             </div>
           )}
-          <div className="form-field">
-            <label className="form-label" htmlFor="task-recurring">Es recurrente</label>
-            <input
-              id="task-recurring"
-              className="form-input"
-              type="checkbox"
-              value={isRecurring}
-              onChange={(e) => setIsRecurring(e.target.checked)}
-            />
+          <div className="form-field task-recurring form-input">
+            
+
+            <button
+              type="button"
+              id='task-recurring'
+              className="task-item__check"
+              
+              aria-checked={isRecurring}
+              onClick={(e) => {setIsRecurring(!isRecurring)}}
+
+            >
+              {isRecurring ? <CheckIcon /> : <EmptyCheckIcon />}
+            </button>
+            <label className="form-label" >Quieres que se repita cada semana?</label>
           </div>
 
           {error && <p className="form-error">{error}</p>}
 
+          <footer>
+
+
           <button id="modal-submit" className="btn-primary modal__submit" type="submit">
-            Agregar pendiente
+            {isEditMode?"Actualizar":'Agregar'}
           </button>
+
+          {isEditMode&&(
+
+            <button type="button" onClick={()=>{
+              onClose();
+              
+              onDelete(payloadTask);
+              }} id="modal-delete" className="btn-danger btn-secondary ">
+              Eliminar
+            </button>
+          )}
+          </footer>
         </form>
     </Modal>
   );

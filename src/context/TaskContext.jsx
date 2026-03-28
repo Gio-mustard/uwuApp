@@ -103,20 +103,41 @@ export function TaskProvider({ children, repository }) {
 
   const addDailyTask = useCallback(
     async (taskData) => {
-      const task = createDailyTask({ ...taskData, completions: { [currentWeekId]: [] } });
-      await repository.addDailyTask(task);
+      const task = createDailyTask({ ...taskData});
+      task.completions = task.completions === null ? { [currentWeekId]: [] }:task.completions;
+      const {id,wasEditing} = await repository.addDailyTask(task);
+      task.id = id;
+      
+      if (wasEditing){
+        
+        const temp  = dailyTasks.filter(task=>task.id !==id);
+        
+        setDailyTasks([...temp,task]);
+        return
+      }
       setDailyTasks((prev) => [...prev, task]);
     },
-    [repository, currentWeekId],
+    [repository, currentWeekId,dailyTasks],
   );
 
   const addWeeklyTask = useCallback(
     async (taskData) => {
-      const task = createWeeklyTask({ ...taskData, completions: { [currentWeekId]: 0 } });
-      await repository.addWeeklyTask(task);
+      const task = createWeeklyTask({ ...taskData});
+      task.completions = task.completions === null ? { [currentWeekId]: [] }:task.completions;
+      const {id,wasEditing} = await repository.addWeeklyTask(task);
+      task.id = id;
+      
+      if (wasEditing){
+        
+        const temp  = weeklyTasks.filter(task=>task.id !==id);
+        
+        setWeeklyTasks([...temp,task]);
+        return
+      }
       setWeeklyTasks((prev) => [...prev, task]);
+
     },
-    [repository, currentWeekId],
+    [repository, currentWeekId,weeklyTasks],
   );
 
   const toggleDailyTask = useCallback(
