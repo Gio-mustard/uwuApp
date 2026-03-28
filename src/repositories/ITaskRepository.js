@@ -160,4 +160,19 @@ export class ITaskRepository {
   async saveWeekHistory(history) {
     throw new Error('ITaskRepository.saveWeekHistory() must be implemented.');
   }
+
+  async getBaulTasks(){
+    throw new Error('ITaskRepository.getBaulTask() must be implemented.');
+  }
+
+  /**
+   * Save a simplier task in a baul
+   * @param {{ id?: string, title: string }} task
+   */
+  async upsertBaulTask(){
+    throw new Error('ITaskRepository.upsertBaulTask() must be implemented.');
+  }
+  async deleteBaulTask(){
+    throw new Error('ITaskRepository.deleteBaulTask() must be implemented.');
+  }
 }

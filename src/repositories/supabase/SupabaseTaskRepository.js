@@ -266,4 +266,43 @@ export class SupabaseTaskRepository extends ITaskRepository {
   async saveWeekHistory(_history) {
     // Intentional no-op — see close_week() in Postgres.
   }
+
+
+  // ─── Baul ────────────────────────────────────────────────────────────────────
+
+async getBaulTasks() {
+  const { data, error } = await supabase
+    .from('baul_task')
+    .select('*')
+    .eq('user_id', this.user.id)
+    .order('created_at', { ascending: true });
+
+  if (error) throw new Error(error.message);
+
+  return data ?? [];
+}
+
+  /**
+   * @param {{ id?: string, title: string }} task
+   */
+  async upsertBaulTask(task) {
+    const { data, error } = await supabase.rpc('upsert_baul_task', {
+      p_title: task.title,
+      p_id:    task.id ?? null,
+    });
+
+    if (error) throw new Error(error.message);
+    return data;
+  }
+
+  /**
+   * @param {string} id
+   */
+  async deleteBaulTask(id) {
+    const { error } = await supabase.rpc('delete_baul_task', {
+      p_id: id,
+    });
+
+    if (error) throw new Error(error.message);
+  }
 }

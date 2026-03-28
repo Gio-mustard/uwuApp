@@ -313,6 +313,12 @@
   z-index: 301;
 }
 
+@media (max-width: 767px) {
+  .confirm-vaul-content {
+    width: 100%;
+  }
+}
+
 .confirm-vaul-body {
   padding: 8px 24px 40px;
 }

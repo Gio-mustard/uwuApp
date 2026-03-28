@@ -1,0 +1,193 @@
+/* ── VaulPage layout ───────────────────────────────────────────────── */
+.vaul-page {
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.vaul-page__title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0 0 4px;
+}
+
+.vaul-page__subtitle {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin: 0 0 24px;
+}
+
+/* ── Cards de ejemplo ──────────────────────────────────────────────── */
+.vaul-example-card {
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: 18px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: var(--shadow-card);
+}
+
+.vaul-example-card__label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.vaul-example-card__desc {
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.vaul-open-btn {
+  align-self: flex-start;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 22px;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+  box-shadow: 0 2px 12px rgba(232, 93, 93, 0.3);
+}
+
+.vaul-open-btn:hover {
+  background: var(--color-primary-hover);
+  box-shadow: 0 4px 18px rgba(232, 93, 93, 0.45);
+}
+
+.vaul-open-btn:active {
+  transform: scale(0.97);
+}
+
+.vaul-open-btn--secondary {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  box-shadow: none;
+}
+
+.vaul-open-btn--secondary:hover {
+  background: var(--color-surface-3);
+  box-shadow: none;
+}
+
+/* ── Overlay compartido ────────────────────────────────────────────── */
+.vaul-drawer__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 300;
+}
+
+/* ── Handle ────────────────────────────────────────────────────────── */
+.vaul-drawer__handle {
+  width: 40px;
+  height: 4px;
+  border-radius: 99px;
+  background: var(--color-border);
+  margin: 12px auto 0;
+  display: block;
+  flex-shrink: 0;
+}
+
+/* ── Contenido base del drawer ─────────────────────────────────────── */
+.vaul-drawer__content {
+  background: var(--color-surface);
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -4px 40px rgba(0, 0, 0, 0.18);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: min(100%, 50svh);
+  max-height: 92svh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  outline: none;
+  z-index: 301;
+}
+
+@media (max-width: 767px) {
+  .vaul-drawer__content {
+    width: 100%;
+  }
+}
+
+.vaul-drawer__body {
+  padding: 20px 20px 36px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.vaul-drawer__title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0 0 8px;
+}
+
+.vaul-drawer__text {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  margin: 0 0 20px;
+}
+
+/* ── Snap points: barra de progreso visual ─────────────────────────── */
+.vaul-snap-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.vaul-snap-pill {
+  flex: 1;
+  padding: 8px 0;
+  border-radius: 10px;
+  border: 2px solid var(--color-border);
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.vaul-snap-pill--active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+/* ── Scrollable: lista larga ───────────────────────────────────────── */
+.vaul-scroll-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.vaul-scroll-item {
+  background: var(--color-surface-2);
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 0.9rem;
+  color: var(--color-text);
+}
