@@ -9,9 +9,10 @@ import { HOME_TEXTS } from '../../constants/texts/home.texts';
 import './BottomNav.css';
 
 const tabs = [
-  { label: HOME_TEXTS.navHome,    path: ROUTES.HOME,    icon: HomeIcon },
+  { label: HOME_TEXTS.navHome, path: ROUTES.HOME, icon: HomeIcon },
   { label: HOME_TEXTS.navHistory, path: ROUTES.HISTORY, icon: HistoryIcon },
-  { label: 'Configuración',       path: ROUTES.SETTINGS,icon: SettingsIcon },
+  { label: HOME_TEXTS.navVaul, path: ROUTES.Baul, icon: VaulIcon },
+  { label: 'Configuración', path: ROUTES.SETTINGS, icon: SettingsIcon },
 ];
 
 export function BottomNav() {
@@ -66,6 +67,21 @@ function SettingsIcon({ active }) {
       stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="12" r="3" />
       <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" />
+    </svg>
+  );
+}
+
+function VaulIcon({ active }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect width="18" height="18" x="3" y="3" rx="2" ry="2" fill={active ? 'currentColor' : 'none'} opacity={active ? 0.15 : 0} />
+      <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+      <circle cx="12" cy="12" r="3" />
+      <line x1="12" y1="9" x2="12" y2="10" />
+      <line x1="12" y1="14" x2="12" y2="15" />
+      <line x1="9" y1="12" x2="10" y2="12" />
+      <line x1="14" y1="12" x2="15" y2="12" />
     </svg>
   );
 }

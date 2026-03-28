@@ -16,6 +16,7 @@ import { ROUTES } from './constants/routes';
 import { HomePage } from './pages/HomePage';
 import { HistoryPage } from './pages/HistoryPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { VaulPage } from './pages/Baul/VaulPage';
 
 /**
  * @param {{
@@ -31,10 +32,11 @@ export function App({ authRepository, taskRepositoryFactory }) {
     >
       <BrowserRouter>
         <Routes>
-          <Route path={ROUTES.HOME}     element={<HomePage />} />
-          <Route path={ROUTES.HISTORY}  element={<HistoryPage />} />
+          <Route path={ROUTES.HOME} element={<HomePage />} />
+          <Route path={ROUTES.HISTORY} element={<HistoryPage />} />
           <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
-          <Route path="*"               element={<Navigate to={ROUTES.HOME} replace />} />
+          <Route path={ROUTES.Baul} element={<VaulPage />} />
+          <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
         </Routes>
       </BrowserRouter>
     </SessionProvider>

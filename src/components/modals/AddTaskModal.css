@@ -39,6 +39,12 @@
   z-index: 301;
 }
 
+@media (max-width: 767px) {
+  .modal-vaul-content {
+    width: 100%;
+  }
+}
+
 /* Un wrapper interno maneja el padding y el scroll */
 .modal-vaul-body {
   padding: 0 20px 36px;

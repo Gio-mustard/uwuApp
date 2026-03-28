@@ -40,6 +40,12 @@
   padding: 0; /* el padding va en profile-vaul-body */
 }
 
+@media (max-width: 767px) {
+  .profile-vaul-content {
+    width: 100%;
+  }
+}
+
 .profile-vaul-body {
   padding: 0 24px 48px;
   overflow-y: auto;

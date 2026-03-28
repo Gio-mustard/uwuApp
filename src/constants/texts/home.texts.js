@@ -33,4 +33,5 @@ export const HOME_TEXTS = {
   // Navigation labels (used in BottomNav & Sidebar)
   navHome: 'Inicio',
   navHistory: 'Historial',
+  navVaul: 'Baul'
 };
