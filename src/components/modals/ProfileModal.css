@@ -95,6 +95,7 @@
   position: relative;
   overflow: hidden;
   transition: transform 0.2s ease, opacity 0.2s ease;
+  margin-top: 2dvh;
 }
 
 .profile-sheet__avatar--uploading {

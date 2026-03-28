@@ -71,7 +71,7 @@ body {
   background: #e8e7e4;
 }
 
-.modal-vaul-handle {
+.modal-vaul-handle,.profile-vaul-handle {
   background-color: var(--color-primary) !important;
   height: 1.5dvh !important;
   width: 5dvh !important;
