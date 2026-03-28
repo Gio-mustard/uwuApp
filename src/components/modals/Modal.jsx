@@ -117,6 +117,41 @@ function VaulDrawer({
     };
   }, [open]);
 
+  // iOS Safari fix: when the soft keyboard appears, fixed elements stay
+  // anchored to the layout viewport (full screen) instead of the visual
+  // viewport (visible area above keyboard). We use visualViewport to
+  // detect the keyboard height and translate the drawer up accordingly.
+  useEffect(() => {
+    if (!open) return;
+    const vv = window.visualViewport;
+    if (!vv) return;
+
+    const getContentEl = () =>
+      document.querySelector(`.${drawerContentClass.split(' ')[0]}`);
+
+    function handleViewport() {
+      const keyboardHeight = window.innerHeight - vv.height - vv.offsetTop;
+      const el = getContentEl();
+      if (!el) return;
+      if (keyboardHeight > 0) {
+        el.style.transform = `translateY(-${keyboardHeight}px)`;
+        el.style.transition = 'transform 0.2s ease';
+      } else {
+        el.style.transform = '';
+      }
+    }
+
+    vv.addEventListener('resize', handleViewport);
+    vv.addEventListener('scroll', handleViewport);
+
+    return () => {
+      vv.removeEventListener('resize', handleViewport);
+      vv.removeEventListener('scroll', handleViewport);
+      const el = getContentEl();
+      if (el) el.style.transform = '';
+    };
+  }, [open, drawerContentClass]);
+
   return (
     <Drawer.Root
       open={open}
