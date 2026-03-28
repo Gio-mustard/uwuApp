@@ -46,6 +46,7 @@ export function AddTaskModal({ onAdd, onClose,initialType = 'daily',editMode = f
     if (payload.type === 'weekly'){
       setRequiredCount(payload.requiredCount);
     }
+    setIsRecurring(payload.isRecurring);
 
 
   },[])
