@@ -48,6 +48,7 @@
 /* Un wrapper interno maneja el padding y el scroll */
 .modal-vaul-body {
   padding: 0 20px 36px;
+  overflow-x: hidden;
   overflow-y: auto;
   flex: 1;
 }

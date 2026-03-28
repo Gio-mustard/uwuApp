@@ -229,7 +229,7 @@ export function AddTaskModal({ onAdd, onClose, open = true, initialType = 'daily
           <footer>
 
 
-          <button id="modal-submit" className="btn-primary modal__submit" type="submit">
+          <button id="modal-submit" className="btn-primary modal__submit" type="submit" autoFocus>
             {isEditMode?"Actualizar":'Agregar'}
           </button>
 
