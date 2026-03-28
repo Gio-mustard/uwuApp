@@ -24,7 +24,7 @@ import { getDynamicGreeting } from '../constants/texts/greetings.texts';
 import { HOME_TEXTS } from '../constants/texts/home.texts';
 import './HomePage.css';
 import { Modal } from '../components/modals/Modal';
-import { is } from 'date-fns/locale';
+
 
 export function HomePage() {
   const { useAuth, useTasks } = useSession();
@@ -93,51 +93,54 @@ export function HomePage() {
 
   return (
     <AppShell>
-      {modalTaskDeleteConfirmation.show && (
-
-        <Modal
-        overlayClass='profile-overlay task-delete-confirmation-overlay'
-        sheetClass='profile-sheet task-delete-confirmation-sheet'
-        onClose={
-          ()=> setModalTaskDeleteConfirmation({show:false,task:undefined})
-        }>
-        
-        <h3 className = 'confirmation-message'>Quieres <b>eliminar</b> esta <b>tarea ?</b></h3>
-        
-        <h2 className='confirmation-task-title'>{modalTaskDeleteConfirmation.task?.title}</h2>
-        <p className='confirmation-task-description'>{modalTaskDeleteConfirmation.task?.description}</p>
-        <footer>
-          <button 
-          disabled={isDeleting}
-          onClick={async()=>{
-            setIsDeleting(true);
-            await deleteTask(modalTaskDeleteConfirmation.task.id);
-            setModalTaskDeleteConfirmation({show:false,task:undefined})
-            setIsDeleting(false);
-          }} className='modal__type-btn btn-primary'>
+      <Modal
+        useDrawer
+        open={modalTaskDeleteConfirmation.show}
+        onClose={() => setModalTaskDeleteConfirmation({ show: false, task: undefined })}
+        drawerContentClass="confirm-vaul-content"
+        handleClass="modal-vaul-handle"
+        overlayClass="modal-vaul-overlay"
+      >
+        <div className="confirm-vaul-body">
+          <h3 className='confirmation-message'>Quieres <b>eliminar</b> esta <b>tarea?</b></h3>
+          <h2 className='confirmation-task-title'>{modalTaskDeleteConfirmation.task?.title}</h2>
+          <p className='confirmation-task-description'>{modalTaskDeleteConfirmation.task?.description}</p>
+          <footer className="confirm-vaul-footer">
+            <button
+              disabled={isDeleting}
+              onClick={async () => {
+                setIsDeleting(true);
+                await deleteTask(modalTaskDeleteConfirmation.task.id);
+                setModalTaskDeleteConfirmation({ show: false, task: undefined });
+                setIsDeleting(false);
+              }}
+              className='modal__type-btn btn-primary confirm-vaul-btn'
+            >
               {isDeleting ? 'Eliminando...' : 'Eliminar'}
-
               {isDeleting && (
-                        <div className='spinner' style={{
-                      position: 'absolute', inset: 0, 
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      background: 'rgba(0,0,0,0.2)'
-                    }}>
-                      <div style={{
-                        width: 14, height: 14, 
-                        border: '2px solid rgba(255,255,255,0.4)',
-                        borderTopColor: '#fff', borderRadius: '50%',
-                        animation: 'spin 0.8s linear infinite'
-                      }} />
-                    </div>
+                <div className='spinner' style={{
+                  position: 'absolute', inset: 0,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  background: 'rgba(0,0,0,0.2)'
+                }}>
+                  <div style={{
+                    width: 14, height: 14,
+                    border: '2px solid rgba(255,255,255,0.4)',
+                    borderTopColor: '#fff', borderRadius: '50%',
+                    animation: 'spin 0.8s linear infinite'
+                  }} />
+                </div>
               )}
             </button>
-          <button onClick={()=>{
-            setModalTaskDeleteConfirmation({show:false,task:undefined})
-          }} className='modal__type-btn'>Cancelar</button>
-        </footer>
+            <button
+              onClick={() => setModalTaskDeleteConfirmation({ show: false, task: undefined })}
+              className='modal__type-btn'
+            >
+              Cancelar
+            </button>
+          </footer>
+        </div>
       </Modal>
-      )}
 
       <div className="home-page">
         {/* Header */}
@@ -277,13 +280,20 @@ export function HomePage() {
         +
       </button>
 
-      {showModal && (
-        <AddTaskModal onAdd={handleAdd} onClose={() => setShowModal(false)} initialType={typeModal} editMode={editMode.isEditing} payloadTask={editMode.payload} onDelete={handleDelete} />
-      )}
+      <AddTaskModal
+        open={showModal}
+        onAdd={handleAdd}
+        onClose={() => setShowModal(false)}
+        initialType={typeModal}
+        editMode={editMode.isEditing}
+        payloadTask={editMode.payload}
+        onDelete={handleDelete}
+      />
 
-      {showProfile && (
-        <ProfileModal onClose={() => setShowProfile(false)} />
-      )}
+      <ProfileModal
+        open={showProfile}
+        onClose={() => setShowProfile(false)}
+      />
     </AppShell>
   );
 }

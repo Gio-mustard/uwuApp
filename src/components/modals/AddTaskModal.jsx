@@ -22,7 +22,7 @@ import { CheckIcon, EmptyCheckIcon } from '../common/Icons';
  *   onDelete : (import('../../domain/models/WeeklyTask').WeeklyTask|import('../../domain/models/DailyTask').DailyTask) 
  * }} props
  */
-export function AddTaskModal({ onAdd, onClose,initialType = 'daily',editMode = false,payloadTask,onDelete=(task)=>{} }) {
+export function AddTaskModal({ onAdd, onClose, open = true, initialType = 'daily',editMode = false,payloadTask,onDelete=(task)=>{} }) {
   const [type, setType] = useState(initialType);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -96,7 +96,15 @@ export function AddTaskModal({ onAdd, onClose,initialType = 'daily',editMode = f
   }
 
   return (
-    <Modal onClose={onClose} overlayClass="modal-overlay" sheetClass="modal">
+    <Modal
+      useDrawer
+      open={open}
+      onClose={onClose}
+      drawerContentClass="modal-vaul-content"
+      handleClass="modal-vaul-handle"
+      overlayClass="modal-vaul-overlay"
+    >
+      <div className="modal-vaul-body">
         <div className="modal__header">
           <h2 className="modal__title">{isEditMode?'Editar pendiente':'Nuevo pendiente'}</h2>
           <button id="modal-close" className="modal__close" onClick={onClose} aria-label="Cerrar">
@@ -237,6 +245,7 @@ export function AddTaskModal({ onAdd, onClose,initialType = 'daily',editMode = f
           )}
           </footer>
         </form>
+      </div>
     </Modal>
   );
 }

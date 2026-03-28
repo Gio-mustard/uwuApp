@@ -1,38 +1,53 @@
-.profile-overlay {
+/* ── Estilos heredados (overlay/sheet ya no se usan, vaul los reemplaza) ─── */
+
+/* ── Contenedor vaul para ProfileModal ─────────────────────────────────── */
+.profile-vaul-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  z-index: 200;
-  animation: overlay-in 0.18s ease;
+  z-index: 300;
 }
 
-@keyframes overlay-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+.profile-vaul-handle {
+  width: 40px;
+  height: 4px;
+  border-radius: 99px;
+  background: var(--color-border);
+  margin: 12px auto 20px;
+  display: block;
+  flex-shrink: 0;
 }
 
-.profile-sheet {
+.profile-vaul-content {
   background: var(--color-surface);
   border-radius: 28px 28px 0 0;
-  padding: 12px 24px 48px;
-  width: 100%;
-  max-width: 430px;
+  width: min(100%, 50svh);
+  max-height: 92svh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0;
-  animation: sheet-up 0.28s cubic-bezier(0.34, 1.4, 0.64, 1);
-  box-shadow: 0 -6px 40px rgba(0,0,0,0.16);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  box-shadow: 0 -6px 40px rgba(0, 0, 0, 0.16);
+  outline: none;
+  overflow: hidden;  /* el scroll va en el body interior */
+  z-index: 301;
+  padding: 0; /* el padding va en profile-vaul-body */
 }
 
-@keyframes sheet-up {
-  from { transform: translateY(80px); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
+.profile-vaul-body {
+  padding: 0 24px 48px;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 
 .profile-sheet__handle {

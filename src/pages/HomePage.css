@@ -297,49 +297,59 @@
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
-.task-delete-confirmation-overlay{
-  align-items: center;
-  padding: 5svh;
+/* ── Confirmación de borrado (vaul) ────────────────────────────────── */
+.confirm-vaul-content {
+  background: var(--color-surface);
+  border-radius: 24px 24px 0 0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: min(100%, 50svh);
+  outline: none;
+  overflow: hidden;
+  box-shadow: 0 -4px 40px rgba(0, 0, 0, 0.18);
+  z-index: 301;
 }
 
-.task-delete-confirmation-sheet{
-  position: relative;
-  bottom: 10svh;
-  border-radius: 3.5svh;
-  padding: 2svh;
+.confirm-vaul-body {
+  padding: 8px 24px 40px;
 }
-.task-delete-confirmation-sheet > footer{
-  /* confirmation buttons */
-  width: 100%;
-  display: flex;
-  gap: 5svh;
-  padding:  0 2.5svh;
-  margin-top: 5svh ;
-}
-.task-delete-confirmation-sheet > .confirmation-message{
-  /* margin: 2svh 0; */
-  margin-bottom: 4svh;
+
+.confirm-vaul-body .confirmation-message {
+  margin-bottom: 12px;
   font-size: 14px;
   color: var(--color-text-muted);
 }
-.task-delete-confirmation-sheet > .confirmation-task-title{
-  font-size: 20px;
-  font-weight: 700;
-}
-.task-delete-confirmation-sheet > .confirmation-message b{
+
+.confirm-vaul-body .confirmation-message b {
   font-weight: 700;
   color: var(--color-primary);
-  
 }
-.task-delete-confirmation-sheet > .confirmation-task-description{
+
+.confirm-vaul-body .confirmation-task-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 6px;
+}
+
+.confirm-vaul-body .confirmation-task-description {
   font-size: 15px;
-  width: 90%;
   color: var(--color-text-muted);
+  margin: 0;
 }
-.task-delete-confirmation-sheet button{
+
+.confirm-vaul-footer {
+  display: flex;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.confirm-vaul-btn {
   position: relative;
 }
 
-.task-delete-confirmation-sheet .spinner{
+.confirm-vaul-btn .spinner {
   border-radius: inherit;
 }

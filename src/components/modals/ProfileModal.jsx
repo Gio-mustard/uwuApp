@@ -14,7 +14,7 @@ import './ProfileModal.css';
 /**
  * @param {{ onClose: () => void }} props
  */
-export function ProfileModal({ onClose }) {
+export function ProfileModal({ onClose, open = true }) {
   const { useAuth } = useSession();
   const { user, logout, uploadAvatar } = useAuth();
   const [uploading, setUploading] = useState(false);
@@ -41,8 +41,15 @@ export function ProfileModal({ onClose }) {
   const initial = user?.displayName?.[0]?.toUpperCase() ?? '?';
 
   return (
-    <Modal onClose={onClose} overlayClass="profile-overlay" sheetClass="profile-sheet">
-
+    <Modal
+      useDrawer
+      open={open}
+      onClose={onClose}
+      drawerContentClass="profile-vaul-content"
+      handleClass="profile-vaul-handle"
+      overlayClass="profile-vaul-overlay"
+    >
+      <div className="profile-vaul-body">
         {/* Avatar Upload */}
         <label className="profile-sheet__avatar-label" aria-label="Cambiar foto de perfil">
           <input 
@@ -90,6 +97,7 @@ export function ProfileModal({ onClose }) {
         >
           Cancelar
         </button>
+      </div>
     </Modal>
   );
 }

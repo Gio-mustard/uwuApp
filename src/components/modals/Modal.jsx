@@ -6,10 +6,24 @@
  * - Escape key closes the modal
  * - Body scroll is locked while open
  *
- * Usage:
+ * Usage (modal clásico — sin cambios para los consumidores existentes):
  * ```jsx
  * <Modal onClose={onClose} overlayClass="modal-overlay" sheetClass="modal">
  *   <h2>My content</h2>
+ * </Modal>
+ * ```
+ *
+ * Usage (drawer de vaul-base con snap points y fondo escalado):
+ * ```jsx
+ * <Modal
+ *   useDrawer
+ *   open={open}
+ *   onClose={onClose}
+ *   snapPoints={['240px', '400px', 1]}
+ *   shouldScaleBackground
+ *   drawerContentClass="mi-drawer"
+ * >
+ *   <h2>Drawer content</h2>
  * </Modal>
  * ```
  *
@@ -18,8 +32,14 @@
  */
 
 import { useEffect, useCallback } from 'react';
+import { Drawer } from 'vaul-base';
+
+/* ─── Modo clásico ──────────────────────────────────────────────────────── */
 
 /**
+ * Shell clásico: overlay + sheet estáticos tal como existían antes.
+ * Ningun modal existente necesita cambios.
+ *
  * @param {{
  *   children:     React.ReactNode,
  *   onClose:      () => void,
@@ -27,8 +47,7 @@ import { useEffect, useCallback } from 'react';
  *   sheetClass:   string,
  * }} props
  */
-export function Modal({ children, onClose, overlayClass, sheetClass }) {
-  // Stable reference so addEventListener / removeEventListener match.
+function ClassicModal({ children, onClose, overlayClass, sheetClass }) {
   const handleKey = useCallback(
     (e) => { if (e.key === 'Escape') onClose(); },
     [onClose],
@@ -56,5 +75,119 @@ export function Modal({ children, onClose, overlayClass, sheetClass }) {
         {children}
       </div>
     </div>
+  );
+}
+
+/* ─── Modo vaul-base ────────────────────────────────────────────────────── */
+
+/**
+ * Shell de vaul-base: drawer con snap points, fondo escalado y handle.
+ *
+ * @param {{
+ *   children:             React.ReactNode,
+ *   open:                 boolean,
+ *   onClose:              () => void,
+ *   snapPoints?:          (string | number)[],  // ej. ['240px','400px',1]
+ *   activeSnapPoint?:     string | number,
+ *   onSnapPointChange?:   (snap: string | number) => void,
+ *   shouldScaleBackground?: boolean,
+ *   drawerContentClass?:  string,               // clase CSS para Drawer.Content
+ *   handleClass?:         string,               // clase CSS para el handle
+ *   overlayClass?:        string,               // clase CSS para Drawer.Overlay
+ * }} props
+ */
+function VaulDrawer({
+  children,
+  open,
+  onClose,
+  snapPoints,
+  activeSnapPoint,
+  onSnapPointChange,
+  shouldScaleBackground = false,
+  drawerContentClass = 'vaul-drawer__content',
+  handleClass = 'vaul-drawer__handle',
+  overlayClass = 'vaul-drawer__overlay',
+}) {
+  return (
+    <Drawer.Root
+      open={open}
+      onOpenChange={(isOpen) => { if (!isOpen) onClose(); }}
+      snapPoints={snapPoints}
+      activeSnapPoint={activeSnapPoint}
+      setActiveSnapPoint={onSnapPointChange}
+      shouldScaleBackground={shouldScaleBackground}
+    >
+      <Drawer.Portal>
+        <Drawer.Overlay className={overlayClass} />
+        <Drawer.Content className={drawerContentClass} role="dialog" aria-modal="true">
+          <Drawer.Handle className={handleClass} />
+          {children}
+        </Drawer.Content>
+      </Drawer.Portal>
+    </Drawer.Root>
+  );
+}
+
+/* ─── Exportación unificada ─────────────────────────────────────────────── */
+
+/**
+ * Componente unificado Modal.
+ *
+ * - `useDrawer={false}` (default) → comportamiento clásico idéntico al original.
+ * - `useDrawer={true}`            → drawer de vaul-base con todas sus funciones.
+ *
+ * Las props extras de VaulDrawer sólo se usan cuando `useDrawer={true}`.
+ *
+ * @param {{
+ *   useDrawer?:           boolean,
+ *   children:             React.ReactNode,
+ *   onClose:              () => void,
+ *   open?:                boolean,
+ *   overlayClass?:        string,
+ *   sheetClass?:          string,
+ *   snapPoints?:          (string | number)[],
+ *   activeSnapPoint?:     string | number,
+ *   onSnapPointChange?:   (snap: string | number) => void,
+ *   shouldScaleBackground?: boolean,
+ *   drawerContentClass?:  string,
+ *   handleClass?:         string,
+ * }} props
+ */
+export function Modal({
+  useDrawer = false,
+  children,
+  onClose,
+  open,
+  overlayClass,
+  sheetClass,
+  snapPoints,
+  activeSnapPoint,
+  onSnapPointChange,
+  shouldScaleBackground,
+  drawerContentClass,
+  handleClass,
+}) {
+  if (useDrawer) {
+    return (
+      <VaulDrawer
+        open={open}
+        onClose={onClose}
+        snapPoints={snapPoints}
+        activeSnapPoint={activeSnapPoint}
+        onSnapPointChange={onSnapPointChange}
+        shouldScaleBackground={shouldScaleBackground}
+        drawerContentClass={drawerContentClass}
+        handleClass={handleClass}
+        overlayClass={overlayClass}
+      >
+        {children}
+      </VaulDrawer>
+    );
+  }
+
+  return (
+    <ClassicModal onClose={onClose} overlayClass={overlayClass} sheetClass={sheetClass}>
+      {children}
+    </ClassicModal>
   );
 }
