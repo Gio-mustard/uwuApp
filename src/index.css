@@ -65,7 +65,11 @@ html, body {
   height: 100svh;
   background: #e8e7e4;
 }
-
+.modal-vaul-handle {
+  background-color: var(--color-primary) !important;
+  height: 1.5svh !important;
+  width: 5svh !important;
+}
 body {
   font-family: var(--font-body);
   font-size: 16px;

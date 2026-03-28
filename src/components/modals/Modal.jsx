@@ -111,7 +111,7 @@ function VaulDrawer({
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden !important';
     return () => {
       document.body.style.overflow = prev;
     };

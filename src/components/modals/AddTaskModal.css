@@ -45,11 +45,16 @@
   }
 }
 
+#task-time{
+  max-width: 47%;
+}
+
 /* Un wrapper interno maneja el padding y el scroll */
 .modal-vaul-body {
   padding: 0 20px 36px;
   overflow-x: hidden;
   overflow-y: auto;
+  overflow-y: hidden;
   flex: 1;
 }
 
