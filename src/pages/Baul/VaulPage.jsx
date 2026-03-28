@@ -161,10 +161,25 @@ function ScrollableExample() {
 
 /* ─── Page ───────────────────────────────────────────────────────────────── */
 export function VaulPage() {
+  const [open, setOpen] = useState(true);
+
   return (
     <AppShell>
-      
-      
+      <Modal
+        useDrawer
+        open={open}
+        onClose={() => setOpen(false)}
+        drawerContentClass="vaul-drawer__content"
+        handleClass="vaul-drawer__handle"
+        overlayClass="vaul-drawer__overlay"
+      >
+        <main id='vaul-page'>
+
+          <h1>Proximamente aqui podras guardar pendientes!</h1>
+          <p>pendientes que sabes que tienes que hacer pero aun no los vas a hacer...</p>
+        </main>
+      </Modal>
+
     </AppShell>
   );
 }

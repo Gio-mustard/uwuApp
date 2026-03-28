@@ -26,7 +26,7 @@ function SessionLoader() {
   return (
     <div
       style={{
-        minHeight: '100svh',
+        minHeight: '100dvh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -63,7 +63,7 @@ function SessionLoader() {
 function SessionGateway({ children, taskRepositoryFactory }) {
   const { user, loading } = useAuth();
   const [taskRepository, setTaskRepository] = useState(null);
-  const [repoLoading, setRepoLoading]       = useState(false);
+  const [repoLoading, setRepoLoading] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -89,8 +89,8 @@ function SessionGateway({ children, taskRepositoryFactory }) {
   }, [user?.id]);
 
   if (loading || repoLoading) return <SessionLoader />;
-  if (!user)                  return <LoginPage />;
-  if (!taskRepository)        return <SessionLoader />;
+  if (!user) return <LoginPage />;
+  if (!taskRepository) return <SessionLoader />;
 
   return (
     <TaskProvider repository={taskRepository}>

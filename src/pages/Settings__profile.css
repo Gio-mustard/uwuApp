@@ -1,20 +1,21 @@
-.settings-section.profile > .settings-card{
+.settings-section.profile>.settings-card {
     display: flex;
     flex-direction: row;
-    gap: 5svh;
+    gap: 5dvh;
     flex-wrap: wrap;
 }
-.profile-settings-card__avatar{
+
+.profile-settings-card__avatar {
     width: fit-content;
     position: relative;
 }
 
-.btn-edit-avatar{
+.btn-edit-avatar {
     position: absolute;
     bottom: 0;
-    
-    height: 4svh;
-    border-radius: 2svh;
-    padding: 0 2svh;
+
+    height: 4dvh;
+    border-radius: 2dvh;
+    padding: 0 2dvh;
     border: none;
 }

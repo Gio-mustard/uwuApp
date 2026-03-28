@@ -24,8 +24,8 @@
 .modal-vaul-content {
   background: var(--color-surface);
   border-radius: 24px 24px 0 0;
-  width: min(100%, 50svh);
-  max-height: 92svh;
+  width: min(100%, 50dvh);
+  max-height: 92dvh;
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -35,7 +35,8 @@
   margin: 0 auto;
   box-shadow: 0 -4px 40px rgba(0, 0, 0, 0.18);
   outline: none;
-  overflow: hidden;  /* el scroll va en el body interior */
+  overflow: hidden;
+  /* el scroll va en el body interior */
   z-index: 301;
 }
 
@@ -45,7 +46,7 @@
   }
 }
 
-#task-time{
+#task-time {
   max-width: 47%;
 }
 
@@ -119,7 +120,7 @@
   background: var(--color-surface);
   color: var(--color-primary);
   font-weight: 700;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
 .modal__form {
@@ -196,15 +197,18 @@
   margin: 0;
   font-weight: 500;
 }
-.modal__form >footer{
+
+.modal__form>footer {
   display: grid;
-  grid-template-columns: repeat(2,1fr);
-  margin-top: 2svh;
-  gap: 2svh;
+  grid-template-columns: repeat(2, 1fr);
+  margin-top: 2dvh;
+  gap: 2dvh;
 }
-.btn-primary,.btn-secondary {
+
+.btn-primary,
+.btn-secondary {
   border-radius: 14px;
-  padding: 1.5svh 3.5svh;
+  padding: 1.5dvh 3.5dvh;
   font-family: var(--font-body);
   font-size: 0.95rem;
   font-weight: 700;
@@ -213,7 +217,7 @@
   box-shadow: var(--shadow-card);
 }
 
-.btn-primary{
+.btn-primary {
   border: none;
   background: var(--color-primary);
   color: #fff;
@@ -223,27 +227,31 @@
   background: var(--color-primary-hover);
   box-shadow: 0 4px 16px rgba(232, 93, 93, 0.45);
 }
-.modal__delete{
+
+.modal__delete {
   background-color: var(--color-danger);
 }
+
 .btn-primary:active {
   transform: scale(0.97);
 }
 
 
 /* task recurring */
-.task-recurring{
+.task-recurring {
   display: flex;
   flex-direction: row;
   width: fit-content;
   align-items: center;
-  gap: 2svh;
+  gap: 2dvh;
 }
-.task-recurring  label{
-    height: fit-content;
+
+.task-recurring label {
+  height: fit-content;
 }
-.task-recurring > input{
-  width: 2.5svh;
-  height: 2.5svh;
+
+.task-recurring>input {
+  width: 2.5dvh;
+  height: 2.5dvh;
   background-color: red;
 }

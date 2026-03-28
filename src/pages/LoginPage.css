@@ -1,5 +1,5 @@
 .login-page {
-  min-height: 100svh;
+  min-height: 100dvh;
   width: 100%;
   max-width: 430px;
   margin: 0 auto;
@@ -12,12 +12,12 @@
 @media (min-width: 768px) {
   .login-page {
     max-width: 900px;
-    min-height: 100svh;
+    min-height: 100dvh;
     margin: auto;
     flex-direction: row;
     border-radius: 24px;
     overflow: hidden;
-    box-shadow: 0 8px 60px rgba(0,0,0,0.14);
+    box-shadow: 0 8px 60px rgba(0, 0, 0, 0.14);
     align-self: center;
     height: 620px;
     min-height: unset;
@@ -36,7 +36,7 @@
 
 @media (min-width: 768px) {
   .login-page__top {
-    background: linear-gradient(160deg, var(--color-primary) 0%, #c0392b 100%); 
+    background: linear-gradient(160deg, var(--color-primary) 0%, #c0392b 100%);
     background-color: #030303;
     background-image: url('https://cdn.britannica.com/70/234870-050-D4D024BB/Orange-colored-cat-yawns-displaying-teeth.jpg');
     background-size: contain;
@@ -44,16 +44,19 @@
     background-repeat: no-repeat;
     background-blend-mode: lighten;
   }
+
   .login-page__tagline {
     display: none;
-    
+
   }
+
   .login-page__logo-text {
     display: none;
-    
+
   }
+
   .login-page__logo-dot {
-    background: rgba(255,255,255,0.9);
+    background: rgba(255, 255, 255, 0.9);
     display: none;
   }
 }
@@ -96,7 +99,7 @@
   background: var(--color-surface);
   border-radius: 28px 28px 0 0;
   padding: 28px 24px 48px;
-  box-shadow: 0 -4px 30px rgba(0,0,0,0.08);
+  box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -139,7 +142,7 @@
   background: var(--color-surface);
   color: var(--color-primary);
   font-weight: 700;
-  box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
 }
 
 .login-page__form {
@@ -201,7 +204,7 @@
 .login-page__google-btn:hover {
   transform: translateY(-4px);
   border-color: rgba(232, 93, 93, 0.3);
-  box-shadow: 0 12px 24px rgba(232, 93, 93, 0.15), 0 4px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 12px 24px rgba(232, 93, 93, 0.15), 0 4px 8px rgba(0, 0, 0, 0.05);
   background: linear-gradient(135deg, var(--color-surface), #fff5f5);
 }
 

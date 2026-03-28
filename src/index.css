@@ -2,13 +2,15 @@
    UwuApp — Global Design System
    All spacing, color, and typography tokens are defined here as CSS custom
    properties so they can be referenced from any component stylesheet.
-   Units: svh / svw for viewport-relative, rem for text, px for borders only.
+   Units: dvh / svw for viewport-relative, rem for text, px for borders only.
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 /* ── Reset ────────────────────────────────────────────────────────────────── */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -18,58 +20,63 @@
 /* ── Design Tokens ─────────────────────────────────────────────────────────── */
 :root {
   /* Palette */
-  --color-primary:        #E85D5D;
-  --dark-color-primary:#c0392b;
-  --ligth-color-primary:#f7956a;
-  --color-primary-hover:  #d94848;
-  --color-primary-bg:     #fdf0f0;
-  --color-success:        #34a853;
-  --color-danger:         #E85D5D;
+  --color-primary: #E85D5D;
+  --dark-color-primary: #c0392b;
+  --ligth-color-primary: #f7956a;
+  --color-primary-hover: #d94848;
+  --color-primary-bg: #fdf0f0;
+  --color-success: #34a853;
+  --color-danger: #E85D5D;
 
   /* Surface */
-  --color-bg:             #f5f4f2;
-  --color-surface:        #ffffff;
-  --color-surface-2:      #f2f1ef;
-  --color-surface-3:      #e9e8e6;
+  --color-bg: #f5f4f2;
+  --color-surface: #ffffff;
+  --color-surface-2: #f2f1ef;
+  --color-surface-3: #e9e8e6;
 
   /* Text */
-  --color-text:           #1a1917;
-  --color-description:    #51504f;
-  --color-text-muted:     #8a8680;
+  --color-text: #1a1917;
+  --color-description: #51504f;
+  --color-text-muted: #8a8680;
 
   /* Borders */
-  --color-border:         #eae9e6;
-  --color-border-strong:  #c8c7c3;
+  --color-border: #eae9e6;
+  --color-border-strong: #c8c7c3;
 
   /* Shadows */
-  --shadow-card:          0 1px 3px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04);
 
   /* Typography */
-  --font-body:            'Inter', system-ui, -apple-system, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
 
   /* Layout */
-  --max-width:            430px;
+  --max-width: 430px;
   transition:
     background-color 200ms ease,
     color 200ms ease,
     box-shadow 200ms ease;
 }
-*{
+
+* {
   transition:
     background-color 200ms ease,
-    color 200ms ease ,
+    color 200ms ease,
     box-shadow 200ms ease;
 }
+
 /* ── Base ──────────────────────────────────────────────────────────────────── */
-html, body {
-  height: 100svh;
+html,
+body {
+  height: 100dvh;
   background: #e8e7e4;
 }
+
 .modal-vaul-handle {
   background-color: var(--color-primary) !important;
-  height: 1.5svh !important;
-  width: 5svh !important;
+  height: 1.5dvh !important;
+  width: 5dvh !important;
 }
+
 body {
   font-family: var(--font-body);
   font-size: 16px;
@@ -81,8 +88,8 @@ body {
 }
 
 #root {
-  min-height: 100svh;
-  max-height: 100svh;
+  min-height: 100dvh;
+  max-height: 100dvh;
   position: relative;
   max-width: 100svw;
   display: flex;
@@ -126,9 +133,11 @@ body {
 ::-webkit-scrollbar {
   width: 4px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--color-surface-3);
   border-radius: 4px;
@@ -138,7 +147,9 @@ body {
 
 /* Spinner used by SessionLoader, TaskContext loading state */
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Sections and cards fade + slide up gently when mounted */
@@ -147,6 +158,7 @@ body {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -155,20 +167,37 @@ body {
 
 /* Modal overlays fade in */
 @keyframes fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 /* Modal bottom-sheets slide up */
 @keyframes slide-up {
-  from { transform: translateY(100%); }
-  to   { transform: translateY(0); }
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
 }
 
 /* FAB entrance */
 @keyframes pop-in {
-  from { opacity: 0; transform: scale(0.7); }
-  to   { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* Apply subtle entrance animation to all section cards */
@@ -179,9 +208,17 @@ body {
 }
 
 /* Stagger history cards (each card slightly delayed) */
-.history-card:nth-child(2) { animation-delay: 0.04s; }
-.history-card:nth-child(3) { animation-delay: 0.08s; }
-.history-card:nth-child(4) { animation-delay: 0.12s; }
+.history-card:nth-child(2) {
+  animation-delay: 0.04s;
+}
+
+.history-card:nth-child(3) {
+  animation-delay: 0.08s;
+}
+
+.history-card:nth-child(4) {
+  animation-delay: 0.12s;
+}
 
 /* FAB pop-in */
 .fab {
@@ -190,7 +227,7 @@ body {
 
 
 .btn-danger {
-  background: rgba(248, 113, 113, 0.1) ;
+  background: rgba(248, 113, 113, 0.1);
   color: var(--color-danger);
   border: 2px solid rgba(248, 113, 113, 0.3);
 }

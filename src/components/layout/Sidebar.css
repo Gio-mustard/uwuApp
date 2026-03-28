@@ -1,5 +1,6 @@
 .sidebar {
-  display: none; /* Hidden on mobile */
+  display: none;
+  /* Hidden on mobile */
 }
 
 /* ── Desktop sidebar ─────────────────────────────────────────────────── */
@@ -9,7 +10,7 @@
     flex-direction: column;
     width: 240px;
     min-width: 240px;
-    height: 100svh;
+    height: 100dvh;
     position: sticky;
     top: 0;
     background: var(--color-surface);
@@ -27,7 +28,8 @@
   gap: 5px;
   padding: 0 4px;
   margin-bottom: 28px;
-  display: none; /*TODO : Drop this element*/
+  display: none;
+  /*TODO : Drop this element*/
 }
 
 .sidebar__brand-text {
