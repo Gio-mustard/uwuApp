@@ -68,6 +68,62 @@ const orangePalette = {
         colorDanger: "#E64A19"
     }
 };
+const synthwavePalette = {
+    title: 'Synthwave Nights',
+    description: '',
+    colors: {
+        colorPrimary: "#F700FF",
+        darkColorPrimary: "#AD00B3",
+        ligthColorPrimary: "#F94DFF",
+        colorPrimaryHover: "#DE00E6",
+        colorPrimaryBg: "#FEE5FF",
+        colorSuccess: "#00E5FF",
+        colorDanger: "#FF0055"
+    }
+};
+
+const radioactivePalette = {
+    title: 'Tóxico Radioactivo',
+    description: '',
+    colors: {
+        colorPrimary: "#39FF14",
+        darkColorPrimary: "#28B30E",
+        ligthColorPrimary: "#73FF59",
+        colorPrimaryHover: "#33E612",
+        colorPrimaryBg: "#EAFFE5",
+        colorSuccess: "#34A853",
+        colorDanger: "#FF073A"
+    }
+};
+
+const vaporwavePalette = {
+    title: 'Vaporwave Aesthetic',
+    description: '',
+    colors: {
+        colorPrimary: "#FF71CE",
+        darkColorPrimary: "#B34F8F",
+        ligthColorPrimary: "#FF9CE0",
+        colorPrimaryHover: "#E666B9",
+        colorPrimaryBg: "#FFF0F9",
+        colorSuccess: "#05FFA1",
+        colorDanger: "#FF1B8D"
+    }
+};
+
+const cyberpunkPalette = {
+    title: 'Cyberpunk 2077',
+    description: '',
+    colors: {
+        colorPrimary: "#00FF9D",
+        darkColorPrimary: "#00B36E",
+        ligthColorPrimary: "#4DFFBA",
+        colorPrimaryHover: "#00E68D",
+        colorPrimaryBg: "#E5FFF4",
+        colorSuccess: "#FF003C",
+        colorDanger: "#FCEE0A"
+    }
+};
+
 const colorPalettes = {
     default: {
     title: "Paleta Actual",
@@ -86,7 +142,11 @@ const colorPalettes = {
   yellowPalette:yellowPalette,
   greenPalette:greenPalette,
   purplePalette:purplePalette,
-  orangePallete:orangePalette
+  orangePallete:orangePalette,
+  synthwavePalette:synthwavePalette,
+  radioactivePalette:radioactivePalette,
+  vaporwavePalette:vaporwavePalette,
+  cyberpunkPalette:cyberpunkPalette
 };
 
 const darkTheme = {
