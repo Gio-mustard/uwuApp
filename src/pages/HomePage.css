@@ -255,7 +255,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 16px rgba(232, 93, 93, 0.45);
+  box-shadow: var(--shadow-btn);
   transition: background 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease;
   z-index: 50;
   line-height: 1;

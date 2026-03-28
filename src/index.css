@@ -45,6 +45,8 @@
 
   /* Shadows */
   --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-btn: var(--shadow-btn);
+
 
   /* Typography */
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
@@ -71,7 +73,8 @@ body {
   background: #e8e7e4;
 }
 
-.modal-vaul-handle,.profile-vaul-handle {
+.modal-vaul-handle,
+.profile-vaul-handle {
   background-color: var(--color-primary) !important;
   height: 1.5dvh !important;
   width: 5dvh !important;

@@ -9,7 +9,8 @@ const yellowPalette = {
         colorPrimaryHover: "#E2A700",
         colorPrimaryBg: "#FFF8E1",
         colorSuccess: "#34A853",
-        colorDanger: "#E85D5D"
+        colorDanger: "#E85D5D",
+        shadowBtn: "0 4px 16px #F4B40073"
     }
 };
 const bluePalette = {
@@ -23,7 +24,8 @@ const bluePalette = {
         colorPrimaryHover: "#3367D6",
         colorPrimaryBg: "#E8F0FE",
         colorSuccess: "#34A853",
-        colorDanger: "#EA4335"
+        colorDanger: "#EA4335",
+        shadowBtn: "0 4px 16px #4285F473"
     }
 };
 const greenPalette = {
@@ -37,7 +39,8 @@ const greenPalette = {
         colorPrimaryHover: "#2E9E5B",
         colorPrimaryBg: "#E6F4EA",
         colorSuccess: "#34A853",
-        colorDanger: "#E5533D"
+        colorDanger: "#E5533D",
+        shadowBtn: "0 4px 16px #34A85373"
     }
 };
 const purplePalette = {
@@ -50,7 +53,8 @@ const purplePalette = {
         colorPrimaryHover: "#7B1FA2",
         colorPrimaryBg: "#F3E5F5",
         colorSuccess: "#34A853",
-        colorDanger: "#E53935"
+        colorDanger: "#E53935",
+        shadowBtn: "0 4px 16px #8E24AA73"
     }
 };
 
@@ -65,7 +69,8 @@ const orangePalette = {
         colorPrimaryHover: "#F57C00",
         colorPrimaryBg: "#FFF3E0",
         colorSuccess: "#34A853",
-        colorDanger: "#E64A19"
+        colorDanger: "#E64A19",
+        shadowBtn: "0 4px 16px #FB8C0073"
     }
 };
 const synthwavePalette = {
@@ -78,7 +83,8 @@ const synthwavePalette = {
         colorPrimaryHover: "#DE00E6",
         colorPrimaryBg: "#FEE5FF",
         colorSuccess: "#00E5FF",
-        colorDanger: "#FF0055"
+        colorDanger: "#FF0055",
+        shadowBtn: "0 4px 16px #F700FF73"
     }
 };
 
@@ -92,7 +98,8 @@ const radioactivePalette = {
         colorPrimaryHover: "#33E612",
         colorPrimaryBg: "#EAFFE5",
         colorSuccess: "#34A853",
-        colorDanger: "#FF073A"
+        colorDanger: "#FF073A",
+        shadowBtn: "0 4px 16px #39FF1473"
     }
 };
 
@@ -106,7 +113,8 @@ const vaporwavePalette = {
         colorPrimaryHover: "#E666B9",
         colorPrimaryBg: "#FFF0F9",
         colorSuccess: "#05FFA1",
-        colorDanger: "#FF1B8D"
+        colorDanger: "#FF1B8D",
+        shadowBtn: "0 4px 16px #FF71CE73"
     }
 };
 
@@ -120,7 +128,38 @@ const cyberpunkPalette = {
         colorPrimaryHover: "#00E68D",
         colorPrimaryBg: "#E5FFF4",
         colorSuccess: "#FF003C",
-        colorDanger: "#FCEE0A"
+        colorDanger: "#FCEE0A",
+        shadowBtn: "0 4px 16px #00FF9D73"
+    }
+};
+
+const oceanCalmPalette = {
+    title: 'Calma Profunda',
+    description: '',
+    colors: {
+        colorPrimary: "#2B6CB0",
+        darkColorPrimary: "#2C5282",
+        ligthColorPrimary: "#BEE3F8",
+        colorPrimaryHover: "#3182CE",
+        colorPrimaryBg: "#EBF8FF",
+        colorSuccess: "#34A853",
+        colorDanger: "#EA4335",
+        shadowBtn: "0 4px 16px #2B6CB073"
+    }
+};
+
+const sereneProgressPalette = {
+    title: 'Progreso Sereno',
+    description: '',
+    colors: {
+        colorPrimary: "#00B5D8",
+        darkColorPrimary: "#00838F",
+        ligthColorPrimary: "#9DECF9",
+        colorPrimaryHover: "#0BC5EA",
+        colorPrimaryBg: "#E0FCFF",
+        colorSuccess: "#34A853",
+        colorDanger: "#EA4335",
+        shadowBtn: "0 4px 16px #00B5D873"
     }
 };
 
@@ -135,7 +174,8 @@ const colorPalettes = {
             colorPrimaryHover: "#d94848",
             colorPrimaryBg: "#fdf0f0",
             colorSuccess: "#34a853",
-            colorDanger: "#E85D5D"
+            colorDanger: "#E85D5D",
+            shadowBtn: "0 4px 16px #E85D5D73"
         }
   },
   bluePalette:bluePalette,
@@ -146,7 +186,9 @@ const colorPalettes = {
   synthwavePalette:synthwavePalette,
   radioactivePalette:radioactivePalette,
   vaporwavePalette:vaporwavePalette,
-  cyberpunkPalette:cyberpunkPalette
+  cyberpunkPalette:cyberpunkPalette,
+  oceanCalmPalette:oceanCalmPalette,
+  sereneProgressPalette:sereneProgressPalette
 };
 
 const darkTheme = {

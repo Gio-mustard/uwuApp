@@ -214,7 +214,7 @@
   font-weight: 700;
   cursor: pointer;
   transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
-  box-shadow: var(--shadow-card);
+  box-shadow: var(--shadow-btn);
 }
 
 .btn-primary {
@@ -225,11 +225,12 @@
 
 .btn-primary:hover {
   background: var(--color-primary-hover);
-  box-shadow: 0 4px 16px rgba(232, 93, 93, 0.45);
+  box-shadow: var(--shadow-btn);
 }
 
-.modal__delete {
-  background-color: var(--color-danger);
+#modal-delete {
+  box-shadow: var(--shadow-card);
+
 }
 
 .btn-primary:active {

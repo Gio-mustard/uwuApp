@@ -35,7 +35,7 @@
   background: var(--color-primary);
   color: #fff;
   border-color: transparent;
-  box-shadow: inset 2px 2px 5px var(--color-primary) , inset -2px -2px 5px var(--color-primary-hover),0 2px 8px rgba(232, 93, 93, 0.35);
+  box-shadow: inset 2px 2px 5px var(--color-primary) , inset -2px -2px 5px var(--color-primary-hover),var(--shadow-btn); 
 }
 
 .day-selector__pill--today:hover {
