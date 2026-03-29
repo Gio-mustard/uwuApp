@@ -281,7 +281,6 @@ export function HomePage() {
       </button>
 
 
-        {showModal&&(
 
           <AddTaskModal
           open={showModal}
@@ -292,7 +291,7 @@ export function HomePage() {
           payloadTask={editMode.payload}
           onDelete={handleDelete}
           />
-        )}
+
 
       <ProfileModal
         open={showProfile}
