@@ -34,11 +34,22 @@ export function AddTaskModal({ onAdd, onClose, open = true, initialType = 'daily
   const [isRecurring,setIsRecurring] = useState(false);
   const [isEditMode,setIsEditMode] = useState(editMode);
   const injectPayload = useCallback((payload)=>{
-    if(payload === undefined) return;
+    console.log(payload)
+    if(payload === undefined) {
+      setTitle('');
+      setDescription('');
+      setTime('');
+      setType(initialType);
+      setAssignedDays([]);
+      setRequiredCount(1);
+      setIsRecurring(false);
+      setError('');
+      return
+    }
 
     setTitle(payload.title);
     setDescription(payload.description);
-    setTime(payload.time);
+    setTime(payload.suggestedTime);
     setType(payload.type);
     if (payload.type === 'daily'){
       setAssignedDays(payload.assignedDays);
