@@ -122,17 +122,19 @@
     border-radius: 20px 20px 0 0;
     box-shadow: 0 -4px 40px rgba(0, 0, 0, 0.18);
     position: fixed;
-    bottom: 0;
+    bottom: 0 !important;
     left: 0;
     right: 0;
     margin: 0 auto;
     width: min(100%, 50svh);
-    max-height: 92svh;
+    max-height: 92lvh;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     outline: none;
     z-index: 301;
+    /* Transición suave cuando el teclado empuja el drawer hacia arriba */
+    transition: bottom 0.2s ease;
 }
 
 @media (max-width: 767px) {

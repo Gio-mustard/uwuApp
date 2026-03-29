@@ -64,6 +64,7 @@ function ClassicModal({ children, onClose, overlayClass, sheetClass }) {
     };
   }, [handleKey]);
 
+
   /** Close only when the backdrop itself is clicked, not the sheet. */
   function handleOverlayClick(e) {
     if (e.target === e.currentTarget) onClose();
@@ -108,14 +109,29 @@ function VaulDrawer({
   handleClass = 'vaul-drawer__handle',
   overlayClass = 'vaul-drawer__overlay',
 }) {
+  
+
+
+  // ── minHeight lock ────────────────────────────────────────────────────────
+ 
   useEffect(() => {
     if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden !important';
+
+    const selector = `.${drawerContentClass.split(' ')[0]}`;
+
+    const timer = setTimeout(() => {
+      const el = document.querySelector(selector);
+      if (!el) return;
+      const h = el.getBoundingClientRect().height;
+      if (h > 0) el.style.minHeight = `${h}px`;
+    }, 350); // NO CHANGE THIS!!!!!
+
     return () => {
-      document.body.style.overflow = prev;
+      clearTimeout(timer);
+      const el = document.querySelector(selector);
+      if (el) el.style.minHeight = '';
     };
-  }, [open]);
+  }, [open, drawerContentClass]);
 
   return (
     <Drawer.Root
@@ -137,7 +153,6 @@ function VaulDrawer({
   );
 }
 
-/* ─── Exportación unificada ─────────────────────────────────────────────── */
 
 /**
  * Componente unificado Modal.

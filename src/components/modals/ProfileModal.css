@@ -24,7 +24,7 @@
   background: var(--color-surface);
   border-radius: 28px 28px 0 0;
   width: min(100%, 50dvh);
-  max-height: 92dvh;
+  max-height: 92lvh;
   display: flex;
   flex-direction: column;
   align-items: center;

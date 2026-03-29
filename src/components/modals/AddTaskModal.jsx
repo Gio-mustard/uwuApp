@@ -34,11 +34,22 @@ export function AddTaskModal({ onAdd, onClose, open = true, initialType = 'daily
   const [isRecurring,setIsRecurring] = useState(false);
   const [isEditMode,setIsEditMode] = useState(editMode);
   const injectPayload = useCallback((payload)=>{
-    if(payload === undefined) return;
+    console.log(payload)
+    if(payload === undefined) {
+      setTitle('');
+      setDescription('');
+      setTime('');
+      setType(initialType);
+      setAssignedDays([]);
+      setRequiredCount(1);
+      setIsRecurring(false);
+      setError('');
+      return
+    }
 
     setTitle(payload.title);
     setDescription(payload.description);
-    setTime(payload.time);
+    setTime(payload.suggestedTime);
     setType(payload.type);
     if (payload.type === 'daily'){
       setAssignedDays(payload.assignedDays);
@@ -57,6 +68,28 @@ export function AddTaskModal({ onAdd, onClose, open = true, initialType = 'daily
   useEffect(()=>{
     injectPayload(payloadTask);
   },[isEditMode]);
+
+  useEffect(() => {
+    const handleFocusIn = (e) => {
+      const target = e.target;
+      // Solo inputs/textareas dentro del modal
+      if (!target.matches('input, textarea, select')) return;
+
+      const scrollContainer = target.closest('.modal-vaul-body');
+      if (!scrollContainer) return;
+
+      // Esperamos a que el teclado termine de aparecer antes de medir.
+      setTimeout(() => {
+        const containerTop = scrollContainer.getBoundingClientRect().top;
+        const elementTop   = target.getBoundingClientRect().top;
+        // Posición del elemento relativa al contenedor + scroll actual = offset absoluto.
+        const scrollTo = elementTop - containerTop + scrollContainer.scrollTop - 8;
+        scrollContainer.scrollTo({ top: scrollTo, behavior: 'smooth' });
+      }, 350);
+    };
+    window.addEventListener('focusin', handleFocusIn);
+    return () => window.removeEventListener('focusin', handleFocusIn);
+  }, []);
 
   function toggleDay(day) {
     setAssignedDays((prev) =>
@@ -103,6 +136,7 @@ export function AddTaskModal({ onAdd, onClose, open = true, initialType = 'daily
       drawerContentClass="modal-vaul-content"
       handleClass="modal-vaul-handle"
       overlayClass="modal-vaul-overlay"
+      shouldScaleBackground
     >
       <div className="modal-vaul-body">
         <div className="modal__header">
