@@ -280,15 +280,19 @@ export function HomePage() {
         +
       </button>
 
-      <AddTaskModal
-        open={showModal}
-        onAdd={handleAdd}
-        onClose={() => setShowModal(false)}
-        initialType={typeModal}
-        editMode={editMode.isEditing}
-        payloadTask={editMode.payload}
-        onDelete={handleDelete}
-      />
+
+        {showModal&&(
+
+          <AddTaskModal
+          open={showModal}
+          onAdd={handleAdd}
+          onClose={() => setShowModal(false)}
+          initialType={typeModal}
+          editMode={editMode.isEditing}
+          payloadTask={editMode.payload}
+          onDelete={handleDelete}
+          />
+        )}
 
       <ProfileModal
         open={showProfile}
