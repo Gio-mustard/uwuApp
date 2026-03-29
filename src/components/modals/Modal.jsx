@@ -122,6 +122,17 @@ function VaulDrawer({
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
+    // iOS Safari: cuando el teclado aparece el browser puede cambiar
+    // window.scrollY silenciosamente incluso con overflow:hidden en body.
+    // Esto desplaza los elementos position:fixed (como el drawer) hacia abajo.
+    // En el PRIMER focus scrollY suele ser 0 → no hay problema.
+    // En el SEGUNDO focus scrollY ya es != 0 (quedó del ciclo anterior) → drawer baja.
+    // Solución: resetear window.scrollY a 0 inmediatamente cada vez que cambie.
+    const resetScroll = () => {
+      if (window.pageYOffset !== 0) window.scrollTo(0, 0);
+    };
+    window.addEventListener('scroll', resetScroll);
+
     // Scrollable wrappers definidos en los distintos modales de la app.
     const SCROLL_SELECTORS = [
       '.modal-vaul-body',
@@ -131,7 +142,6 @@ function VaulDrawer({
     ].join(', ');
 
     const preventTouchMove = (e) => {
-      // Permite scroll dentro de los cuerpos scrollables del drawer.
       if (e.target.closest(SCROLL_SELECTORS)) return;
       e.preventDefault();
     };
@@ -140,6 +150,7 @@ function VaulDrawer({
 
     return () => {
       document.body.style.overflow = prevOverflow;
+      window.removeEventListener('scroll', resetScroll);
       document.removeEventListener('touchmove', preventTouchMove);
     };
   }, [open]);
