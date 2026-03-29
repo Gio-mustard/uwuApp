@@ -117,6 +117,8 @@ function VaulDrawer({
   // NO usamos position:fixed en body porque provoca un salto al abrir.
   // En cambio: overflow:hidden + prevención de touchmove en document,
   // exceptuando los contenedores scrollables internos del drawer.
+  
+  /*
   useEffect(() => {
     if (!open) return;
 
@@ -155,6 +157,8 @@ function VaulDrawer({
       document.removeEventListener('touchmove', preventTouchMove);
     };
   }, [open]);
+  */
+
 
   // ── minHeight lock ────────────────────────────────────────────────────────
   // Al abrir el drawer leemos su altura real (después de que vaul termine su
