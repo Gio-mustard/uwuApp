@@ -157,14 +157,12 @@ function VaulDrawer({
 
       if (kbHeight > 0) {
 
-        // drawer.style.bottom = `${kbHeight}px`;
+        drawer.style.bottom = `${kbHeight}px`;
 
-
-        
-        drawer.style.maxHeight = `${vv.height - 16}px`;
+        drawer.style.maxHeight = `${vv.height - 8}px`;
       } else {
         drawer.style.bottom = '0';
-        drawer.style.maxHeight = '95dvh';
+        drawer.style.maxHeight = '92dvh';
       }
     }
 
@@ -175,8 +173,8 @@ function VaulDrawer({
       vv.removeEventListener('scroll', onViewport);
       const drawer = getDrawerContent();
       if (drawer) {
-        drawer.style.bottom = '';
-        drawer.style.maxHeight = '';
+        drawer.style.bottom = '0';
+        drawer.style.maxHeight = '92dvh';
       }
     };
   }, [open, drawerContentClass]);
