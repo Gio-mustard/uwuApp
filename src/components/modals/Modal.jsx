@@ -147,22 +147,24 @@ function VaulDrawer({
     const vv = window.visualViewport;
     if (!vv) return;
 
-    const getEl = () =>
+    const getDrawerContent = () =>
       document.querySelector(`.${drawerContentClass.split(' ')[0]}`);
 
     function onViewport() {
       const kbHeight = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
-      const el = getEl();
-      if (!el) return;
+      const drawer = getDrawerContent();
+      if (!drawer) return;
 
       if (kbHeight > 0) {
-        // Sube el drawer al nivel del teclado...
-        el.style.bottom = `${kbHeight}px`;
-        // ...y limita su altura al espacio visible (con 8px de margen superior).
-        el.style.maxHeight = `${vv.height - 8}px`;
+
+        // drawer.style.bottom = `${kbHeight}px`;
+
+
+        
+        drawer.style.maxHeight = `${vv.height - 16}px`;
       } else {
-        el.style.bottom = '';
-        el.style.maxHeight = '';
+        drawer.style.bottom = '0';
+        drawer.style.maxHeight = '95dvh';
       }
     }
 
@@ -171,10 +173,10 @@ function VaulDrawer({
     return () => {
       vv.removeEventListener('resize', onViewport);
       vv.removeEventListener('scroll', onViewport);
-      const el = getEl();
-      if (el) {
-        el.style.bottom = '';
-        el.style.maxHeight = '';
+      const drawer = getDrawerContent();
+      if (drawer) {
+        drawer.style.bottom = '';
+        drawer.style.maxHeight = '';
       }
     };
   }, [open, drawerContentClass]);
