@@ -101,6 +101,7 @@ body {
   background-color: #eceae6;
   background-image: radial-gradient(circle, #c8c6c0 1px, transparent 1px);
   background-size: 24px 24px;
+  background:#e85d5d58 !important;
 }
 
 /* ── Desktop background ───────────────────────────────────────────────────── */
