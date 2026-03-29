@@ -168,7 +168,7 @@ export function AddTaskModal({ onAdd, onClose, open = true, initialType = 'daily
           )
         }
 
-        <form className="modal__form" onSubmit={handleSubmit} noValidate>
+        <form className="modal__form" onSubmit={handleSubmit} noValidate autoComplete='off'>
           <div className="form-field">
             <label className="form-label" htmlFor="task-title">Título *</label>
             <input
