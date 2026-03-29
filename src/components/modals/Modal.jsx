@@ -146,6 +146,8 @@ function VaulDrawer({
   // En drawers con scroll también ajustamos `maxHeight` al espacio visible
   // (vv.height). Sin esto, el drawer puede ser más alto que el área visible
   // sobre el teclado y el scroll interno se rompe o el drawer se sale por arriba.
+
+  /*
   useEffect(() => {
     if (!open) return;
     const vv = window.visualViewport;
@@ -182,7 +184,7 @@ function VaulDrawer({
       }
     };
   }, [open, drawerContentClass]);
-
+*/
   return (
     <Drawer.Root
       open={open}
