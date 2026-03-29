@@ -64,6 +64,7 @@ function ClassicModal({ children, onClose, overlayClass, sheetClass }) {
     };
   }, [handleKey]);
 
+
   /** Close only when the backdrop itself is clicked, not the sheet. */
   function handleOverlayClick(e) {
     if (e.target === e.currentTarget) onClose();
@@ -154,6 +155,32 @@ function VaulDrawer({
       document.removeEventListener('touchmove', preventTouchMove);
     };
   }, [open]);
+
+  // ── minHeight lock ────────────────────────────────────────────────────────
+  // Al abrir el drawer leemos su altura real (después de que vaul termine su
+  // animación de entrada) y la fijamos como minHeight inline.
+  // Esto impide que cambios en unidades de viewport (svh/dvh) al aparecer el
+  // teclado virtual reduzcan el tamaño del drawer.
+  useEffect(() => {
+    if (!open) return;
+
+    const selector = `.${drawerContentClass.split(' ')[0]}`;
+
+    // Vaul anima la entrada con un transition (~300ms). Esperamos a que termine
+    // antes de leer la altura para que el valor sea el correcto (no 0 ni parcial).
+    const timer = setTimeout(() => {
+      const el = document.querySelector(selector);
+      if (!el) return;
+      const h = el.getBoundingClientRect().height;
+      if (h > 0) el.style.minHeight = `${h}px`;
+    }, 350); // margen mayor que la duración de la animación de vaul
+
+    return () => {
+      clearTimeout(timer);
+      const el = document.querySelector(selector);
+      if (el) el.style.minHeight = '';
+    };
+  }, [open, drawerContentClass]);
 
   return (
     <Drawer.Root
