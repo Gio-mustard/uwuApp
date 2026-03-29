@@ -177,6 +177,19 @@ export function VaulPage() {
 
           <h1>Proximamente aqui podras guardar pendientes!</h1>
           <p>pendientes que sabes que tienes que hacer pero aun no los vas a hacer...</p>
+          <div className="form-field">
+            <label className="form-label" htmlFor="task-title">Título *</label>
+            <input
+              id="task-title"
+              className="form-input"
+              type="text"
+              placeholder="Ej: Tomar vitaminas"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              maxLength={80}
+              autoFocus
+            />
+          </div>
         </main>
       </Modal>
 

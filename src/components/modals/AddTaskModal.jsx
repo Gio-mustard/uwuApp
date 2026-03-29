@@ -60,9 +60,7 @@ export function AddTaskModal({ onAdd, onClose, open = true, initialType = 'daily
 
   useEffect(() => {
     const handleFocusOut = () => {
-      // Hack for iOS Safari: Force viewport recalculation when keyboard closes
-      // so fixed elements (like modales) don't get suspended in the air.
-      window.scrollTo(0, window.scrollY);
+      
     };
     window.addEventListener('focusout', handleFocusOut);
     return () => window.removeEventListener('focusout', handleFocusOut);
