@@ -137,8 +137,11 @@ function VaulDrawer({
   // ── Teclado virtual (visualViewport) ─────────────────────────────────────
   // Cuando aparece el teclado el visualViewport encoge pero position:fixed;
   // bottom:0 queda anclado al layout viewport completo. Ajustamos `bottom`
-  // inline — es una propiedad distinta a `transform`, por lo que no interfiere
-  // con el translateY que vaul aplica durante el gesto de arrastre.
+  // inline — es una propiedad distinta a `transform`, no interfiere con vaul.
+  //
+  // En drawers con scroll también ajustamos `maxHeight` al espacio visible
+  // (vv.height). Sin esto, el drawer puede ser más alto que el área visible
+  // sobre el teclado y el scroll interno se rompe o el drawer se sale por arriba.
   useEffect(() => {
     if (!open) return;
     const vv = window.visualViewport;
@@ -151,7 +154,16 @@ function VaulDrawer({
       const kbHeight = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
       const el = getEl();
       if (!el) return;
-      el.style.bottom = kbHeight > 0 ? `${kbHeight}px` : '';
+
+      if (kbHeight > 0) {
+        // Sube el drawer al nivel del teclado...
+        el.style.bottom = `${kbHeight}px`;
+        // ...y limita su altura al espacio visible (con 8px de margen superior).
+        el.style.maxHeight = `${vv.height - 8}px`;
+      } else {
+        el.style.bottom = '';
+        el.style.maxHeight = '';
+      }
     }
 
     vv.addEventListener('resize', onViewport);
@@ -160,7 +172,10 @@ function VaulDrawer({
       vv.removeEventListener('resize', onViewport);
       vv.removeEventListener('scroll', onViewport);
       const el = getEl();
-      if (el) el.style.bottom = '';
+      if (el) {
+        el.style.bottom = '';
+        el.style.maxHeight = '';
+      }
     };
   }, [open, drawerContentClass]);
 
