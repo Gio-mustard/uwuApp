@@ -112,6 +112,9 @@ function VaulDrawer({
   // `overflow: hidden` solo no es suficiente en iOS Safari: el browser puede
   // seguir reposicionando el layout viewport al abrir el teclado. La solución
   // es fijar el body en su posición actual con position:fixed.
+
+
+  /*
   useEffect(() => {
     if (!open) return;
     const scrollY = window.scrollY;
@@ -133,6 +136,7 @@ function VaulDrawer({
       window.scrollTo(0, scrollY);
     };
   }, [open]);
+  */
 
   // ── Teclado virtual (visualViewport) ─────────────────────────────────────
   // Cuando aparece el teclado el visualViewport encoge pero position:fixed;
