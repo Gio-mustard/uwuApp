@@ -162,6 +162,7 @@ function ScrollableExample() {
 /* ─── Page ───────────────────────────────────────────────────────────────── */
 export function VaulPage() {
   const [open, setOpen] = useState(true);
+  const [title,setTitle] = useState("");
 
   return (
     <AppShell>
