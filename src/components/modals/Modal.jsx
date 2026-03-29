@@ -108,83 +108,42 @@ function VaulDrawer({
   handleClass = 'vaul-drawer__handle',
   overlayClass = 'vaul-drawer__overlay',
 }) {
-  // ── Scroll lock robusto para iOS ──────────────────────────────────────────
-  // `overflow: hidden` solo no es suficiente en iOS Safari: el browser puede
-  // seguir reposicionando el layout viewport al abrir el teclado. La solución
-  // es fijar el body en su posición actual con position:fixed.
-
-
-  /*
+  // ── Scroll lock ───────────────────────────────────────────────────────────
+  // Sin esto, en iOS el browser puede hacer scroll del window cuando el
+  // teclado aparece (sobre todo la segunda vez), desplazando el drawer hacia
+  // abajo aunque tenga position:fixed;bottom:0.
+  //
+  // NO usamos position:fixed en body porque provoca un salto al abrir.
+  // En cambio: overflow:hidden + prevención de touchmove en document,
+  // exceptuando los contenedores scrollables internos del drawer.
   useEffect(() => {
     if (!open) return;
-    const scrollY = window.scrollY;
-    const prev = {
-      overflow: document.body.style.overflow,
-      position: document.body.style.position,
-      top:      document.body.style.top,
-      width:    document.body.style.width,
-    };
+
+    const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    document.body.style.position = 'fixed';
-    document.body.style.top      = `-${scrollY}px`;
-    document.body.style.width    = '100%';
+
+    // Scrollable wrappers definidos en los distintos modales de la app.
+    const SCROLL_SELECTORS = [
+      '.modal-vaul-body',
+      '.profile-vaul-body',
+      '.vaul-drawer__body',
+      '.confirm-vaul-body',
+    ].join(', ');
+
+    const preventTouchMove = (e) => {
+      // Permite scroll dentro de los cuerpos scrollables del drawer.
+      if (e.target.closest(SCROLL_SELECTORS)) return;
+      e.preventDefault();
+    };
+
+    document.addEventListener('touchmove', preventTouchMove, { passive: false });
+
     return () => {
-      document.body.style.overflow = prev.overflow;
-      document.body.style.position = prev.position;
-      document.body.style.top      = prev.top;
-      document.body.style.width    = prev.width;
-      window.scrollTo(0, scrollY);
+      document.body.style.overflow = prevOverflow;
+      document.removeEventListener('touchmove', preventTouchMove);
     };
   }, [open]);
-  */
 
-  // ── Teclado virtual (visualViewport) ─────────────────────────────────────
-  // Cuando aparece el teclado el visualViewport encoge pero position:fixed;
-  // bottom:0 queda anclado al layout viewport completo. Ajustamos `bottom`
-  // inline — es una propiedad distinta a `transform`, no interfiere con vaul.
-  //
-  // En drawers con scroll también ajustamos `maxHeight` al espacio visible
-  // (vv.height). Sin esto, el drawer puede ser más alto que el área visible
-  // sobre el teclado y el scroll interno se rompe o el drawer se sale por arriba.
-
-  /*
-  useEffect(() => {
-    if (!open) return;
-    const vv = window.visualViewport;
-    if (!vv) return;
-
-    const getDrawerContent = () =>
-      document.querySelector(`.${drawerContentClass.split(' ')[0]}`);
-
-    function onViewport() {
-      const kbHeight = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
-      const drawer = getDrawerContent();
-      if (!drawer) return;
-
-      if (kbHeight > 0) {
-
-        drawer.style.bottom = `${kbHeight}px`;
-
-        drawer.style.maxHeight = `${vv.height - 8}px`;
-      } else {
-        drawer.style.bottom = '0';
-        drawer.style.maxHeight = '92dvh';
-      }
-    }
-
-    vv.addEventListener('resize', onViewport);
-    vv.addEventListener('scroll', onViewport);
-    return () => {
-      vv.removeEventListener('resize', onViewport);
-      vv.removeEventListener('scroll', onViewport);
-      const drawer = getDrawerContent();
-      if (drawer) {
-        drawer.style.bottom = '0';
-        drawer.style.maxHeight = '92dvh';
-      }
-    };
-  }, [open, drawerContentClass]);
-*/
   return (
     <Drawer.Root
       open={open}
