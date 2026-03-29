@@ -109,75 +109,22 @@ function VaulDrawer({
   handleClass = 'vaul-drawer__handle',
   overlayClass = 'vaul-drawer__overlay',
 }) {
-  // ── Scroll lock ───────────────────────────────────────────────────────────
-  // Sin esto, en iOS el browser puede hacer scroll del window cuando el
-  // teclado aparece (sobre todo la segunda vez), desplazando el drawer hacia
-  // abajo aunque tenga position:fixed;bottom:0.
-  //
-  // NO usamos position:fixed en body porque provoca un salto al abrir.
-  // En cambio: overflow:hidden + prevención de touchmove en document,
-  // exceptuando los contenedores scrollables internos del drawer.
   
-  /*
-  useEffect(() => {
-    if (!open) return;
-
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-
-    // iOS Safari: cuando el teclado aparece el browser puede cambiar
-    // window.scrollY silenciosamente incluso con overflow:hidden en body.
-    // Esto desplaza los elementos position:fixed (como el drawer) hacia abajo.
-    // En el PRIMER focus scrollY suele ser 0 → no hay problema.
-    // En el SEGUNDO focus scrollY ya es != 0 (quedó del ciclo anterior) → drawer baja.
-    // Solución: resetear window.scrollY a 0 inmediatamente cada vez que cambie.
-    const resetScroll = () => {
-      if (window.pageYOffset !== 0) window.scrollTo(0, 0);
-    };
-    window.addEventListener('scroll', resetScroll);
-
-    // Scrollable wrappers definidos en los distintos modales de la app.
-    const SCROLL_SELECTORS = [
-      '.modal-vaul-body',
-      '.profile-vaul-body',
-      '.vaul-drawer__body',
-      '.confirm-vaul-body',
-    ].join(', ');
-
-    const preventTouchMove = (e) => {
-      if (e.target.closest(SCROLL_SELECTORS)) return;
-      e.preventDefault();
-    };
-
-    document.addEventListener('touchmove', preventTouchMove, { passive: false });
-
-    return () => {
-      document.body.style.overflow = prevOverflow;
-      window.removeEventListener('scroll', resetScroll);
-      document.removeEventListener('touchmove', preventTouchMove);
-    };
-  }, [open]);
-  */
 
 
   // ── minHeight lock ────────────────────────────────────────────────────────
-  // Al abrir el drawer leemos su altura real (después de que vaul termine su
-  // animación de entrada) y la fijamos como minHeight inline.
-  // Esto impide que cambios en unidades de viewport (svh/dvh) al aparecer el
-  // teclado virtual reduzcan el tamaño del drawer.
+ 
   useEffect(() => {
     if (!open) return;
 
     const selector = `.${drawerContentClass.split(' ')[0]}`;
 
-    // Vaul anima la entrada con un transition (~300ms). Esperamos a que termine
-    // antes de leer la altura para que el valor sea el correcto (no 0 ni parcial).
     const timer = setTimeout(() => {
       const el = document.querySelector(selector);
       if (!el) return;
       const h = el.getBoundingClientRect().height;
       if (h > 0) el.style.minHeight = `${h}px`;
-    }, 350); // margen mayor que la duración de la animación de vaul
+    }, 350); // NO CHANGE THIS!!!!!
 
     return () => {
       clearTimeout(timer);
@@ -206,7 +153,6 @@ function VaulDrawer({
   );
 }
 
-/* ─── Exportación unificada ─────────────────────────────────────────────── */
 
 /**
  * Componente unificado Modal.

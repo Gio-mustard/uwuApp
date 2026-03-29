@@ -1,5 +1,3 @@
-/* ── Estilos heredados (overlay/sheet ya no se usan, vaul los reemplaza) ─── */
-/* Se mantienen por si algún consumidor externo los referencia todavía. */
 
 /* ── Contenedor vaul para AddTaskModal ─────────────────────────────────── */
 .modal-vaul-overlay {
