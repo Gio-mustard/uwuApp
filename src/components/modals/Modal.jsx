@@ -108,47 +108,59 @@ function VaulDrawer({
   handleClass = 'vaul-drawer__handle',
   overlayClass = 'vaul-drawer__overlay',
 }) {
+  // ── Scroll lock robusto para iOS ──────────────────────────────────────────
+  // `overflow: hidden` solo no es suficiente en iOS Safari: el browser puede
+  // seguir reposicionando el layout viewport al abrir el teclado. La solución
+  // es fijar el body en su posición actual con position:fixed.
   useEffect(() => {
     if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden !important';
+    const scrollY = window.scrollY;
+    const prev = {
+      overflow: document.body.style.overflow,
+      position: document.body.style.position,
+      top:      document.body.style.top,
+      width:    document.body.style.width,
+    };
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.top      = `-${scrollY}px`;
+    document.body.style.width    = '100%';
     return () => {
-      document.body.style.overflow = prev;
+      document.body.style.overflow = prev.overflow;
+      document.body.style.position = prev.position;
+      document.body.style.top      = prev.top;
+      document.body.style.width    = prev.width;
+      window.scrollTo(0, scrollY);
     };
   }, [open]);
 
-  // iOS Safari fix: when the soft keyboard appears, fixed elements stay
-  // anchored to the layout viewport (full screen) instead of the visual
-  // viewport (visible area above keyboard). We use visualViewport to
-  // detect the keyboard height and translate the drawer up accordingly.
+  // ── Teclado virtual (visualViewport) ─────────────────────────────────────
+  // Cuando aparece el teclado el visualViewport encoge pero position:fixed;
+  // bottom:0 queda anclado al layout viewport completo. Ajustamos `bottom`
+  // inline — es una propiedad distinta a `transform`, por lo que no interfiere
+  // con el translateY que vaul aplica durante el gesto de arrastre.
   useEffect(() => {
     if (!open) return;
     const vv = window.visualViewport;
     if (!vv) return;
 
-    const getContentEl = () =>
+    const getEl = () =>
       document.querySelector(`.${drawerContentClass.split(' ')[0]}`);
 
-    function handleViewport() {
-      const keyboardHeight = window.innerHeight - vv.height - vv.offsetTop;
-      const el = getContentEl();
+    function onViewport() {
+      const kbHeight = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+      const el = getEl();
       if (!el) return;
-      if (keyboardHeight > 0) {
-        el.style.transform = `translateY(-${keyboardHeight}px)`;
-        el.style.transition = 'transform 0.2s ease';
-      } else {
-        el.style.transform = '';
-      }
+      el.style.bottom = kbHeight > 0 ? `${kbHeight}px` : '';
     }
 
-    vv.addEventListener('resize', handleViewport);
-    vv.addEventListener('scroll', handleViewport);
-
+    vv.addEventListener('resize', onViewport);
+    vv.addEventListener('scroll', onViewport);
     return () => {
-      vv.removeEventListener('resize', handleViewport);
-      vv.removeEventListener('scroll', handleViewport);
-      const el = getContentEl();
-      if (el) el.style.transform = '';
+      vv.removeEventListener('resize', onViewport);
+      vv.removeEventListener('scroll', onViewport);
+      const el = getEl();
+      if (el) el.style.bottom = '';
     };
   }, [open, drawerContentClass]);
 

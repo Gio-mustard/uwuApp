@@ -133,6 +133,8 @@
     overflow: hidden;
     outline: none;
     z-index: 301;
+    /* Transición suave cuando el teclado empuja el drawer hacia arriba */
+    transition: bottom 0.2s ease;
 }
 
 @media (max-width: 767px) {

@@ -159,13 +159,26 @@ function ScrollableExample() {
   );
 }
 
-/* ─── Page ───────────────────────────────────────────────────────────────── */
-export function VaulPage() {
-  const [open, setOpen] = useState(true);
-  const [title,setTitle] = useState("");
+/* ─── Ejemplo 4: Input (prueba de teclado virtual) ───────────────────────── */
+function InputExample() {
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState('');
+  const [notes, setNotes] = useState('');
 
   return (
-    <AppShell>
+    <div className="vaul-example-card">
+      <span className="vaul-example-card__label">Input + teclado</span>
+      <p className="vaul-example-card__desc">
+        El drawer se mantiene visible cuando aparece el teclado virtual, sin saltar fuera de la pantalla.
+      </p>
+      <button
+        id="vaul-input-open"
+        className="vaul-open-btn"
+        onClick={() => setOpen(true)}
+      >
+        Abrir con inputs
+      </button>
+
       <Modal
         useDrawer
         open={open}
@@ -174,26 +187,60 @@ export function VaulPage() {
         handleClass="vaul-drawer__handle"
         overlayClass="vaul-drawer__overlay"
       >
-        <main id='vaul-page'>
+        <div className="vaul-drawer__body">
+          <h2 className="vaul-drawer__title">Nueva tarea</h2>
 
-          <h1>Proximamente aqui podras guardar pendientes!</h1>
-          <p>pendientes que sabes que tienes que hacer pero aun no los vas a hacer...</p>
           <div className="form-field">
-            <label className="form-label" htmlFor="task-title">Título *</label>
+            <label className="form-label" htmlFor="vaul-task-title">Título *</label>
             <input
-              id="task-title"
+              id="vaul-task-title"
               className="form-input"
               type="text"
               placeholder="Ej: Tomar vitaminas"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               maxLength={80}
-              autoFocus
             />
           </div>
-        </main>
-      </Modal>
 
+          <div className="form-field" style={{ marginTop: '12px' }}>
+            <label className="form-label" htmlFor="vaul-task-notes">Notas</label>
+            <input
+              id="vaul-task-notes"
+              className="form-input"
+              type="text"
+              placeholder="Opcional…"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+            />
+          </div>
+
+          <button
+            style={{ marginTop: '20px' }}
+            className="vaul-open-btn"
+            onClick={() => setOpen(false)}
+          >
+            Guardar
+          </button>
+        </div>
+      </Modal>
+    </div>
+  );
+}
+
+/* ─── Page ───────────────────────────────────────────────────────────────── */
+export function VaulPage() {
+  return (
+    <AppShell>
+      <div className="vaul-page">
+        <h1 className="vaul-page__title">Baúl</h1>
+        <p className="vaul-page__subtitle">Ejemplos del drawer de vaul-base integrado en Modal.</p>
+
+        <BasicDrawerExample />
+        <SnapPointsExample />
+        <ScrollableExample />
+        <InputExample />
+      </div>
     </AppShell>
   );
 }
