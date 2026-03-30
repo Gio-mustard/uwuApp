@@ -9,6 +9,7 @@ export const HOME_TEXTS = {
   // Section titles
   dailyTasksTitle: 'Pendientes diarios',
   weeklyTasksTitle: 'Pendientes semanales',
+  vaulTaskTitle:"Tu baul",
 
   // Empty states
   noDailyTasksForDay: 'No hay pendientes para este día.',

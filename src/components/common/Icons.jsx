@@ -41,3 +41,17 @@ export function CameraIcon() {
     </svg>
   );
 }
+export function VaulIcon({ active }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect width="18" height="18" x="3" y="3" rx="2" ry="2" fill={active ? 'currentColor' : 'none'} opacity={active ? 0.15 : 0} />
+      <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+      <circle cx="12" cy="12" r="3" />
+      <line x1="12" y1="9" x2="12" y2="10" />
+      <line x1="12" y1="14" x2="12" y2="15" />
+      <line x1="9" y1="12" x2="10" y2="12" />
+      <line x1="14" y1="12" x2="15" y2="12" />
+    </svg>
+  );
+}

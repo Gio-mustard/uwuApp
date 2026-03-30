@@ -3,7 +3,7 @@
     flex-direction: row;
     flex-wrap: wrap;
     gap: 2dvh;
-    justify-content: space-between;
+    justify-content: flex-start;
 }
 
 .palette-card {

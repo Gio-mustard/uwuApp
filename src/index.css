@@ -64,6 +64,7 @@
     background-color 200ms ease,
     color 200ms ease,
     box-shadow 200ms ease;
+    user-select: none;
 }
 
 /* ── Base ──────────────────────────────────────────────────────────────────── */

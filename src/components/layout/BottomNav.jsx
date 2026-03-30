@@ -8,10 +8,10 @@ import { ROUTES } from '../../constants/routes';
 import { HOME_TEXTS } from '../../constants/texts/home.texts';
 import './BottomNav.css';
 
+// TODO : standarize these
 const tabs = [
   { label: HOME_TEXTS.navHome, path: ROUTES.HOME, icon: HomeIcon },
   { label: HOME_TEXTS.navHistory, path: ROUTES.HISTORY, icon: HistoryIcon },
-  { label: HOME_TEXTS.navVaul, path: ROUTES.Baul, icon: VaulIcon },
   { label: 'Configuración', path: ROUTES.SETTINGS, icon: SettingsIcon },
 ];
 
