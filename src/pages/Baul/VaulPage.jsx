@@ -38,7 +38,7 @@ const VaulTask = ({ task, onDelete, onPromote }) => {
 
 
 /* ─── Page ───────────────────────────────────────────────────────────────── */
-export function VaulPage({ open, onClose }) {
+export function VaulPage({ open, onClose,onPromote }) {
     const { useTasks } = useSession();
     const { addVaulTask, vaulTasks, deleteBaulTask } = useTasks();
     const [currentTitleTask, setCurrentTitleTask] = useState('');
@@ -50,7 +50,10 @@ export function VaulPage({ open, onClose }) {
     })
 
     const handlePromote = useCallback((task) => {
-        // TODO: abrir modal de AddTask con el título prellenado
+        onPromote({
+            title:task.title
+        });
+        onClose();
         console.log('Promover tarea al baul formal:', task);
     }, []);
     return (

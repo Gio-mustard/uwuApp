@@ -26,6 +26,7 @@ import './HomePage.css';
 import { Modal } from '../components/modals/Modal';
 import { VaulPage } from './Baul/VaulPage';
 import { VaulIcon } from '../components/common/Icons';
+import { createDailyTask } from '../domain/models/DailyTask';
 
 
 export function HomePage() {
@@ -90,6 +91,13 @@ export function HomePage() {
     setModalTaskDeleteConfirmation({show:true,task:task,type: task.assignedDays ? 'daily' : 'weekly'})
     
   },[]);
+  const handleInjectPayload = useCallback((dataTask)=>{
+    // TODO : data vaildation ??
+    if (showModal) return;
+    setShowModal(true);
+    const task = createDailyTask(dataTask);
+    setEditMode({isEditing:false,payload:task});
+  })
 
   // Avatar shows first letter of the user's display name (independent of the greeting sentence).
   const avatarInitial = (user?.displayName ?? 'U')[0].toUpperCase();
@@ -148,6 +156,7 @@ export function HomePage() {
       <VaulPage 
         open={vaulOpen}
         onClose={()=>setVaulOpen(false)}
+        onPromote={handleInjectPayload}
         />
         
       <div className="home-page">
