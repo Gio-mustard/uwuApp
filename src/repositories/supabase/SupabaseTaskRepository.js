@@ -74,6 +74,7 @@ export class SupabaseTaskRepository extends ITaskRepository {
       completions: t.completed_days.length > 0
         ? { [this.weekId]: t.completed_days }
         : {},
+        isRecurring:t.is_recurring
     })))
   }
 
@@ -164,6 +165,7 @@ export class SupabaseTaskRepository extends ITaskRepository {
       completions: t.completed_count > 0
         ? { [this.weekId]: t.completed_count }
         : {},
+        isRecurring:t.is_recurring
     })));
   }
 
