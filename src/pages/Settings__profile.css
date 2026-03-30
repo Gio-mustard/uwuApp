@@ -9,7 +9,10 @@
     width: fit-content;
     position: relative;
 }
-
+.profile-settings-card__avatar >  .profile-sheet__avatar{
+    width: 160px;
+    height: auto;
+}
 .btn-edit-avatar {
     position: absolute;
     bottom: 0;

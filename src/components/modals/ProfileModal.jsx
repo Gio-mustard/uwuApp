@@ -10,6 +10,8 @@ import { useSession } from '../../context/SessionContext';
 import { Modal } from './Modal';
 import { Avatar } from '../common/Avatar';
 import './ProfileModal.css';
+import { FileNotFoundError, useUploadUserAvatar } from '../../services/UserService';
+import { CameraIcon } from '../common/Icons';
 
 /**
  * @param {{ onClose: () => void }} props
@@ -18,6 +20,7 @@ export function ProfileModal({ onClose, open = true }) {
   const { useAuth } = useSession();
   const { user, logout, uploadAvatar } = useAuth();
   const [uploading, setUploading] = useState(false);
+  const {upload} = useUploadUserAvatar();
 
   async function handleLogout() {
     onClose();
@@ -26,16 +29,15 @@ export function ProfileModal({ onClose, open = true }) {
 
   async function handleFileChange(e) {
     const file = e.target.files?.[0];
-    if (!file || !user) return;
+
+    setUploading(true);
     try {
-      setUploading(true);
-      await uploadAvatar(file, user.id);
-    } catch (err) {
-      console.error('Avatar upload failed:', err);
-      // Optional: set some local error state here if needed
-    } finally {
-      setUploading(false);
+      await upload(file)
     }
+    catch (FileNotFoundError) {
+      console.log('avatar file doesnt exists')
+    }
+    setUploading(false);
   }
 
   const initial = user?.displayName?.[0]?.toUpperCase() ?? '?';
@@ -113,11 +115,3 @@ function LogoutIcon() {
   );
 }
 
-function CameraIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-      <circle cx="12" cy="13" r="4" />
-    </svg>
-  );
-}
