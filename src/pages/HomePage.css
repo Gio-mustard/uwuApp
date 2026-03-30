@@ -362,3 +362,23 @@
 .confirm-vaul-btn .spinner {
   border-radius: inherit;
 }
+
+/* vaul section */
+.section-card.vaul{
+  display: flex;
+  flex-direction: row;
+  gap: 3svh;
+  align-items: center;
+  width: fit-content;
+  padding-right: 3svh;
+  box-shadow: inset var(--shadow-card);
+  border: .1svh solid var(--color-primary);
+  background-color: var(--color-primary-bg);
+}
+.section-card__button{
+  border-radius: .4svh;
+  padding: .5svh;
+  width: 4svh;
+  height: 4svh;
+  box-shadow: inset var(--shadow-btn);
+}

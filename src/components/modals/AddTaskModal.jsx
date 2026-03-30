@@ -33,8 +33,19 @@ export function AddTaskModal({ onAdd, onClose, open = true, initialType = 'daily
 
   const [isRecurring,setIsRecurring] = useState(false);
   const [isEditMode,setIsEditMode] = useState(editMode);
+
+  useEffect(()=>{
+    if (!open) return;
+    injectPayload(undefined);
+  },[open])
+
+  useEffect(()=>{
+    if (payloadTask){
+      injectPayload(payloadTask);
+    }
+  },[payloadTask])
+
   const injectPayload = useCallback((payload)=>{
-    console.log(payload)
     if(payload === undefined) {
       setTitle('');
       setDescription('');

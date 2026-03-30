@@ -16,6 +16,7 @@ import { ITaskRepository } from '../ITaskRepository';
 import { supabase } from '../../lib/supabaseClient';
 import { createDailyTask } from '../../domain/models/DailyTask';
 import { createWeeklyTask } from '../../domain/models/WeeklyTask';
+import { createVaulTask } from '../../domain/models/VaulTask';
 
 export class SupabaseTaskRepository extends ITaskRepository {
   /**
@@ -279,7 +280,7 @@ async getBaulTasks() {
 
   if (error) throw new Error(error.message);
 
-  return data ?? [];
+  return data.map(task=>createVaulTask(task))?? [];
 }
 
   /**
@@ -292,6 +293,7 @@ async getBaulTasks() {
     });
 
     if (error) throw new Error(error.message);
+    console.log(data)
     return data;
   }
 

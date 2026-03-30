@@ -169,7 +169,7 @@ export class ITaskRepository {
    * Save a simplier task in a baul
    * @param {{ id?: string, title: string }} task
    */
-  async upsertBaulTask(){
+  async upsertBaulTask(task){
     throw new Error('ITaskRepository.upsertBaulTask() must be implemented.');
   }
   async deleteBaulTask(){

@@ -24,6 +24,9 @@ import { getDynamicGreeting } from '../constants/texts/greetings.texts';
 import { HOME_TEXTS } from '../constants/texts/home.texts';
 import './HomePage.css';
 import { Modal } from '../components/modals/Modal';
+import { VaulPage } from './Baul/VaulPage';
+import { VaulIcon } from '../components/common/Icons';
+import { createDailyTask } from '../domain/models/DailyTask';
 
 
 export function HomePage() {
@@ -53,6 +56,7 @@ export function HomePage() {
   const dailyForDay = getDailyTasksForDay(dailyTasks, selectedDay);
   const now = new Date();
   const nextEvent = getNextEvent([...dailyTasks, ...weeklyTasks], now, todayDay, currentWeekId);
+  const [vaulOpen,setVaulOpen] = useState(false);
 
   const [editMode,setEditMode] = useState({isEditing:false,payload:undefined});
   const handleActivateEditMode = useCallback((task)=>{
@@ -87,6 +91,13 @@ export function HomePage() {
     setModalTaskDeleteConfirmation({show:true,task:task,type: task.assignedDays ? 'daily' : 'weekly'})
     
   },[]);
+  const handleInjectPayload = useCallback((dataTask)=>{
+    // TODO : data vaildation ??
+    if (showModal) return;
+    setShowModal(true);
+    const task = createDailyTask(dataTask);
+    setEditMode({isEditing:false,payload:task});
+  })
 
   // Avatar shows first letter of the user's display name (independent of the greeting sentence).
   const avatarInitial = (user?.displayName ?? 'U')[0].toUpperCase();
@@ -142,6 +153,12 @@ export function HomePage() {
         </div>
       </Modal>
 
+      <VaulPage 
+        open={vaulOpen}
+        onClose={()=>setVaulOpen(false)}
+        onPromote={handleInjectPayload}
+        />
+        
       <div className="home-page">
         {/* Header */}
         <header className="home-header">
@@ -200,6 +217,17 @@ export function HomePage() {
                 </div>
               </section>
             )}
+
+            {/* Vaul task*/}
+            <section className='home-section'>
+                <div className='section-card vaul'>
+                    <button className='btn-primary section-card__button' onClick={()=>setVaulOpen(true)}>
+                        <VaulIcon/>
+                        {/* <span>abrir</span> */}
+                    </button>
+                    <h2 className='section-card__title'>{HOME_TEXTS.vaulTaskTitle}</h2>
+                </div>
+            </section>
             {/* Daily tasks */}
             <section className="home-section" aria-label="Pendientes diarios">
               <div className="section-card">

@@ -18,6 +18,7 @@ import { getIsoDay } from '../domain/enums/DayOfWeek';
 import { buildWeekHistorySnapshot } from '../services/WeekService';
 import { createDailyTask } from '../domain/models/DailyTask';
 import { createWeeklyTask } from '../domain/models/WeeklyTask';
+import { createVaulTask } from '../domain/models/VaulTask';
 
 /** @type {React.Context<TaskContextValue>} */
 const TaskContext = createContext(null);
@@ -35,6 +36,9 @@ const TaskContext = createContext(null);
  * @property {(taskId: string, day: number) => Promise<void>} toggleDailyTask
  * @property {(taskId: string, increment: boolean) => Promise<void>} toggleWeeklyTask
  * @property {(id: string) => Promise<void>} deleteTask
+ * @property {(taskData: object) => Promise<void>} addVaulTask
+ * @property {import('../domain/models/VaulTask').VaulTask[]} vaulTasks
+ * @property {(id: string) => Promise<void>} deleteBaulTask
  */
 
 /**
@@ -45,6 +49,7 @@ export function TaskProvider({ children, repository }) {
   const [weeklyTasks, setWeeklyTasks] = useState([]);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [vaulTasks,setBaulTasks] = useState([]);
 
   const now = new Date();
   const currentWeekId = getWeekId(now);
@@ -54,10 +59,11 @@ export function TaskProvider({ children, repository }) {
   useEffect(() => {
     async function load() {
       try {
-        const [daily, weekly, hist] = await Promise.all([
+        const [daily, weekly, hist,baul] = await Promise.all([
           repository.getDailyTasks(),
           repository.getWeeklyTasks(),
           repository.getWeekHistory(),
+          repository.getBaulTasks()
         ]);
 
         // ── Week reset: if no completion data exists for currentWeekId,
@@ -90,6 +96,7 @@ export function TaskProvider({ children, repository }) {
         setDailyTasks(daily);
         setWeeklyTasks(weekly);
         setHistory(hist);
+        setBaulTasks(baul);
       } catch (err) {
         console.error('TaskContext failed to load data:', err);
       } finally {
@@ -194,6 +201,27 @@ export function TaskProvider({ children, repository }) {
     [repository],
   );
 
+  // ---- Baul (Its vaul but in DB is Baul)
+  const deleteBaulTask = useCallback(
+    async (id) => {
+      await repository.deleteBaulTask(id);
+      setBaulTasks((prev) => prev.filter((t) => t.id !== id));
+    },
+    [repository],
+  );
+
+  const addVaulTask = useCallback(
+    async (taskData)=>{
+      const task = createVaulTask({...taskData});
+      const data = await repository.upsertBaulTask(task);
+      task.id = data.id;
+
+      setBaulTasks((prev)=>[...prev,task]);
+      return data;
+
+    },[repository,vaulTasks]
+  )
+
   return (
     <TaskContext.Provider
       value={{
@@ -208,6 +236,9 @@ export function TaskProvider({ children, repository }) {
         toggleDailyTask,
         toggleWeeklyTask,
         deleteTask,
+        addVaulTask,
+        vaulTasks,
+        deleteBaulTask
       }}
     >
       {children}
