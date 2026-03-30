@@ -75,7 +75,7 @@ body {
 }
 
 .modal-vaul-handle,
-.profile-vaul-handle {
+.profile-vaul-handle,.vaul-page-handle,.vaul-drawer__handle {
   background-color: var(--color-primary) !important;
   height: 1.5dvh !important;
   width: 5dvh !important;
@@ -238,4 +238,10 @@ body {
 
 .btn-danger:hover {
   background: rgba(248, 113, 113, 0.2);
+}
+
+.divider{
+  border-style: solid;
+  border-color: var(--color-border);
+  border-radius: 2svh;
 }

@@ -214,6 +214,7 @@ export function TaskProvider({ children, repository }) {
     async (taskData)=>{
       const task = createVaulTask({...taskData});
       const data = await repository.upsertBaulTask(task);
+      task.id = data.id;
 
       setBaulTasks((prev)=>[...prev,task]);
       return data;

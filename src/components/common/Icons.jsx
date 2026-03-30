@@ -5,7 +5,7 @@ export function TrashIcon() {
       strokeLinecap="round" strokeLinejoin="round"
       xmlns="http://www.w3.org/2000/svg"
 
-      opacity={.5}
+      opacity={"currentOpacity"??.7}
 
     >
       <polyline points="3 6 5 6 21 6" />
@@ -52,6 +52,26 @@ export function VaulIcon({ active }) {
       <line x1="12" y1="14" x2="12" y2="15" />
       <line x1="9" y1="12" x2="10" y2="12" />
       <line x1="14" y1="12" x2="15" y2="12" />
+    </svg>
+  );
+}
+
+/**
+ * Icono de "promover tarea" — una flecha hacia arriba saliendo de una bandeja,
+ * simboliza convertir una tarea del Baúl en un pendiente formal (diario/semanal).
+ */
+export function PromoteIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="1.5"
+      strokeLinecap="round" strokeLinejoin="round"
+      opacity={"currentOpacity"??.7}
+    >
+      {/* Bandeja / contenedor de salida */}
+      <path d="M3 15v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4" />
+      {/* Flecha subiendo */}
+      <polyline points="8 9 12 4 16 9" />
+      <line x1="12" y1="4" x2="12" y2="15" />
     </svg>
   );
 }
