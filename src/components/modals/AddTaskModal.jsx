@@ -80,6 +80,7 @@ export function AddTaskModal({ onAdd, onClose, open = true, initialType = 'daily
     injectPayload(payloadTask);
   },[isEditMode]);
 
+  /*
   useEffect(() => {
     const handleFocusIn = (e) => {
       const target = e.target;
@@ -101,7 +102,8 @@ export function AddTaskModal({ onAdd, onClose, open = true, initialType = 'daily
     window.addEventListener('focusin', handleFocusIn);
     return () => window.removeEventListener('focusin', handleFocusIn);
   }, []);
-
+  */
+ 
   function toggleDay(day) {
     setAssignedDays((prev) =>
       prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day],
