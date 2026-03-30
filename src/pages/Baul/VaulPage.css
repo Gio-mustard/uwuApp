@@ -66,13 +66,24 @@
 
 .vaul-form{
     width: 100%;
-    display: flex;
+    display: grid;
+    grid-template-columns: 82.5% 1fr;
     gap:2svh;
+    position: relative;
+}
+
+.vaul-form  .spinner{
+    width: 82.5% ;
+    border-radius: 2svh;
+    backdrop-filter: blur(1px);
+    z-index: 100000;
 }
 
 .create-vaul-task{
     font-size: 1.5rem;
     padding: .2svh 2svh;
+    min-width: 6.5svh;
+    min-height: 6.5svh;
 }
 
 .vaul-tasks{
@@ -105,6 +116,7 @@
     padding: .2svh;
     border-radius: 1svh;
     transition: width .2s ease-in;
+    position: relative;
     
 }
 .vaul-task__options > button{
@@ -122,6 +134,7 @@
     }
     .vaul-task__options{
         width: fit-content;
+        min-width: fit-content;
     }
     .vaul-task:hover{
         background-color: transparent;
@@ -130,3 +143,31 @@
         width: fit-content;
     }
 }
+
+/* ── Skeleton loader ───────────────────────────────────────────────── */
+@keyframes shimmer {
+    0%   { background-position: 200% center; }
+    100% { background-position:  -200% center; }
+}
+
+.vaul-task.loader {
+    height: 0;
+    border-radius: 1.2svh;
+    background: linear-gradient(
+        90deg,
+        #e0e0e0 25%,
+        #f0f0f0 50%,
+        #e0e0e0 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.4s ease-in-out infinite;
+    transition: height .1s;
+    padding: 0;
+    border: 0;
+
+}
+
+.vaul-task.loader.is-loading {
+    height: 8svh;
+}
+

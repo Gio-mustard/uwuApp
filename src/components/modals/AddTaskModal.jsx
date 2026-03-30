@@ -6,7 +6,7 @@
  * or for weekly tasks sets a required count (≥1).
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ALL_DAYS, DAY_LABELS } from '../../domain/enums/DayOfWeek';
 import { Modal } from './Modal';
 import './AddTaskModal.css';
