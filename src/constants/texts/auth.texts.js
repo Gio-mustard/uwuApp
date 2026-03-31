@@ -25,6 +25,6 @@ export const AUTH_TEXTS = {
   errorNoName: 'Ingresa tu nombre.',
 
   // Demo hint
-  demoHint: 'Demo: giomus@uwu.app / 123456',
+  demoHint: 'MVP v0.8.1',
   demoLabel: 'Demo:',
 };
