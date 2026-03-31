@@ -42,31 +42,32 @@ export function HomePage() {
     addWeeklyTask,
     toggleDailyTask,
     toggleWeeklyTask,
-    deleteTask
+    deleteTask,
+    vaulTasks
   } = useTasks();
 
   const [selectedDay, setSelectedDay] = useState(todayDay);
   // --- Add task modal
   const [showModal, setShowModal] = useState(false);
-  const [typeModal,setTypeModal] = useState('daily');
+  const [typeModal, setTypeModal] = useState('daily');
 
   const [showProfile, setShowProfile] = useState(false);
-  const [modalTaskDeleteConfirmation,setModalTaskDeleteConfirmation] = useState({show:false,task:undefined});
-  const [isDeleting,setIsDeleting] = useState(false);
+  const [modalTaskDeleteConfirmation, setModalTaskDeleteConfirmation] = useState({ show: false, task: undefined });
+  const [isDeleting, setIsDeleting] = useState(false);
   const dailyForDay = getDailyTasksForDay(dailyTasks, selectedDay);
   const now = new Date();
   const nextEvent = getNextEvent([...dailyTasks, ...weeklyTasks], now, todayDay, currentWeekId);
-  const [vaulOpen,setVaulOpen] = useState(false);
+  const [vaulOpen, setVaulOpen] = useState(false);
 
-  const [editMode,setEditMode] = useState({isEditing:false,payload:undefined});
-  const handleActivateEditMode = useCallback((task)=>{
+  const [editMode, setEditMode] = useState({ isEditing: false, payload: undefined });
+  const handleActivateEditMode = useCallback((task) => {
     setShowModal(true);
-    setEditMode({isEditing:true,payload:task});
-  },[])
-  useEffect(()=>{
+    setEditMode({ isEditing: true, payload: task });
+  }, [])
+  useEffect(() => {
     if (showModal) return;
-    setEditMode({isEditing:false,payload:undefined});
-  },[showModal])
+    setEditMode({ isEditing: false, payload: undefined });
+  }, [showModal])
   /** Weekly completion % for the dynamic greeting. */
   const weeklyCompletionPct = useMemo(() => {
     const dailyCompleted = dailyTasks.filter((t) =>
@@ -86,17 +87,17 @@ export function HomePage() {
     else await addWeeklyTask(data);
   }
 
-  const handleDelete = useCallback((task)=>{
+  const handleDelete = useCallback((task) => {
     if (task === undefined) return 10;
-    setModalTaskDeleteConfirmation({show:true,task:task,type: task.assignedDays ? 'daily' : 'weekly'})
-    
-  },[]);
-  const handleInjectPayload = useCallback((dataTask)=>{
+    setModalTaskDeleteConfirmation({ show: true, task: task, type: task.assignedDays ? 'daily' : 'weekly' })
+
+  }, []);
+  const handleInjectPayload = useCallback((dataTask) => {
     // TODO : data vaildation ??
     if (showModal) return;
     setShowModal(true);
     const task = createDailyTask(dataTask);
-    setEditMode({isEditing:false,payload:task});
+    setEditMode({ isEditing: false, payload: task });
   })
 
   // Avatar shows first letter of the user's display name (independent of the greeting sentence).
@@ -153,12 +154,12 @@ export function HomePage() {
         </div>
       </Modal>
 
-      <VaulPage 
+      <VaulPage
         open={vaulOpen}
-        onClose={()=>setVaulOpen(false)}
+        onClose={() => setVaulOpen(false)}
         onPromote={handleInjectPayload}
-        />
-        
+      />
+
       <div className="home-page">
         {/* Header */}
         <header className="home-header">
@@ -174,14 +175,7 @@ export function HomePage() {
           <h1 className="home-header__greeting">{greeting}</h1>
         </header>
 
-        {/* Day selector */}
-        <section className="home-section" aria-label="Selector de día">
-          <DaySelector
-            selectedDay={selectedDay}
-            todayDay={todayDay}
-            onSelect={setSelectedDay}
-          />
-        </section>
+
 
         {loading ? (
           <div className="home-loading">
@@ -189,7 +183,7 @@ export function HomePage() {
           </div>
         ) : (
           <>
-          {/* Next event */}
+            {/* Next event */}
             {nextEvent && (
               <section className="home-section" aria-label="Siguiente evento">
                 <div className="next-event-card">
@@ -219,14 +213,24 @@ export function HomePage() {
             )}
 
             {/* Vaul task*/}
-            <section className='home-section'>
-                <div className='section-card vaul'>
-                    <button className='btn-primary section-card__button' onClick={()=>setVaulOpen(true)}>
-                        <VaulIcon/>
-                        {/* <span>abrir</span> */}
-                    </button>
-                    <h2 className='section-card__title'>{HOME_TEXTS.vaulTaskTitle}</h2>
-                </div>
+            <section className='home-section' onClick={() => setVaulOpen(true)} style={{ cursor: "pointer" }}>
+              <div className='section-card vaul'>
+                <button className='btn-primary section-card__button'>
+                  <VaulIcon />
+                </button>
+
+                <h2 className='section-card__title'>{HOME_TEXTS.vaulTaskTitle}</h2>
+                <div className='divider'></div>
+                <h3 className='section-card__subtitle'>Tienes <b>{vaulTasks.length}</b> pendientes guardados!</h3>
+              </div>
+            </section>
+            {/* Day selector */}
+            <section className="home-section" aria-label="Selector de día">
+              <DaySelector
+                selectedDay={selectedDay}
+                todayDay={todayDay}
+                onSelect={setSelectedDay}
+              />
             </section>
             {/* Daily tasks */}
             <section className="home-section" aria-label="Pendientes diarios">
@@ -236,7 +240,7 @@ export function HomePage() {
                   <button
                     id="add-daily-btn"
                     className="section-card__add"
-                    onClick={() => {setShowModal(true) ; setTypeModal('daily')}}
+                    onClick={() => { setShowModal(true); setTypeModal('daily') }}
                     aria-label="Agregar pendiente diario"
                   >
                     +
@@ -254,7 +258,7 @@ export function HomePage() {
                       todayDay={todayDay}
                       onToggle={toggleDailyTask}
                       onDelete={handleDelete}
-                      onEdit = {handleActivateEditMode}
+                      onEdit={handleActivateEditMode}
                     />
                   ))
                 )}
@@ -269,7 +273,7 @@ export function HomePage() {
                   <button
                     id="add-weekly-btn"
                     className="section-card__add"
-                    onClick={() => {setShowModal(true) ; setTypeModal('weekly')}}
+                    onClick={() => { setShowModal(true); setTypeModal('weekly') }}
                     aria-label="Agregar pendiente semanal"
                   >
                     +
@@ -285,7 +289,7 @@ export function HomePage() {
                       weekId={currentWeekId}
                       onToggle={toggleWeeklyTask}
                       onDelete={handleDelete}
-                      onEdit = {handleActivateEditMode}
+                      onEdit={handleActivateEditMode}
 
                     />
                   ))
@@ -293,7 +297,7 @@ export function HomePage() {
               </div>
             </section>
 
-            
+
           </>
         )}
       </div>
@@ -310,15 +314,15 @@ export function HomePage() {
 
 
 
-          <AddTaskModal
-          open={showModal}
-          onAdd={handleAdd}
-          onClose={() => setShowModal(false)}
-          initialType={typeModal}
-          editMode={editMode.isEditing}
-          payloadTask={editMode.payload}
-          onDelete={handleDelete}
-          />
+      <AddTaskModal
+        open={showModal}
+        onAdd={handleAdd}
+        onClose={() => setShowModal(false)}
+        initialType={typeModal}
+        editMode={editMode.isEditing}
+        payloadTask={editMode.payload}
+        onDelete={handleDelete}
+      />
 
 
       <ProfileModal

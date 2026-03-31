@@ -44,14 +44,18 @@ export function CameraIcon() {
 export function VaulIcon({ active }) {
   return (
     <svg viewBox="0 0 24 24" fill="none"
-      stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <rect width="18" height="18" x="3" y="3" rx="2" ry="2" fill={active ? 'currentColor' : 'none'} opacity={active ? 0.15 : 0} />
-      <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
-      <circle cx="12" cy="12" r="3" />
-      <line x1="12" y1="9" x2="12" y2="10" />
-      <line x1="12" y1="14" x2="12" y2="15" />
-      <line x1="9" y1="12" x2="10" y2="12" />
-      <line x1="14" y1="12" x2="15" y2="12" />
+      stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      {/* Fondo activo */}
+      <rect width="18" height="18" x="3" y="3" rx="4" ry="4" fill={active ? 'currentColor' : 'none'} opacity={active ? 0.15 : 0} />
+      {/* Cuerpo del baúl */}
+      <rect width="18" height="18" x="3" y="3" rx="4" ry="4" />
+      {/* Línea divisoria tapa / cuerpo */}
+      <line x1="3" y1="10" x2="21" y2="10" />
+      {/* Ojo de cerradura ovalado centrado en la línea */}
+      <rect x="9.5" y="8" width="5" height="4" rx="2.5" ry="2" fill="currentColor"/>
+      {/* Divisores verticales en la parte inferior */}
+      {/* <line x1="9" y1="10" x2="9" y2="21" /> */}
+      {/* <line x1="15" y1="10" x2="15" y2="21" /> */}
     </svg>
   );
 }

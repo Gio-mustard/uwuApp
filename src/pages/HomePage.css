@@ -367,18 +367,42 @@
 .section-card.vaul{
   display: flex;
   flex-direction: row;
-  gap: 3svh;
+  gap: 1svh;
   align-items: center;
   width: fit-content;
-  padding-right: 3svh;
-  box-shadow: inset var(--shadow-card);
+  padding: .5svh;
+  padding-right: 1.5svh;
   border: .1svh solid var(--color-primary);
   background-color: var(--color-primary-bg);
 }
+
+.section-card.vaul  .divider{
+  min-height: 100%;
+  border-color:var(--color-primary) ;
+  margin: 0 .4svh;
+}
+
 .section-card__button{
   border-radius: .4svh;
   padding: .5svh;
   width: 4svh;
   height: 4svh;
-  box-shadow: inset var(--shadow-btn);
+  box-shadow:none;
+  background-color: transparent;
+  color: var(--color-primary);
+}
+
+.section-card.vaul > .section-card__title{
+  color: var(--dark-color-primary);
+  text-wrap: nowrap;
+
+}
+.section-card__subtitle{
+  font-size:.9rem ;
+  color: var(--color-text);
+  opacity: .9;
+}
+
+.section-card__subtitle > b{
+  color: var(--dark-color-primary);
 }
