@@ -6,11 +6,13 @@
  * or for weekly tasks sets a required count (≥1).
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ALL_DAYS, DAY_LABELS } from '../../domain/enums/DayOfWeek';
 import { Modal } from './Modal';
 import './AddTaskModal.css';
 import { CheckIcon, EmptyCheckIcon } from '../common/Icons';
+import NumberInput from '../common/NumberInput';
+import TimePicker from '../common/TimePicker';
 
 /**
  * @param {{
@@ -141,6 +143,7 @@ export function AddTaskModal({ onAdd, onClose, open = true, initialType = 'daily
     onClose();
   }
 
+
   return (
     <Modal
       useDrawer
@@ -211,12 +214,10 @@ export function AddTaskModal({ onAdd, onClose, open = true, initialType = 'daily
 
           <div className="form-field">
             <label className="form-label" htmlFor="task-time">Hora sugerida</label>
-            <input
+            <TimePicker
               id="task-time"
-              className="form-input"
-              type="time"
               value={time}
-              onChange={(e) => setTime(e.target.value)}
+              onChange={(val) => setTime(val)}
             />
           </div>
 
@@ -241,17 +242,10 @@ export function AddTaskModal({ onAdd, onClose, open = true, initialType = 'daily
           ) : (
             <div className="form-field">
               <label className="form-label" htmlFor="task-count">
-                Veces por semana (mín. 1)
+                Veces por semana (mín. 1 max. 99)
               </label>
-              <input
-                id="task-count"
-                className="form-input"
-                type="number"
-                min="1"
-                max="99"
-                value={requiredCount}
-                onChange={(e) => setRequiredCount(e.target.value)}
-              />
+
+              <NumberInput id='task-count' min={1} max={99} initialValue={requiredCount} onChange={(value) => setRequiredCount(value)}/>
             </div>
           )}
           <div className="form-field task-recurring form-input">
