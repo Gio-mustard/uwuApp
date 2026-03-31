@@ -1,4 +1,4 @@
-/* ── TimePicker ─────────────────────────────────────────────────────────── */
+/* ── TimePicker trigger button ──────────────────────────────────────────── */
 
 .time-picker-btn {
   position: relative;
@@ -8,7 +8,7 @@
   background: var(--color-surface-2);
   border: 1.5px solid var(--color-border);
   border-radius: 12px;
-  padding: 10px 14px;
+  padding: 11px 14px;
   font-family: var(--font-body);
   font-size: 1rem;
   font-weight: 500;
@@ -33,28 +33,11 @@
   color: var(--color-text);
 }
 
-/* Input nativo completamente invisible pero operable */
-.time-picker-hidden-input {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  pointer-events: none;
-  border: none;
-  background: transparent;
-}
-
-/* Ocultar el indicador de reloj nativo en Chromium */
-.time-picker-hidden-input::-webkit-calendar-picker-indicator {
-  display: none;
-}
-
 .time-picker-icon {
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  /* color: var(--color-primary); */
+  color: var(--color-primary);
 }
 
 .time-picker-value {
@@ -71,13 +54,243 @@
   margin-left: auto;
   font-size: 0.7rem;
   color: var(--color-text-muted);
-  padding: 2px 4px;
+  padding: 3px 6px;
   border-radius: 4px;
-  transition: background 0.12s ease, color 0.12s ease;
   flex-shrink: 0;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
 }
 
 .time-picker-clear:hover {
   background: var(--color-surface-3);
   color: var(--color-danger);
+}
+
+/* ── TimePickerWheel modal ──────────────────────────────────────────────── */
+
+.tpw-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: tpw-fade-in 0.2s ease both;
+}
+
+.tpw-sheet {
+  background: var(--color-surface);
+  border-radius: 24px;
+  width: min(calc(100% - 40px), 340px);
+  padding: 24px 24px 28px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.08);
+  animation: tpw-pop-in 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.tpw-header {
+  margin-bottom: 8px;
+}
+
+.tpw-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Contenedor de las tres ruedas */
+.tpw-wheels {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 260px; /* ITEM_H(52) * VISIBLE(5) */
+  gap: 0;
+  position: relative;
+}
+
+/* ── Columna individual ───────────────────────────────────────────────── */
+
+.tpw-col-wrap {
+  position: relative;
+  width: 76px;
+  height: 260px;
+  overflow: hidden;
+}
+
+/* Degradado superior e inferior que desvanece los items extremos */
+.tpw-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 104px; /* PAD = 2 * ITEM_H */
+  z-index: 2;
+  pointer-events: none;
+}
+
+.tpw-fade--top {
+  top: 0;
+  background: linear-gradient(to bottom,
+    var(--color-surface) 20%,
+    transparent 100%
+  );
+}
+
+.tpw-fade--bottom {
+  bottom: 0;
+  background: linear-gradient(to top,
+    var(--color-surface) 20%,
+    transparent 100%
+  );
+}
+
+/* Resalte del item central (seleccionado) */
+.tpw-highlight {
+  position: absolute;
+  top: 50%;
+  left: 4px;
+  right: 4px;
+  transform: translateY(-50%);
+  height: 52px; /* ITEM_H */
+  background: var(--color-primary-bg);
+  opacity: 0.3;
+  border: 1.5px solid var(--color-primary);
+  border-radius: 12px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* La rueda scrollable propiamente dicha */
+.tpw-column {
+  height: 100%;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.tpw-column::-webkit-scrollbar {
+  display: none;
+}
+
+/* Cada item de la rueda */
+.tpw-item {
+  height: 52px; /* ITEM_H */
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-size: 1.45rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  scroll-snap-align: center;
+  transition: color 0.12s ease, font-weight 0.12s ease;
+  cursor: pointer;
+  user-select: none;
+}
+
+.tpw-item--active {
+  color: var(--color-primary);
+  font-weight: 800;
+}
+
+/* Separador ":" entre horas y minutos */
+.tpw-colon {
+  font-family: var(--font-body);
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--color-text);
+  padding: 0 2px;
+  align-self: center;
+  margin-bottom: 2px;
+}
+
+/* Botones AM / PM */
+.tpw-period {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-left: 14px;
+  align-self: center;
+}
+
+.tpw-period-btn {
+  padding: 9px 16px;
+  border-radius: 12px;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface-2);
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  letter-spacing: 0.02em;
+}
+
+.tpw-period-btn--active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+  box-shadow: var(--shadow-btn);
+}
+
+/* Botones de acción (Cancelar / Listo) */
+.tpw-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.tpw-btn {
+  padding: 13px;
+  border-radius: 14px;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.tpw-btn:active {
+  transform: scale(0.97);
+}
+
+.tpw-btn--cancel {
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
+}
+
+.tpw-btn--cancel:hover {
+  background: var(--color-surface-3);
+}
+
+.tpw-btn--confirm {
+  border: none;
+  background: var(--color-primary);
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(232, 93, 93, 0.3);
+}
+
+.tpw-btn--confirm:hover {
+  background: var(--color-primary-hover);
+}
+
+/* ── Animaciones ────────────────────────────────────────────────────────── */
+@keyframes tpw-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes tpw-pop-in {
+  from { opacity: 0; transform: scale(0.88); }
+  to   { opacity: 1; transform: scale(1); }
 }
