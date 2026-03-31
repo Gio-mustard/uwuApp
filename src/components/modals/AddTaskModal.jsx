@@ -213,7 +213,7 @@ export function AddTaskModal({ onAdd, onClose, open = true, initialType = 'daily
           </div>
 
           <div className="form-field">
-            <label className="form-label" htmlFor="task-time">Hora sugerida</label>
+            <label className="form-label" htmlFor="task-time" style={{background:'red'}}>Hora sugerida</label>
             <TimePicker
               id="task-time"
               value={time}
@@ -248,7 +248,7 @@ export function AddTaskModal({ onAdd, onClose, open = true, initialType = 'daily
               <NumberInput id='task-count' min={1} max={99} initialValue={requiredCount} onChange={(value) => setRequiredCount(value)}/>
             </div>
           )}
-          <div className="form-field task-recurring form-input">
+          <div className="form-field task-recurring form-input" onClick={(e) => {setIsRecurring(!isRecurring)}} style={{cursor:"pointer"}}>
             
 
             <button
@@ -257,8 +257,6 @@ export function AddTaskModal({ onAdd, onClose, open = true, initialType = 'daily
               className="task-item__check"
               
               aria-checked={isRecurring}
-              onClick={(e) => {setIsRecurring(!isRecurring)}}
-
             >
               {isRecurring ? <CheckIcon /> : <EmptyCheckIcon />}
             </button>

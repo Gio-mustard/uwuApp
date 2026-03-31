@@ -138,6 +138,7 @@
   color: var(--color-text-muted);
   letter-spacing: 0.03em;
   text-transform: uppercase;
+  width: fit-content;
 }
 
 .form-input {
