@@ -85,7 +85,6 @@ export function VaulPage({ open, onClose, onPromote }) {
             title: task.title
         });
         onClose();
-        console.log('Promover tarea al baul formal:', task);
     }, []);
     return (
         <Modal
