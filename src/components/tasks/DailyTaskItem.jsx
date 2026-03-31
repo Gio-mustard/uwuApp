@@ -8,6 +8,7 @@
 
 import { isDailyTaskDoneOnDay, isDailyTaskInteractable } from '../../services/TaskService';
 import { TrashIcon } from '../common/Icons';
+import { formatTime12h } from '../../utils/timeUtils';
 import './TaskItem.css';
 
 /**
@@ -53,7 +54,7 @@ export function DailyTaskItem({ task, weekId, selectedDay, todayDay, onToggle, o
       </div>
         
       {task.suggestedTime && (
-        <span className="task-item__time">{task.suggestedTime}</span>
+        <span className="task-item__time">{formatTime12h(task.suggestedTime)}</span>
       )}
       <button  onClick={()=>onDelete(task)} style={{border:'none',padding:'4px',borderRadius:'4px',cursor:'pointer',background:'none'}}>
           <TrashIcon/>

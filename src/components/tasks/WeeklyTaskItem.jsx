@@ -8,6 +8,7 @@
 
 import { useEffect, useState } from 'react';
 import { isWeeklyTaskComplete, getWeeklyTaskCount } from '../../services/TaskService';
+import { formatTime12h } from '../../utils/timeUtils';
 import './TaskItem.css';
 import { TrashIcon } from '../common/Icons';
 
@@ -72,7 +73,7 @@ export function WeeklyTaskItem({ task, weekId, onToggle,onEdit,onDelete=(task)=>
       <div className="task-item__weekly-controls">
         
         {task.suggestedTime && (
-          <span className="task-item__time">{task.suggestedTime}</span>
+          <span className="task-item__time">{formatTime12h(task.suggestedTime)}</span>
         )}
         <div className="weekly-counter">
           <button  onClick={async()=>{

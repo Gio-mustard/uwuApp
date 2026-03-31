@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import TimePickerWheel from './TimePickerWheel';
+import { formatTime12h } from '../../utils/timeUtils';
 import './TimePicker.css';
 
 /**
@@ -16,15 +17,7 @@ import './TimePicker.css';
 export default function TimePicker({ id, value, onChange, placeholder = 'Sin hora' }) {
   const [open, setOpen] = useState(false);
 
-  /** "HH:MM" → "H:MM AM/PM" */
-  const formatDisplay = (val) => {
-    if (!val) return null;
-    const [hStr, mStr] = val.split(':');
-    const h      = parseInt(hStr, 10);
-    const period = h >= 12 ? 'PM' : 'AM';
-    const h12    = h % 12 || 12;
-    return `${h12}:${mStr} ${period}`;
-  };
+  const formatDisplay = (val) => formatTime12h(val);
 
   const display = formatDisplay(value);
 
