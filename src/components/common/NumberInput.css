@@ -1,0 +1,23 @@
+.number-input-container{
+    width: fit-content;
+    display: grid;
+    border-radius: 12px;
+    overflow: hidden;
+    grid-template-columns: 4svh 1fr 4svh;
+    background-color: var(--color-surface-2);
+}
+.number-input-container > .input-number{
+    width: 5svh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    border-radius: 0;
+}
+.number-input-container > button{
+    border: none;
+    cursor: pointer;
+}
+.number-input-container > button:hover{
+    background-color: var(--color-surface-3);
+}

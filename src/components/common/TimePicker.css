@@ -1,0 +1,83 @@
+/* ── TimePicker ─────────────────────────────────────────────────────────── */
+
+.time-picker-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-surface-2);
+  border: 1.5px solid var(--color-border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  width: 100%;
+  text-align: left;
+}
+
+.time-picker-btn:hover {
+  background: var(--color-surface-3);
+}
+
+.time-picker-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.time-picker-btn--has-value {
+  border-color: var(--color-primary);
+  color: var(--color-text);
+}
+
+/* Input nativo completamente invisible pero operable */
+.time-picker-hidden-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  border: none;
+  background: transparent;
+}
+
+/* Ocultar el indicador de reloj nativo en Chromium */
+.time-picker-hidden-input::-webkit-calendar-picker-indicator {
+  display: none;
+}
+
+.time-picker-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  /* color: var(--color-primary); */
+}
+
+.time-picker-value {
+  flex: 1;
+  font-size: 0.95rem;
+}
+
+.time-picker-placeholder {
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+.time-picker-clear {
+  margin-left: auto;
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: background 0.12s ease, color 0.12s ease;
+  flex-shrink: 0;
+}
+
+.time-picker-clear:hover {
+  background: var(--color-surface-3);
+  color: var(--color-danger);
+}

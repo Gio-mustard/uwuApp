@@ -245,3 +245,19 @@ body {
   border-color: var(--color-border);
   border-radius: 2svh;
 }
+
+/* Ocultar controles de input type="number" */
+.hide-spin-button::-webkit-inner-spin-button,
+.hide-spin-button::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.hide-spin-button {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Ocultar el icono de reloj nativo del input time */
+.custom-time-input::-webkit-calendar-picker-indicator {
+  display: none;
+}
