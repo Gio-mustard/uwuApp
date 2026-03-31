@@ -11,6 +11,7 @@ export function Avatar({ path, size = 30, fallback = '?', className = '' }) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (path === avatarUrl) return;
     if (!path) {
       setAvatarUrl(null);
       return;

@@ -15,7 +15,6 @@ import './Sidebar.css';
 import { Avatar } from '../common/Avatar';
 import { ProfileModal } from '../modals/ProfileModal';
 import { useState } from 'react';
-import { VaulIcon } from '../common/Icons';
 
 const NAV_ITEMS = [
   { label: HOME_TEXTS.navHome, path: ROUTES.HOME, icon: HomeIcon },
@@ -30,7 +29,7 @@ export function Sidebar() {
   const { user, logout } = useAuth();
   const [showProfile, setShowProfile] = useState(false);
 
-  const initial = user?.displayName?.[0]?.toUpperCase() ?? '?';
+  const [initial,_ ] = useState(user?.displayName?.[0]?.toUpperCase() ?? '?');
 
   return (
     <>
