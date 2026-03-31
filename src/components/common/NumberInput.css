@@ -7,7 +7,7 @@
     background-color: var(--color-surface-2);
 }
 .number-input-container > .input-number{
-    width: 5svh;
+    width: 7svh;
     display: flex;
     justify-content: center;
     align-items: center;
