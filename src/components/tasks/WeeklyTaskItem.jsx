@@ -20,50 +20,54 @@ import { TrashIcon } from '../common/Icons';
  *   onEdit : (task:import('../../domain/models/DailyTask').DailyTask)=>void
  * }} props
  */
-export function WeeklyTaskItem({ task, weekId, onToggle,onEdit,onDelete=(task)=>{}}) {
+export function WeeklyTaskItem({ task, weekId, onToggle, onEdit, onDelete = (task) => { } }) {
   const done = isWeeklyTaskComplete(task, weekId);
   const count = getWeeklyTaskCount(task, weekId);
-  
-  const [internalCount,setInternalCount] = useState(count);
-  const [canDecrement,setCanDecrement] = useState(internalCount>0);
-  const [canIncrement,setCanIncrement] = useState(internalCount < task.requiredCount);
-  const [isDeleting,setIsDeleting] = useState(false);  
 
-  useEffect(()=>{
-    if (count != internalCount){
+  const [internalCount, setInternalCount] = useState(count);
+  const [canDecrement, setCanDecrement] = useState(internalCount > 0);
+  const [canIncrement, setCanIncrement] = useState(internalCount < task.requiredCount);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    if (count != internalCount) {
       setInternalCount(count);
     }
-  },[count])
+  }, [count])
 
-  useEffect(()=>{
-      setCanDecrement(internalCount>0);
-      setCanIncrement(internalCount < task.requiredCount);
-  },[internalCount])
+  useEffect(() => {
+    setCanDecrement(internalCount > 0);
+    setCanIncrement(internalCount < task.requiredCount);
+  }, [internalCount])
 
 
 
-  useEffect(()=>{
+  useEffect(() => {
     if (!(isDeleting)) return;
     setCanDecrement(false);
     setCanIncrement(false);
 
-  },[isDeleting])
+  }, [isDeleting])
 
   return (
     <div className={`task-item${done ? ' task-item--done' : ''}`}>
       {/* Checkbox — purely a visual done indicator; counter buttons handle incrementing */}
-      <div
-        id={`weekly-task-check-${task.id}`}
-        className="task-item__check"
-        role="checkbox"
-        aria-checked={done}
-        onClick={()=>onEdit(task)}
-        aria-label={done ? `${task.title} completado` : `${task.title} pendiente`}
-      >
-        {done ? <CheckIcon /> : null}
-      </div>
 
-      <div className="task-item__body" onClick={()=>onEdit(task)}>
+      {done && (
+
+        <div
+          id={`weekly-task-check-${task.id}`}
+          className="task-item__check"
+          role="checkbox"
+          aria-checked={done}
+          onClick={() => onEdit(task)}
+          aria-label={done ? `${task.title} completado` : `${task.title} pendiente`}
+        >
+          <CheckIcon />
+        </div>
+      )}
+
+      <div className="task-item__body" onClick={() => onEdit(task)}>
         <span className="task-item__title">{task.title}</span>
         {task.description && (
           <span className="task-item__desc">{task.description}</span>
@@ -71,27 +75,27 @@ export function WeeklyTaskItem({ task, weekId, onToggle,onEdit,onDelete=(task)=>
       </div>
 
       <div className="task-item__weekly-controls">
-        
+
         {task.suggestedTime && (
           <span className="task-item__time">{formatTime12h(task.suggestedTime)}</span>
         )}
         <div className="weekly-counter">
-          <button  onClick={async()=>{
-        setIsDeleting(true);
-        await onDelete(task);
-        setIsDeleting(false);
-      }
-        } style={{border:'none',padding:'4px',borderRadius:'4px',cursor:'pointer',background:'none'}}>
-          <TrashIcon/>
-      </button>
-      <br />
+          <button onClick={async () => {
+            setIsDeleting(true);
+            await onDelete(task);
+            setIsDeleting(false);
+          }
+          } style={{ border: 'none', padding: '4px', borderRadius: '4px', cursor: 'pointer', background: 'none' }}>
+            <TrashIcon />
+          </button>
+          <br />
           <button
             id={`weekly-task-dec-${task.id}`}
             className="weekly-counter__btn"
             aria-label={`Restar completado de ${task.title}`}
             disabled={!canDecrement}
             onClick={() => {
-              setInternalCount(internalCount-1);
+              setInternalCount(internalCount - 1);
               onToggle(task.id, false)
             }}
           >
@@ -104,9 +108,9 @@ export function WeeklyTaskItem({ task, weekId, onToggle,onEdit,onDelete=(task)=>
             id={`weekly-task-inc-${task.id}`}
             className="weekly-counter__btn"
             aria-label={`Sumar completado de ${task.title}`}
-            disabled = {!canIncrement}
+            disabled={!canIncrement}
             onClick={() => {
-              setInternalCount(internalCount+1)
+              setInternalCount(internalCount + 1)
               onToggle(task.id, true)
             }}
           >
@@ -114,7 +118,7 @@ export function WeeklyTaskItem({ task, weekId, onToggle,onEdit,onDelete=(task)=>
           </button>
         </div>
       </div>
-      
+
     </div>
   );
 }

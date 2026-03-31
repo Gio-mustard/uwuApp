@@ -261,3 +261,7 @@ body {
 .custom-time-input::-webkit-calendar-picker-indicator {
   display: none;
 }
+
+.trash-icon{
+  color: var(--color-text-muted);
+}
