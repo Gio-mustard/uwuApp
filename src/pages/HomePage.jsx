@@ -197,6 +197,9 @@ export function HomePage() {
                           <circle cx="12" cy="12" r="9" />
                           <polyline points="12 7 12 12 15 15" />
                         </svg>
+                        <div className="next-event-card__time-pill">
+                          {formatTime12h(nextEvent.suggestedTime) ?? '—'}
+                        </div>
                       </div>
                       <div className="next-event-card__info">
                         <span className="next-event-card__name">{nextEvent.title}</span>
@@ -205,9 +208,7 @@ export function HomePage() {
                         </span>
                       </div>
                     </div>
-                    <div className="next-event-card__time-pill">
-                      {formatTime12h(nextEvent.suggestedTime) ?? '—'}
-                    </div>
+
                   </div>
                 </div>
               </section>
