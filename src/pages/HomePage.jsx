@@ -27,6 +27,7 @@ import { Modal } from '../components/modals/Modal';
 import { VaulPage } from './Baul/VaulPage';
 import { VaulIcon } from '../components/common/Icons';
 import { createDailyTask } from '../domain/models/DailyTask';
+import { formatTime12h } from '../utils/timeUtils';
 
 
 export function HomePage() {
@@ -205,7 +206,7 @@ export function HomePage() {
                       </div>
                     </div>
                     <div className="next-event-card__time-pill">
-                      {nextEvent.suggestedTime ?? '—'}
+                      {formatTime12h(nextEvent.suggestedTime) ?? '—'}
                     </div>
                   </div>
                 </div>
