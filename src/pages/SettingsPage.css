@@ -2,6 +2,7 @@
 
 .settings-page {
   padding: 24px;
+  padding-top: 0;
   max-width: 800px;
   margin: 0 auto;
   animation: fadeIn 0.3s ease-out forwards;

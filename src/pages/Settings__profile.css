@@ -11,7 +11,9 @@
 }
 .profile-settings-card__avatar >  .profile-sheet__avatar{
     width: 160px;
-    height: auto;
+    height: 160px;
+    box-shadow: none;
+    border: .5svh solid var(--color-primary);
 }
 .btn-edit-avatar {
     position: absolute;

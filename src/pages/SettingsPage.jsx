@@ -30,7 +30,7 @@ function SettingsSection({ children, title, sectionClassName, titleClassName }) 
 
 export function SettingsPage() {
   const { useAuth } = useSession();
-  const { user, logout, uploadAvatar } = useAuth();
+  const { user, logout } = useAuth();
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const inputAvatarRef = useRef(null);
   const {upload} = useUploadUserAvatar();
@@ -53,7 +53,7 @@ export function SettingsPage() {
   return (
     <AppShell>
       <div className="settings-page">
-        <header className="settings-header">
+        <header className="settings-header home-header">
           <h1 className="settings-header__title">Configuración</h1>
           <p className="settings-header__subtitle">Administra tus preferencias y tu cuenta</p>
         </header>
@@ -73,7 +73,7 @@ export function SettingsPage() {
                 ref={inputAvatarRef}
               />
               <div className={`profile-sheet__avatar${uploadingAvatar ? ' profile-sheet__avatar--uploading' : ''}`}>
-                <Avatar path={user?.avatarUrl} size={160} fallback={initial} />
+                <Avatar className='avatar-settings' path={user?.avatarUrl} size={160} fallback={initial} />
                 {uploadingAvatar && <div className="profile-sheet__avatar-spinner" />}
                 {!uploadingAvatar && (
                   <div className="profile-sheet__avatar-overlay">
