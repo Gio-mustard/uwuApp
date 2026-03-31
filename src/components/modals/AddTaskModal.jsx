@@ -213,7 +213,7 @@ export function AddTaskModal({ onAdd, onClose, open = true, initialType = 'daily
           </div>
 
           <div className="form-field">
-            <label className="form-label" htmlFor="task-time" style={{background:'red'}}>Hora sugerida</label>
+            <label className="form-label" htmlFor="task-time">Hora sugerida</label>
             <TimePicker
               id="task-time"
               value={time}
