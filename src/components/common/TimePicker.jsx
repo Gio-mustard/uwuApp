@@ -16,7 +16,13 @@ export default function TimePicker({ id, value, onChange, placeholder = 'Sin hor
   const inputRef = useRef(null);
 
   const handleOpen = () => {
-    inputRef.current?.showPicker();
+    const input = inputRef.current;
+    if (!input) return;
+    if (typeof input.showPicker === 'function') {
+      input.showPicker();
+    } else {
+      input.focus();
+    }
   };
 
   /** Formatea "HH:MM" a "HH:MM AM/PM" para mostrar al usuario */
@@ -46,9 +52,7 @@ export default function TimePicker({ id, value, onChange, placeholder = 'Sin hor
         type="time"
         value={value}
         className="time-picker-hidden-input"
-        tabIndex={-1}
         onChange={(e) => onChange(e.target.value)}
-        onClick={(e) => e.stopPropagation()}
       />
 
       <span className="time-picker-icon">
