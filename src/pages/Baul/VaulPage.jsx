@@ -11,7 +11,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Modal } from '../../components/modals/Modal';
 import './VaulPage.css';
 import { useSession } from '../../context/SessionContext';
-import { TrashIcon, PromoteIcon } from '../../components/common/Icons';
+import { TrashIcon, PromoteIcon, EyeIcon, EyeOffIcon } from '../../components/common/Icons';
 
 const VaulTask = ({ task, onDelete, onPromote }) => {
     const [isDeleting, setIsDeleting] = useState(false);
@@ -67,6 +67,39 @@ export function VaulPage({ open, onClose, onPromote }) {
     const [currentTitleTask, setCurrentTitleTask] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [innerTask, setInnerTask] = useState(vaulTasks);
+    
+    // Auth state modifications
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [inputPassword, setInputPassword] = useState('');
+    const [errorMsg, setErrorMsg] = useState('');
+    const [showUnlockPassword, setShowUnlockPassword] = useState(false);
+
+    useEffect(()=>{
+        if (!open) {
+            setInputPassword('');
+            setErrorMsg('');
+            setIsAuthenticated(false);
+            return;
+        }
+
+        const password = localStorage.getItem("vaul-password");
+        if (password === null || password === '') {
+            setIsAuthenticated(true);
+        } else {
+            setIsAuthenticated(false);
+        }
+    }, [open]);
+
+    const handleUnlock = (e) => {
+        e.preventDefault();
+        const storedPassword = localStorage.getItem("vaul-password");
+        if (inputPassword === storedPassword) {
+            setIsAuthenticated(true);
+            setErrorMsg('');
+        } else {
+            setErrorMsg('Contraseña incorrecta');
+        }
+    };
 
     useEffect(() => {
         setInnerTask(vaulTasks.toReversed())
@@ -100,19 +133,42 @@ export function VaulPage({ open, onClose, onPromote }) {
                     <p className='vaul-page__subtitle'>Pendientes que tienes que hacer "ahorita"</p>
                 </header>
 
-                <form className='vaul-form' autoComplete='off' noValidate autoFocus onSubmit={(e) => {
-                    e.preventDefault();
-                    handleSubmit(currentTitleTask)
-                }} >
-                    <input className='form-input' type="text" placeholder='ej. planear vacaciones' name='title-task' value={currentTitleTask} onChange={e => setCurrentTitleTask(e.target.value)} />
-                    <button type='submit' className='btn-primary create-vaul-task'>+</button>
-                </form>
-                <hr className='divider' />
-                <main className='vaul-tasks'>
-                    {vaulTasks.length === 0 && !isLoading ? "No haz agregado ningun pendiente al baul" : null}
-                    <section className={`vaul-task task-item loader${isLoading ? ' is-loading' : ''}`} />
-                    {innerTask.map((task) => (<VaulTask key={task.id} task={task} onDelete={deleteBaulTask} onPromote={handlePromote} />))}
-                </main>
+                {!isAuthenticated ? (
+                    <form onSubmit={handleUnlock} className='vaul-unlock-form' style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '2svh' }}>
+                        <label htmlFor="vaul-password">Ingresa tu contraseña para acceder al baúl</label>
+                        <div className="password-input-container">
+                            <input 
+                                name="vaul-password"
+                                type={showUnlockPassword ? "text" : "password"} 
+                                className="form-input" 
+                                value={inputPassword} 
+                                onChange={e => setInputPassword(e.target.value)} 
+                                autoFocus
+                            />
+                            <button type="button" className="toggle-password-btn" onClick={() => setShowUnlockPassword(!showUnlockPassword)}>
+                                {showUnlockPassword ? <EyeOffIcon /> : <EyeIcon />}
+                            </button>
+                        </div>
+                        {errorMsg && <p style={{ color: 'var(--color-danger)', fontSize: '0.9rem' }}>{errorMsg}</p>}
+                        <button type="submit" className="btn-primary" style={{ marginTop: '1svh' }}>Desbloquear</button>
+                    </form>
+                ) : (
+                    <>
+                        <form className='vaul-form' autoComplete='off' noValidate autoFocus onSubmit={(e) => {
+                            e.preventDefault();
+                            handleSubmit(currentTitleTask)
+                        }} >
+                            <input className='form-input' type="text" placeholder='ej. planear vacaciones' name='title-task' value={currentTitleTask} onChange={e => setCurrentTitleTask(e.target.value)} />
+                            <button type='submit' className='btn-primary create-vaul-task'>+</button>
+                        </form>
+                        <hr className='divider' />
+                        <main className='vaul-tasks'>
+                            {vaulTasks.length === 0 && !isLoading ? "No haz agregado ningun pendiente al baul" : null}
+                            <section className={`vaul-task task-item loader${isLoading ? ' is-loading' : ''}`} />
+                            {innerTask.map((task) => (<VaulTask key={task.id} task={task} onDelete={deleteBaulTask} onPromote={handlePromote} />))}
+                        </main>
+                    </>
+                )}
             </section>
 
         </Modal>

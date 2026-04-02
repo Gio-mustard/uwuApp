@@ -171,3 +171,27 @@
     height: 8svh;
 }
 
+.password-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-input-container .form-input {
+    flex: 1;
+    padding-right: 2.5rem;
+}
+
+.toggle-password-btn {
+    position: absolute;
+    right: 0.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary);
+    padding: 0;
+}
+

@@ -11,9 +11,11 @@ import { Avatar } from '../components/common/Avatar';
 import './SettingsPage.css';
 import './Settings__profile.css'
 import ColorPallete from '../components/common/ColorPalete';
-import { useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { CameraIcon } from '../components/common/Icons';
 import {  useUploadUserAvatar } from '../services/UserService';
+import { Modal } from '../components/modals/Modal';
+import ChangeVaulPassword from '../components/modals/ChangeVaulPassword';
 
 
 function SettingsSection({ children, title, sectionClassName, titleClassName }) {
@@ -49,7 +51,9 @@ export function SettingsPage() {
 
 
   const initial = user?.displayName?.[0]?.toUpperCase() ?? '?';
-
+  const [changeVaulPassword,setChangeVaulPassword] = useState(false);
+  
+  
   return (
     <AppShell>
       <div className="settings-page">
@@ -96,7 +100,15 @@ export function SettingsPage() {
 
           {/* Preferences Section */}
           <SettingsSection title='Preferencias'>
-
+                <div className='setings-option'>
+                <div className='settings-option__info'>
+                  <h4>Baul</h4>
+                  <p>Configura como quieres que sea el <b>baul</b> de tus pendientes</p>
+                </div>
+                <button className='btn-primary change-vaul-password' onClick={()=>setChangeVaulPassword(true)}>establecer contrasena</button>
+                <ChangeVaulPassword open={changeVaulPassword} onClose={()=>setChangeVaulPassword(false)}/>
+              </div>
+              <br />
             <div className="settings-option">
               <div className="settings-option__info">
                 <h4>Paleta de color</h4>
@@ -117,6 +129,10 @@ export function SettingsPage() {
                   <span className="slider round"></span>
                 </label>
               </div> */}
+              <br />
+              <hr className='divider'/>
+              <br />
+              
 
 
 
