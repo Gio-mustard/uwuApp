@@ -119,9 +119,9 @@
     position: relative;
     
 }
-.vaul-task__options > button{
-    color: var(--color-primary);
+.vaul-task__options > button > .icon{
     opacity: 1;
+    color: var(--color-primary);
 }
 
 .vaul-task__title{
