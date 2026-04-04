@@ -48,19 +48,25 @@ export function HistoryWeekCard({ history, label, defaultExpanded = false }) {
         }
     }, [taskSnapshots]);
     useEffect(() => {
-        let completedTasks = 0;
-        let totalTasks = 0
+        if (preparedSnapshots.length === 0) return;
+        let temp_completedTasks = 0;
+        let temp_totalTasks = 0
         preparedSnapshots.forEach((task) => {
             if (task.type = 'daily') {
-                totalTasks += task.requiredCount;
-                completedTasks += task.completedCount;
+                temp_totalTasks += task.requiredCount;
+                temp_completedTasks += task.completedCount;
             }
             else if (task.type = 'weekly') {
-                totalTasks += task.detail.required_count; // WHY THATS STRUCTURE ????
-                completedTasks += task.detail.completed_count;
+                temp_totalTasks += task.detail.required_count; // WHY THATS STRUCTURE ????
+                temp_completedTasks += task.detail.completed_count;
             }
         })
-        setPercentage(totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0);
+        
+        if (isNaN(temp_completedTasks)){ // For compatibility with past snapshots (wee need to version it)
+            setPercentage(totalTasks>0?Math.round((completedTasks/totalTasks)*100):0);
+            return
+        }
+        setPercentage(temp_totalTasks > 0 ? Math.round((temp_completedTasks / temp_totalTasks) * 100) : 0);
     }, [preparedSnapshots])
 
     useEffect(() => {
@@ -102,8 +108,8 @@ export function HistoryWeekCard({ history, label, defaultExpanded = false }) {
             {/* Task snapshot list — animates open/closed via CSS grid-template-rows */}
             <div className={`history-card__body${expanded ? ' history-card__body--open' : ''}`}>
                 <ul className="history-card__list" role="list">
-                    {preparedSnapshots.map((snap) => (
-                        <li key={snap.taskId} className="history-card__snap-item">
+                    {preparedSnapshots.map((snap, index) => (
+                        <li key={snap.taskId || `snap-${index}`} className="history-card__snap-item">
                             <span
                                 className={`history-card__snap-icon${snap.completed ? '' : ' history-card__snap-icon--fail'}`}
                             >
