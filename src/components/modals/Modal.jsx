@@ -31,8 +31,10 @@
  * their current styling without change.
  */
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import { Drawer } from 'vaul-base';
+import './Modal.css';
+
 
 /* ─── Modo clásico ──────────────────────────────────────────────────────── */
 
@@ -41,38 +43,66 @@ import { Drawer } from 'vaul-base';
  * Ningun modal existente necesita cambios.
  *
  * @param {{
+ *   open:         boolean,
  *   children:     React.ReactNode,
  *   onClose:      () => void,
  *   overlayClass: string,
  *   sheetClass:   string,
  * }} props
  */
-function ClassicModal({ children, onClose, overlayClass, sheetClass }) {
+function ClassicModal({ open, children, onClose, overlayClass, sheetClass }) {
+  const [visible, setVisible] = useState(open);
+  const [closing, setClosing] = useState(false);
+
+  // Gestiona el ciclo de vida: open → visible; !open → animación de salida → desmontaje
+  useEffect(() => {
+    if (open) {
+      setVisible(true);
+      setClosing(false);
+    } else if (visible) {
+      setClosing(true);
+      const t = setTimeout(() => {
+        setVisible(false);
+        setClosing(false);
+      }, 280); // debe coincidir con la duración de la animación CSS
+      return () => clearTimeout(t);
+    }
+  }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const handleKey = useCallback(
     (e) => { if (e.key === 'Escape') onClose(); },
     [onClose],
   );
 
   useEffect(() => {
+    if (!visible) return;
     document.addEventListener('keydown', handleKey);
-    // Lock body scroll while the modal is open.
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
       document.removeEventListener('keydown', handleKey);
       document.body.style.overflow = prev;
     };
-  }, [handleKey]);
+  }, [visible, handleKey]);
 
+  if (!visible) return null;
 
-  /** Close only when the backdrop itself is clicked, not the sheet. */
+  /** Cierra solo cuando se hace click en el backdrop, no en el sheet. */
   function handleOverlayClick(e) {
     if (e.target === e.currentTarget) onClose();
   }
 
+  const overlayAnimClass = closing ? ' modal-overlay--closing' : ' modal-overlay--open';
+  const sheetAnimClass   = closing ? ' modal-sheet--closing'   : ' modal-sheet--open';
+
   return (
-    <div className={overlayClass} onClick={handleOverlayClick} role="dialog" aria-modal="true">
-      <div className={sheetClass}>
+    <div
+      className={`modal-overlay${overlayAnimClass}${overlayClass ? ' ' + overlayClass : ''}`}
+      onClick={handleOverlayClick}
+      role="dialog"
+      aria-modal="true"
+    >
+      <div className={`modal-sheet${sheetAnimClass}${sheetClass ? ' ' + sheetClass : ''}`}>
         {children}
       </div>
     </div>
@@ -144,7 +174,7 @@ function VaulDrawer({
     >
       <Drawer.Portal>
         <Drawer.Overlay className={overlayClass} />
-        <Drawer.Content className={drawerContentClass} role="dialog" aria-modal="true">
+        <Drawer.Content className={"vaul-drawer-content "+drawerContentClass} role="dialog" aria-modal="true">
           <Drawer.Handle className={handleClass} />
           {children}
         </Drawer.Content>
@@ -210,7 +240,7 @@ export function Modal({
   }
 
   return (
-    <ClassicModal onClose={onClose} overlayClass={overlayClass} sheetClass={sheetClass}>
+    <ClassicModal open={open} onClose={onClose} overlayClass={overlayClass} sheetClass={sheetClass}>
       {children}
     </ClassicModal>
   );

@@ -107,7 +107,7 @@ export function HomePage() {
   return (
     <AppShell>
       <Modal
-        useDrawer
+        
         open={modalTaskDeleteConfirmation.show}
         onClose={() => setModalTaskDeleteConfirmation({ show: false, task: undefined })}
         drawerContentClass="confirm-vaul-content"
