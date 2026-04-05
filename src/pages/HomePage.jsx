@@ -10,12 +10,13 @@
  * - FAB for adding new tasks
  */
 
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useSession } from '../context/SessionContext';
 import { AppShell } from '../components/layout/AppShell';
 import { DaySelector } from '../components/days/DaySelector';
 import { DailyTaskItem } from '../components/tasks/DailyTaskItem';
 import { WeeklyTaskItem } from '../components/tasks/WeeklyTaskItem';
+import { NextEventCard } from '../components/tasks/NextEventCard';
 import { AddTaskModal } from '../components/modals/AddTaskModal';
 import { ProfileModal } from '../components/modals/ProfileModal';
 import { Avatar } from '../components/common/Avatar';
@@ -27,7 +28,6 @@ import { Modal } from '../components/modals/Modal';
 import { VaulPage } from './Baul/VaulPage';
 import { VaulIcon } from '../components/common/Icons';
 import { createDailyTask } from '../domain/models/DailyTask';
-import { formatTime12h } from '../utils/timeUtils';
 
 
 export function HomePage() {
@@ -56,9 +56,76 @@ export function HomePage() {
   const [modalTaskDeleteConfirmation, setModalTaskDeleteConfirmation] = useState({ show: false, task: undefined });
   const [isDeleting, setIsDeleting] = useState(false);
   const dailyForDay = getDailyTasksForDay(dailyTasks, selectedDay);
-  const now = new Date();
-  const nextEvent = getNextEvent([...dailyTasks, ...weeklyTasks], now, todayDay, currentWeekId);
+  const [nextEvent, setNextEvent] = useState(null);
+  const [nextEventIsOverdue, setNextEventIsOverdue] = useState(false);
   const [vaulOpen, setVaulOpen] = useState(false);
+  const recalcTimerRef = useRef(null);
+
+  // Recalculate next event whenever tasks change, and schedule the NEXT
+  // recalculation to fire exactly 1 s after the relevant time boundary:
+  //   - If showing an upcoming task: when its suggestedTime passes (it turns overdue).
+  //   - If showing an overdue task with a nextUpcoming: when that upcoming task starts.
+  // This way the card updates with millisecond precision.
+  useEffect(() => {
+    function timeToMs(suggestedTime) {
+      const [h, m] = suggestedTime.split(':').map(Number);
+      return (h * 60 + m) * 60_000;
+    }
+
+    function scheduleNextRecalc(result) {
+      if (recalcTimerRef.current) clearTimeout(recalcTimerRef.current);
+
+      if (!result) return;
+
+      const { task, isOverdue, nextUpcoming } = result;
+      const now = new Date();
+      const nowMs = (now.getHours() * 60 + now.getMinutes()) * 60_000
+                  + now.getSeconds() * 1000
+                  + now.getMilliseconds();
+
+      const delays = [];
+
+      // If the shown task is still upcoming, schedule for when its time passes (+1s).
+      // At that moment the algorithm will re-evaluate and may show it as overdue.
+      if (!isOverdue && task?.suggestedTime) {
+        const delay = timeToMs(task.suggestedTime) - nowMs + 1_000;
+        if (delay > 0) delays.push(delay);
+      }
+
+      // If showing an overdue task and a nextUpcoming exists, schedule for the
+      // MIDPOINT between them (+1s). That's the exact moment the distances
+      // equalize and the algorithm switches from overdue → upcoming.
+      //   midpointMs = (overdueMs + upcomingMs) / 2
+      if (isOverdue && nextUpcoming?.suggestedTime && task?.suggestedTime) {
+        const overdueMs  = timeToMs(task.suggestedTime);
+        const upcomingMs = timeToMs(nextUpcoming.suggestedTime);
+        const midpointMs = (overdueMs + upcomingMs) / 2;
+        const delay = midpointMs - nowMs + 1_000;
+        if (delay > 0) delays.push(delay);
+      }
+
+      if (delays.length > 0) {
+        recalcTimerRef.current = setTimeout(recalculate, Math.min(...delays));
+      }
+    }
+
+    function recalculate() {
+      const result = getNextEvent([...dailyTasks, ...weeklyTasks], new Date(), todayDay, currentWeekId);
+      if (result) {
+        setNextEvent(result.task);
+        setNextEventIsOverdue(result.isOverdue);
+      } else {
+        setNextEvent(null);
+        setNextEventIsOverdue(false);
+      }
+      scheduleNextRecalc(result);
+    }
+
+    recalculate();
+    return () => {
+      if (recalcTimerRef.current) clearTimeout(recalcTimerRef.current);
+    };
+  }, [dailyTasks, weeklyTasks, todayDay, currentWeekId]);
 
   const [editMode, setEditMode] = useState({ isEditing: false, payload: undefined });
   const handleActivateEditMode = useCallback((task) => {
@@ -186,32 +253,11 @@ export function HomePage() {
           <>
             {/* Next event */}
             {nextEvent && (
-              <section className="home-section" aria-label="Siguiente evento">
-                <div className="next-event-card">
-                  <div className="next-event-card__badge">{HOME_TEXTS.nextEventBadge}</div>
-                  <div className="next-event-card__body">
-                    <div className="next-event-card__left">
-                      <div className="next-event-card__icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                          strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <circle cx="12" cy="12" r="9" />
-                          <polyline points="12 7 12 12 15 15" />
-                        </svg>
-                        <div className="next-event-card__time-pill">
-                          {formatTime12h(nextEvent.suggestedTime) ?? '—'}
-                        </div>
-                      </div>
-                      <div className="next-event-card__info">
-                        <span className="next-event-card__name">{nextEvent.title}</span>
-                        <span className="next-event-card__meta">
-                          {nextEvent.description || (nextEvent.type === 'daily' ? HOME_TEXTS.nextEventDailyMeta : HOME_TEXTS.nextEventWeeklyMeta)}
-                        </span>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-              </section>
+              <NextEventCard
+                key={`${nextEvent?.id}-${nextEventIsOverdue}`}
+                task={nextEvent}
+                is_overdue={nextEventIsOverdue}
+              />
             )}
 
             {/* Vaul task*/}

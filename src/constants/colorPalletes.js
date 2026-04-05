@@ -2,7 +2,6 @@ const yellowPalette = {
     title:"Amarillo amarrillo el platano",
     description:"",
     colors:{
-
         colorPrimary: "#F4B400",
         darkColorPrimary: "#C49000",
         ligthColorPrimary: "#FFE082",
@@ -10,14 +9,17 @@ const yellowPalette = {
         colorPrimaryBg: "#FFF8E1",
         colorSuccess: "#34A853",
         colorDanger: "#E85D5D",
-        shadowBtn: "0 4px 16px #F4B40073"
+        shadowBtn: "0 4px 16px #F4B40073",
+        overdueCardGradientStart: "#7C2D12",
+        overdueCardGradientMid:   "#B45309",
+        overdueCardGradientEnd:   "#F59E0B",
+        overdueCardShadow:        "0 4px 24px rgba(180, 83, 9, 0.45), 0 1px 4px rgba(0,0,0,0.1)"
     }
 };
 const bluePalette = {
     title:"Blue label",
     description:'',
     colors:{
-
         colorPrimary: "#4285F4",
         darkColorPrimary: "#1A56DB",
         ligthColorPrimary: "#AECBFA",
@@ -25,14 +27,17 @@ const bluePalette = {
         colorPrimaryBg: "#E8F0FE",
         colorSuccess: "#34A853",
         colorDanger: "#EA4335",
-        shadowBtn: "0 4px 16px #4285F473"
+        shadowBtn: "0 4px 16px #4285F473",
+        overdueCardGradientStart: "#7F1D1D",
+        overdueCardGradientMid:   "#DC2626",
+        overdueCardGradientEnd:   "#F87171",
+        overdueCardShadow:        "0 4px 24px rgba(220, 38, 38, 0.45), 0 1px 4px rgba(0,0,0,0.1)"
     }
 };
 const greenPalette = {
     title:"Verdecito",
     description:'',
     colors:{
-
         colorPrimary: "#34A853",
         darkColorPrimary: "#0F7B3A",
         ligthColorPrimary: "#A8DAB5",
@@ -40,7 +45,11 @@ const greenPalette = {
         colorPrimaryBg: "#E6F4EA",
         colorSuccess: "#34A853",
         colorDanger: "#E5533D",
-        shadowBtn: "0 4px 16px #34A85373"
+        shadowBtn: "0 4px 16px #34A85373",
+        overdueCardGradientStart: "#7C2D12",
+        overdueCardGradientMid:   "#EA580C",
+        overdueCardGradientEnd:   "#FB923C",
+        overdueCardShadow:        "0 4px 24px rgba(234, 88, 12, 0.45), 0 1px 4px rgba(0,0,0,0.1)"
     }
 };
 const purplePalette = {
@@ -54,7 +63,11 @@ const purplePalette = {
         colorPrimaryBg: "#F3E5F5",
         colorSuccess: "#34A853",
         colorDanger: "#E53935",
-        shadowBtn: "0 4px 16px #8E24AA73"
+        shadowBtn: "0 4px 16px #8E24AA73",
+        overdueCardGradientStart: "#831843",
+        overdueCardGradientMid:   "#BE185D",
+        overdueCardGradientEnd:   "#F472B6",
+        overdueCardShadow:        "0 4px 24px rgba(190, 24, 93, 0.45), 0 1px 4px rgba(0,0,0,0.1)"
     }
 };
 
@@ -62,7 +75,6 @@ const orangePalette = {
     title:'Naranjita',
     description:'',
     colors:{
-
         colorPrimary: "#FB8C00",
         darkColorPrimary: "#EF6C00",
         ligthColorPrimary: "#FFD180",
@@ -70,7 +82,11 @@ const orangePalette = {
         colorPrimaryBg: "#FFF3E0",
         colorSuccess: "#34A853",
         colorDanger: "#E64A19",
-        shadowBtn: "0 4px 16px #FB8C0073"
+        shadowBtn: "0 4px 16px #FB8C0073",
+        overdueCardGradientStart: "#7F1D1D",
+        overdueCardGradientMid:   "#B91C1C",
+        overdueCardGradientEnd:   "#F87171",
+        overdueCardShadow:        "0 4px 24px rgba(185, 28, 28, 0.45), 0 1px 4px rgba(0,0,0,0.1)"
     }
 };
 const synthwavePalette = {
@@ -84,7 +100,11 @@ const synthwavePalette = {
         colorPrimaryBg: "#FEE5FF",
         colorSuccess: "#00E5FF",
         colorDanger: "#FF0055",
-        shadowBtn: "0 4px 16px #F700FF73"
+        shadowBtn: "0 4px 16px #F700FF73",
+        overdueCardGradientStart: "#4C0519",
+        overdueCardGradientMid:   "#BE123C",
+        overdueCardGradientEnd:   "#FF4D6D",
+        overdueCardShadow:        "0 4px 24px rgba(255, 0, 85, 0.5), 0 1px 4px rgba(0,0,0,0.1)"
     }
 };
 
@@ -99,7 +119,11 @@ const radioactivePalette = {
         colorPrimaryBg: "#EAFFE5",
         colorSuccess: "#34A853",
         colorDanger: "#FF073A",
-        shadowBtn: "0 4px 16px #39FF1473"
+        shadowBtn: "0 4px 16px #39FF1473",
+        overdueCardGradientStart: "#431407",
+        overdueCardGradientMid:   "#C2410C",
+        overdueCardGradientEnd:   "#FACC15",
+        overdueCardShadow:        "0 4px 24px rgba(255, 7, 58, 0.5), 0 1px 4px rgba(0,0,0,0.1)"
     }
 };
 
@@ -114,7 +138,11 @@ const vaporwavePalette = {
         colorPrimaryBg: "#FFF0F9",
         colorSuccess: "#05FFA1",
         colorDanger: "#FF1B8D",
-        shadowBtn: "0 4px 16px #FF71CE73"
+        shadowBtn: "0 4px 16px #FF71CE73",
+        overdueCardGradientStart: "#4A044E",
+        overdueCardGradientMid:   "#A21CAF",
+        overdueCardGradientEnd:   "#E879F9",
+        overdueCardShadow:        "0 4px 24px rgba(162, 28, 175, 0.5), 0 1px 4px rgba(0,0,0,0.1)"
     }
 };
 
@@ -129,7 +157,11 @@ const cyberpunkPalette = {
         colorPrimaryBg: "#E5FFF4",
         colorSuccess: "#FF003C",
         colorDanger: "#FCEE0A",
-        shadowBtn: "0 4px 16px #00FF9D73"
+        shadowBtn: "0 4px 16px #00FF9D73",
+        overdueCardGradientStart: "#713F12",
+        overdueCardGradientMid:   "#CA8A04",
+        overdueCardGradientEnd:   "#FDE047",
+        overdueCardShadow:        "0 4px 24px rgba(252, 238, 10, 0.45), 0 1px 4px rgba(0,0,0,0.15)"
     }
 };
 
@@ -144,7 +176,11 @@ const oceanCalmPalette = {
         colorPrimaryBg: "#EBF8FF",
         colorSuccess: "#34A853",
         colorDanger: "#EA4335",
-        shadowBtn: "0 4px 16px #2B6CB073"
+        shadowBtn: "0 4px 16px #2B6CB073",
+        overdueCardGradientStart: "#7C2D12",
+        overdueCardGradientMid:   "#C2410C",
+        overdueCardGradientEnd:   "#FB923C",
+        overdueCardShadow:        "0 4px 24px rgba(194, 65, 12, 0.45), 0 1px 4px rgba(0,0,0,0.1)"
     }
 };
 
@@ -159,7 +195,11 @@ const sereneProgressPalette = {
         colorPrimaryBg: "#E0FCFF",
         colorSuccess: "#34A853",
         colorDanger: "#EA4335",
-        shadowBtn: "0 4px 16px #00B5D873"
+        shadowBtn: "0 4px 16px #00B5D873",
+        overdueCardGradientStart: "#7C2D12",
+        overdueCardGradientMid:   "#D97706",
+        overdueCardGradientEnd:   "#FCD34D",
+        overdueCardShadow:        "0 4px 24px rgba(217, 119, 6, 0.45), 0 1px 4px rgba(0,0,0,0.1)"
     }
 };
 
@@ -175,7 +215,11 @@ const colorPalettes = {
             colorPrimaryBg: "#fdf0f0",
             colorSuccess: "#34a853",
             colorDanger: "#E85D5D",
-            shadowBtn: "0 4px 16px #E85D5D73"
+            shadowBtn: "0 4px 16px #E85D5D73",
+            overdueCardGradientStart: "#92400e",
+            overdueCardGradientMid:   "#d97706",
+            overdueCardGradientEnd:   "#fbbf24",
+            overdueCardShadow:        "0 4px 24px rgba(217, 119, 6, 0.45), 0 1px 4px rgba(0,0,0,0.1)"
         }
   },
   bluePalette:bluePalette,
