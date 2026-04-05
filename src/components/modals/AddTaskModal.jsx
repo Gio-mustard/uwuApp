@@ -6,7 +6,7 @@
  * or for weekly tasks sets a required count (≥1).
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ALL_DAYS, DAY_LABELS } from '../../domain/enums/DayOfWeek';
 import { Modal } from './Modal';
 import './AddTaskModal.css';
@@ -18,14 +18,15 @@ import TimePicker from '../common/TimePicker';
  * @param {{
  *   onAdd: (type: 'daily'|'weekly', data: object) => void,
  *   onClose: () => void,
- *   initialType : string,
- *   editMode : boolean,
- *   payloadTask : import('../../domain/models/WeeklyTask').WeeklyTask | import('../../domain/models/DailyTask').DailyTask,
- *   onDelete : (import('../../domain/models/WeeklyTask').WeeklyTask|import('../../domain/models/DailyTask').DailyTask) 
+ *   open?: boolean,
+ *   task_type?: 'daily' | 'weekly',
+ *   editMode?: boolean,
+ *   payloadTask?: import('../../domain/models/WeeklyTask').WeeklyTask | import('../../domain/models/DailyTask').DailyTask,
+ *   onDelete?: (task: import('../../domain/models/WeeklyTask').WeeklyTask | import('../../domain/models/DailyTask').DailyTask) => void
  * }} props
  */
-export function AddTaskModal({ onAdd, onClose, open = true, initialType = 'daily',editMode = false,payloadTask,onDelete=(task)=>{} }) {
-  const [type, setType] = useState(initialType);
+export function AddTaskModal({ onAdd, onClose, open = true, task_type = 'daily', editMode = false, payloadTask = undefined, onDelete = (task) => { } }) {
+  const [type, setType] = useState(task_type);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [time, setTime] = useState('');
@@ -33,26 +34,16 @@ export function AddTaskModal({ onAdd, onClose, open = true, initialType = 'daily
   const [requiredCount, setRequiredCount] = useState(1);
   const [error, setError] = useState('');
 
-  const [isRecurring,setIsRecurring] = useState(false);
-  const [isEditMode,setIsEditMode] = useState(editMode);
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(editMode);
+  const container = useRef(null);
 
-  useEffect(()=>{
-    if (!open) return;
-    injectPayload(undefined);
-  },[open])
-
-  useEffect(()=>{
-    if (payloadTask){
-      injectPayload(payloadTask);
-    }
-  },[payloadTask])
-
-  const injectPayload = useCallback((payload)=>{
-    if(payload === undefined) {
+  const injectPayload = useCallback((payload) => {
+    if (payload === undefined) {
       setTitle('');
       setDescription('');
       setTime('');
-      setType(initialType);
+      setType(task_type);
       setAssignedDays([]);
       setRequiredCount(1);
       setIsRecurring(false);
@@ -64,48 +55,52 @@ export function AddTaskModal({ onAdd, onClose, open = true, initialType = 'daily
     setDescription(payload.description);
     setTime(payload.suggestedTime);
     setType(payload.type);
-    if (payload.type === 'daily'){
+    if (payload.type === 'daily') {
       setAssignedDays(payload.assignedDays);
     }
-    if (payload.type === 'weekly'){
+    if (payload.type === 'weekly') {
       setRequiredCount(payload.requiredCount);
     }
     setIsRecurring(payload.isRecurring);
 
 
-  },[])
-  useEffect(()=>{
-    setIsEditMode(editMode);
-  },[editMode]);
-
-  useEffect(()=>{
-    injectPayload(payloadTask);
-  },[isEditMode]);
-
-  /*
+  }, [])
   useEffect(() => {
-    const handleFocusIn = (e) => {
-      const target = e.target;
-      // Solo inputs/textareas dentro del modal
-      if (!target.matches('input, textarea, select')) return;
-
-      const scrollContainer = target.closest('.modal-vaul-body');
-      if (!scrollContainer) return;
-
-      // Esperamos a que el teclado termine de aparecer antes de medir.
+    if (open) {
       setTimeout(() => {
-        const containerTop = scrollContainer.getBoundingClientRect().top;
-        const elementTop   = target.getBoundingClientRect().top;
-        // Posición del elemento relativa al contenedor + scroll actual = offset absoluto.
-        const scrollTo = elementTop - containerTop + scrollContainer.scrollTop - 8;
-        scrollContainer.scrollTo({ top: scrollTo, behavior: 'smooth' });
-      }, 350);
-    };
-    window.addEventListener('focusin', handleFocusIn);
-    return () => window.removeEventListener('focusin', handleFocusIn);
-  }, []);
-  */
- 
+        if (container.current) {
+          container.current.scrollTo({ top: 0, behavior: 'instant' });
+        }
+      }, 10);
+    }
+
+    if (!open || payloadTask !== undefined) return;
+    injectPayload(undefined);
+  }, [open, payloadTask, injectPayload]);
+
+  useEffect(() => {
+    setType(task_type);
+  }, [task_type])
+
+  useEffect(() => {
+    if (payloadTask) {
+      injectPayload(payloadTask);
+    }
+  }, [payloadTask])
+
+
+  useEffect(() => {
+    setIsEditMode(editMode);
+  }, [editMode]);
+
+  useEffect(() => {
+    injectPayload(payloadTask);
+  }, [isEditMode]);
+
+
+
+
+
   function toggleDay(day) {
     setAssignedDays((prev) =>
       prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day],
@@ -129,15 +124,15 @@ export function AddTaskModal({ onAdd, onClose, open = true, initialType = 'daily
       return;
     }
     const data = {
-      id:payloadTask===undefined ? null :payloadTask.id,
+      id: payloadTask === undefined ? null : payloadTask.id,
       title: title.trim(),
       description: description.trim(),
       suggestedTime: time || null,
       ...(type === 'daily'
         ? { assignedDays }
         : { requiredCount: Number(requiredCount) }),
-      isRecurring:isRecurring,
-      completions:payloadTask===undefined?null:payloadTask.completions
+      isRecurring: isRecurring,
+      completions: payloadTask === undefined ? null : payloadTask.completions
     };
     onAdd(type, data);
     onClose();
@@ -154,9 +149,9 @@ export function AddTaskModal({ onAdd, onClose, open = true, initialType = 'daily
       overlayClass="modal-vaul-overlay"
       shouldScaleBackground
     >
-      <div className="modal-vaul-body">
+      <div className="modal-vaul-body" ref={container}>
         <div className="modal__header">
-          <h2 className="modal__title">{isEditMode?'Editar pendiente':'Nuevo pendiente'}</h2>
+          <h2 className="modal__title">{isEditMode ? 'Editar pendiente' : 'Nuevo pendiente'}</h2>
           <button id="modal-close" className="modal__close" onClick={onClose} aria-label="Cerrar">
             ✕
           </button>
@@ -164,20 +159,20 @@ export function AddTaskModal({ onAdd, onClose, open = true, initialType = 'daily
 
         {/* Type toggle */}
         {
-          !isEditMode&&(
-              <div className="modal__type-toggle">
+          !isEditMode && (
+            <div className="modal__type-toggle">
               <button
                 id="modal-type-daily"
                 className={`modal__type-btn${type === 'daily' ? ' modal__type-btn--active' : ''}`}
                 onClick={() => setType('daily')}
-                >
+              >
                 Diario
               </button>
               <button
                 id="modal-type-weekly"
                 className={`modal__type-btn${type === 'weekly' ? ' modal__type-btn--active' : ''}`}
                 onClick={() => setType('weekly')}
-                >
+              >
                 Semanal
               </button>
             </div>
@@ -245,17 +240,17 @@ export function AddTaskModal({ onAdd, onClose, open = true, initialType = 'daily
                 Veces por semana (mín. 1 max. 99)
               </label>
 
-              <NumberInput id='task-count' min={1} max={99} initialValue={requiredCount} onChange={(value) => setRequiredCount(value)}/>
+              <NumberInput id='task-count' min={1} max={99} initialValue={requiredCount} onChange={(value) => setRequiredCount(value)} />
             </div>
           )}
-          <div className="form-field task-recurring form-input" onClick={(e) => {setIsRecurring(!isRecurring)}} style={{cursor:"pointer"}}>
-            
+          <div className="form-field task-recurring form-input" onClick={(e) => { setIsRecurring(!isRecurring) }} style={{ cursor: "pointer" }}>
+
 
             <button
               type="button"
               id='task-recurring'
               className="task-item__check"
-              
+
               aria-checked={isRecurring}
             >
               {isRecurring ? <CheckIcon /> : <EmptyCheckIcon />}
@@ -268,20 +263,20 @@ export function AddTaskModal({ onAdd, onClose, open = true, initialType = 'daily
           <footer>
 
 
-          <button id="modal-submit" className="btn-primary modal__submit" type="submit" autoFocus>
-            {isEditMode?"Actualizar":'Agregar'}
-          </button>
-
-          {isEditMode&&(
-
-            <button type="button" onClick={()=>{
-              onClose();
-              
-              onDelete(payloadTask);
-              }} id="modal-delete" className="btn-danger btn-secondary ">
-              Eliminar
+            <button id="modal-submit" className="btn-primary modal__submit" type="submit" autoFocus>
+              {isEditMode ? "Actualizar" : 'Agregar'}
             </button>
-          )}
+
+            {isEditMode && (
+
+              <button type="button" onClick={() => {
+                onClose();
+
+                onDelete(payloadTask);
+              }} id="modal-delete" className="btn-danger btn-secondary ">
+                Eliminar
+              </button>
+            )}
           </footer>
         </form>
       </div>

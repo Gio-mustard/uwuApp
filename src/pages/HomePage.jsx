@@ -320,7 +320,7 @@ export function HomePage() {
         open={showModal}
         onAdd={handleAdd}
         onClose={() => setShowModal(false)}
-        initialType={typeModal}
+        task_type={typeModal}
         editMode={editMode.isEditing}
         payloadTask={editMode.payload}
         onDelete={handleDelete}
