@@ -28,6 +28,15 @@
   --color-success: #34a853;
   --color-danger: #E85D5D;
 
+  /* Next-event card — overdue variant (per-palette via colorPalettes.js) */
+  --overdue-card-gradient-start: #92400e;
+  --overdue-card-gradient-mid:   #d97706;
+  --overdue-card-gradient-end:   #fbbf24;
+  --overdue-card-shadow: 0 4px 24px rgba(217, 119, 6, 0.45), 0 1px 4px rgba(0, 0, 0, 0.1);
+
+  /* Next-event card — upcoming variant shadow  */
+  --upcoming-card-shadow: 0 4px 20px rgba(232, 93, 93, 0.38), 0 1px 4px rgba(0, 0, 0, 0.08);
+
   /* Surface */
   --color-bg: #f5f4f2;
   --color-surface: #ffffff;
