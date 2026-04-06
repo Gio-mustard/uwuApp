@@ -1,253 +1,336 @@
-/* ─── NoteEditorView — Full-page in-place editor ──────────────────────────── */
+/* ─── NoteEditorView — Mobile-first custom editor ─────────────────────────── */
 
-.note-editor-view {
+.nev {
   display: flex;
   flex-direction: column;
   height: 100%;
   min-height: 100%;
   background: var(--color-surface);
-  animation: nev-slide-in 0.22s cubic-bezier(0.4, 0, 0.2, 1) both;
+  animation: nev-in 0.18s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
-@keyframes nev-slide-in {
-  from { opacity: 0; transform: translateX(18px); }
+@keyframes nev-in {
+  from { opacity: 0; transform: translateX(14px); }
   to   { opacity: 1; transform: translateX(0); }
 }
 
-/* ─── Top bar ─────────────────────────────────────────────────────────────── */
+/* ─── Top bar ────────────────────────────────────────────────────────────── */
 
-.nev-topbar {
+.nev__topbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 14px 16px;
+  gap: 8px;
+  padding: 10px 12px;
   border-bottom: 1.5px solid var(--color-border);
   flex-shrink: 0;
   background: var(--color-surface);
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 20;
 }
 
-.nev-back-btn {
+.nev__back {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 6px 12px 6px 6px;
-  border: none;
+  gap: 3px;
+  padding: 6px 10px 6px 4px;
   background: none;
+  border: none;
   border-radius: 8px;
   font-family: var(--font-body);
-  font-size: 0.88rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: var(--color-primary);
   cursor: pointer;
-  transition: background 150ms;
-}
-
-.nev-back-btn svg {
-  width: 18px;
-  height: 18px;
+  transition: background 120ms;
   flex-shrink: 0;
+  user-select: none;
+}
+.nev__back svg { width: 18px; height: 18px; }
+.nev__back:hover,
+.nev__back:active { background: color-mix(in srgb, var(--color-primary) 10%, transparent); }
+
+.nev__status {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  font-size: 0.74rem;
+  pointer-events: none;
 }
 
-.nev-back-btn:hover {
-  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
-}
-
-/* ─── Save status ────────────────────────────────────────────────────────── */
-
-.nev-status {
-  font-size: 0.78rem;
-  min-width: 90px;
-  text-align: right;
-}
-
-.nev-status__saving {
+.nev__saving {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   color: var(--color-text-muted);
 }
 
-.nev-status__dot {
-  width: 7px;
-  height: 7px;
+.nev__dot {
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: var(--color-primary);
   animation: nev-pulse 1s ease-in-out infinite;
-  flex-shrink: 0;
 }
 
 @keyframes nev-pulse {
   0%, 100% { opacity: 1; }
-  50%       { opacity: 0.3; }
+  50%       { opacity: 0.25; }
 }
 
-.nev-status__saved {
-  color: var(--color-success);
-  font-weight: 600;
-  animation: fade-in 0.2s ease;
+.nev__saved { color: var(--color-success); font-weight: 600; }
+
+/* ─── Mode button ────────────────────────────────────────────────────────── */
+
+.nev__mode-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: none;
+  border: 1.5px solid var(--color-border);
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background 120ms, border-color 120ms, color 120ms;
+  flex-shrink: 0;
+  user-select: none;
+}
+.nev__mode-btn svg { width: 13px; height: 13px; }
+.nev__mode-btn:hover { border-color: var(--color-border-strong); color: var(--color-text); }
+
+/* Active state when split is visible */
+.nev[data-mode="split"] .nev__mode-btn {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
 }
 
-/* ─── Content area ────────────────────────────────────────────────────────── */
+/* ─── Meta: title + tags ─────────────────────────────────────────────────── */
 
-.nev-content {
-  flex: 1;
+.nev__meta {
+  flex-shrink: 0;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  padding: 0;
+  gap: 10px;
 }
 
-/* ─── Title ──────────────────────────────────────────────────────────────── */
-
-.nev-title {
+.nev__title {
   width: 100%;
-  padding: 22px 20px 8px;
   border: none;
   outline: none;
+  background: transparent;
   font-family: var(--font-body);
-  font-size: 1.7rem;
+  font-size: clamp(1.3rem, 4vw, 1.6rem);
   font-weight: 800;
   color: var(--color-text);
-  background: transparent;
   line-height: 1.2;
   letter-spacing: -0.02em;
   user-select: text;
-  flex-shrink: 0;
+  caret-color: var(--color-primary);
 }
-
-.nev-title::placeholder {
+.nev__title::placeholder {
   color: var(--color-text-muted);
-  font-weight: 700;
-  opacity: 0.45;
+  opacity: 0.4;
 }
 
-/* ─── Tags row ─────────────────────────────────────────────────────────────── */
+/* ─── Body: contains write-pane and/or preview-pane ─────────────────────── */
 
-.nev-tags {
-  padding: 0 16px 14px;
-  flex-shrink: 0;
-}
-
-/* ─── MD Editor ─────────────────────────────────────────────────────────────── */
-
-.nev-editor {
+.nev__body {
   flex: 1;
+  display: flex;
+  flex-direction: column;   /* mobile: stacked */
   overflow: hidden;
+  min-height: 0;
+}
+
+/* ─── Write pane ─────────────────────────────────────────────────────────── */
+
+.nev__write-pane {
   display: flex;
   flex-direction: column;
-  border-top: 1px solid var(--color-border);
-}
-
-.nev-editor .w-md-editor {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  height: 100% !important;
-  font-family: var(--font-body) !important;
   flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  border-right: none; /* overridden in split below */
 }
 
-.nev-editor .w-md-editor-toolbar {
-  background: var(--color-surface-2) !important;
-  border-bottom: 1px solid var(--color-border) !important;
-  padding: 4px 14px !important;
+/* In split mode on mobile: write pane takes 55%, preview 45% */
+.nev[data-mode="split"] .nev__write-pane {
+  flex: 55;
+  border-bottom: 1.5px solid var(--color-border);
 }
 
-.nev-editor .w-md-editor-toolbar li > button {
-  color: var(--color-text-muted) !important;
-  border-radius: 6px !important;
-  transition: background 120ms, color 120ms !important;
+/* ─── Toolbar ────────────────────────────────────────────────────────────── */
+
+.nev-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 5px 10px;
+  background: var(--color-surface-2);
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nev-toolbar::-webkit-scrollbar { display: none; }
+
+.nev-toolbar__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 30px;
+  padding: 0 7px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background 100ms, color 100ms;
+  flex-shrink: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+.nev-toolbar__btn--bold   { font-weight: 800; }
+.nev-toolbar__btn--italic { font-style: italic; }
+.nev-toolbar__btn:hover,
+.nev-toolbar__btn:active {
+  background: var(--color-surface-3);
+  color: var(--color-text);
 }
 
-.nev-editor .w-md-editor-toolbar li > button:hover {
-  background: var(--color-surface-3) !important;
-  color: var(--color-text) !important;
-}
+/* ─── Textarea ───────────────────────────────────────────────────────────── */
 
-.nev-editor .w-md-editor-content {
-  overflow-y: auto !important;
+.nev__textarea {
   flex: 1;
+  width: 100%;
+  padding: 14px 16px;
+  border: none;
+  outline: none;
+  resize: none;
+  background: transparent;
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  /* Prevent iOS zoom (must be ≥ 16px) */
+  font-size: max(16px, 0.88rem);
+  line-height: 1.7;
+  color: var(--color-text);
+  caret-color: var(--color-primary);
+  user-select: text;
+  -webkit-user-select: text;
+  overflow-y: auto;
+}
+.nev__textarea::placeholder {
+  color: var(--color-text-muted);
+  opacity: 0.6;
+  font-family: var(--font-body);
+  font-style: italic;
+  line-height: 1.8;
 }
 
-.nev-editor .w-md-editor-text-input,
-.nev-editor .w-md-editor-text {
-  font-family: var(--font-body) !important;
-  font-size: 0.94rem !important;
-  line-height: 1.75 !important;
-  color: var(--color-text) !important;
-  user-select: text !important;
-  caret-color: var(--color-primary) !important;
+/* ─── Preview pane ───────────────────────────────────────────────────────── */
+
+.nev__preview-pane {
+  flex: 1;
+  padding: 14px 16px;
+  overflow-y: auto;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  line-height: 1.8;
+  color: var(--color-text);
+  user-select: text;
+  -webkit-user-select: text;
 }
 
-.nev-editor .wmde-markdown {
-  font-family: var(--font-body) !important;
-  font-size: 0.94rem !important;
-  line-height: 1.8 !important;
-  color: var(--color-text) !important;
-  background: transparent !important;
-  padding: 16px 22px !important;
-  user-select: text !important;
+/* In split mode on mobile: preview gets 45% */
+.nev[data-mode="split"] .nev__preview-pane {
+  flex: 45;
 }
 
-.nev-editor .wmde-markdown h1,
-.nev-editor .wmde-markdown h2,
-.nev-editor .wmde-markdown h3 {
-  color: var(--color-text) !important;
-  font-weight: 700 !important;
-  margin-top: 1.2em !important;
-  margin-bottom: 0.4em !important;
+/* Markdown rendered styles */
+.nev__preview-pane h1,
+.nev__preview-pane h2,
+.nev__preview-pane h3 {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--color-text);
+  line-height: 1.3;
+  margin: 1.1em 0 0.4em;
 }
-
-.nev-editor .wmde-markdown h1 { font-size: 1.6rem !important; }
-.nev-editor .wmde-markdown h2 { font-size: 1.25rem !important; }
-.nev-editor .wmde-markdown h3 { font-size: 1.05rem !important; }
-
-.nev-editor .wmde-markdown code {
-  background: var(--color-surface-2) !important;
-  border-radius: 5px !important;
-  padding: 2px 6px !important;
-  font-size: 0.88em !important;
+.nev__preview-pane h1:first-child,
+.nev__preview-pane h2:first-child,
+.nev__preview-pane h3:first-child { margin-top: 0; }
+.nev__preview-pane h1 { font-size: 1.4rem; }
+.nev__preview-pane h2 { font-size: 1.15rem; }
+.nev__preview-pane h3 { font-size: 1rem; }
+.nev__preview-pane p  { margin: 0 0 0.85em; }
+.nev__preview-pane ul,
+.nev__preview-pane ol { margin: 0 0 0.85em; padding-left: 1.3em; }
+.nev__preview-pane li { margin-bottom: 0.25em; }
+.nev__preview-pane code {
+  font-family: 'Menlo', 'Monaco', monospace;
+  font-size: 0.84em;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 1px 5px;
 }
-
-.nev-editor .wmde-markdown pre > code {
-  background: transparent !important;
-  padding: 0 !important;
+.nev__preview-pane pre {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  overflow-x: auto;
+  margin: 0 0 1em;
 }
-
-.nev-editor .wmde-markdown pre {
-  background: var(--color-surface-2) !important;
-  border-radius: 10px !important;
-  padding: 14px 18px !important;
-  overflow-x: auto !important;
+.nev__preview-pane pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.87rem;
 }
-
-.nev-editor .wmde-markdown blockquote {
-  border-left: 3px solid var(--color-primary) !important;
-  margin-left: 0 !important;
-  padding-left: 16px !important;
-  color: var(--color-description) !important;
+.nev__preview-pane blockquote {
+  margin: 0 0 1em;
+  padding: 3px 0 3px 12px;
+  border-left: 3px solid var(--color-primary);
+  color: var(--color-description);
 }
+.nev__preview-pane a   { color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; }
+.nev__preview-pane hr  { border: none; border-top: 1.5px solid var(--color-border); margin: 1em 0; }
+.nev__preview-pane strong { font-weight: 700; }
+.nev__preview-pane em    { font-style: italic; }
 
-.nev-editor .wmde-markdown a {
-  color: var(--color-primary) !important;
-}
-
-/* ─── Desktop ─────────────────────────────────────────────────────────────── */
+/* ─── DESKTOP — split side by side ──────────────────────────────────────── */
 
 @media (min-width: 768px) {
-  .nev-topbar {
-    padding: 16px 28px;
+  .nev__topbar { padding: 12px 24px; }
+  .nev__meta   { padding: 18px 24px 14px; }
+
+  /* In split mode: horizontal layout */
+  .nev[data-mode="split"] .nev__body {
+    flex-direction: row;
   }
 
-  .nev-title {
-    padding: 28px 28px 10px;
-    font-size: 2rem;
+  .nev[data-mode="split"] .nev__write-pane {
+    flex: 1;
+    border-bottom: none;
+    border-right: 1.5px solid var(--color-border);
   }
 
-  .nev-tags {
-    padding: 0 24px 16px;
+  .nev[data-mode="split"] .nev__preview-pane {
+    flex: 1;
   }
+
+  .nev__textarea  { padding: 18px 22px; font-size: 0.9rem; }
+  .nev__preview-pane { padding: 18px 22px; }
+  .nev-toolbar { padding: 5px 18px; }
 }
