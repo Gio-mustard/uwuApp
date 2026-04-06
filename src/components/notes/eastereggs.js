@@ -1,17 +1,13 @@
 export const EASTER_EGGS = {
   'uwu': '#ff61a6',
   'owo': '#ff8a5c',
-  'react': '#61dafb',
-  'sergio': '#a855f7',
-  'javascript': '#f7df1e',
-  'gemini': '#3b82f6',
-  'antigravity': '#22d3ee',
-  'magia': '#ffb020',
+  'sergio': '#0099ff',
   'sexo anal':'#009472',
-  'sexoanal':'#009472'
+  'sexoanal':'#009472',
+  'birote':'#874f10ff',
+  'tu eres mia me alejo mi vida en el espejo':'#39e7faff'
 };
 
-// Extensión para "Marked" que detecta y colorea las palabras de easteregg en la previsualización
 export function getEasterEggMarkedExtension() {
   const words = Object.keys(EASTER_EGGS);
   const regexString = `^\\b(${words.join('|')})\\b`;

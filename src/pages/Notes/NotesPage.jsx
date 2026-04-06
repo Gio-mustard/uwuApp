@@ -29,13 +29,13 @@ export function NotesPage() {
 
   const [localSearch, setLocalSearch] = useState(filters.search || '');
 
-  // Debounce search by 100ms
+  // Debounce search by N ms
   useEffect(() => {
     const handler = setTimeout(() => {
       if (filters.search !== localSearch) {
         setFilters({ search: localSearch });
       }
-    }, 100);
+    }, 500);
     return () => clearTimeout(handler);
   }, [localSearch, setFilters, filters.search]);
 
