@@ -7,7 +7,10 @@ import './NoteCard.css';
 import { useEffect, useState } from 'react';
 
 // Create an isolated instance of Marked so @tiptap/markdown doesn't pollute the tokenizers globally
+import { getEasterEggMarkedExtension } from '../../components/notes/eastereggs';
+
 const cardMarked = new Marked({ breaks: true, gfm: true });
+cardMarked.use({ extensions: [getEasterEggMarkedExtension()] });
 
 /**
  * @param {{

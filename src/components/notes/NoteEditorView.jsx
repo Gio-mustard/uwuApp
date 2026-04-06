@@ -21,12 +21,15 @@ import TaskItem from '@tiptap/extension-task-item';
 import TaskList from '@tiptap/extension-task-list';
 import { TagInput } from './TagInput';
 import { EDITOR_MODES, MODE_META } from './NoteEditorConstants';
+import { EasterEggExtension } from './extensions/EasterEggExtension';
+import { getEasterEggMarkedExtension } from './eastereggs';
 import './NoteEditorView.css';
 
 const AUTOSAVE_DELAY = 800;
 
 // Isolated marked instance for rendering pure previews without tiptap's tokenizer pollution
 const editorMarked = new Marked({ breaks: true, gfm: true });
+editorMarked.use({ extensions: [getEasterEggMarkedExtension()] });
 
 // ─── Shared toolbar actions (for write/split panes) ───────────────────────────
 const WRITE_ACTIONS = [
@@ -150,6 +153,7 @@ function WysiwygPane({ initialContent, onContentChange }) {
         placeholder: 'Escribe tu nota aquí… Usa # encabezados, **negrita**, - listas',
         emptyNodeClass: 'nev-wysiwyg__placeholder',
       }),
+      EasterEggExtension,
     ],
     content: initialContent,
     contentType: 'markdown',
