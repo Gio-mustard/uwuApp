@@ -13,6 +13,7 @@ import { NoteCard } from './NoteCard';
 import { NoteEditorView } from '../../components/notes/NoteEditorView';
 import { EDITOR_MODES } from '../../components/notes/NoteEditorConstants';
 import { Modal } from '../../components/modals/Modal';
+import { PlusIcon } from '../../components/common/Icons';
 import './NotesPage.css';
 
 export function NotesPage() {
@@ -91,7 +92,7 @@ export function NotesPage() {
               onClick={() => openEditor(null)}
               aria-label="Nueva nota"
             >
-              <span className="notes-new-btn__icon">+</span>
+              <span className="notes-new-btn__icon"><PlusIcon /></span>
               <span className="notes-new-btn__label">Nueva nota</span>
             </button>
           </div>
@@ -237,7 +238,7 @@ export function NotesPage() {
           onClick={() => openEditor(null)}
           aria-label="Nueva nota"
         >
-          +
+          <PlusIcon />
         </button>
       </div>
 

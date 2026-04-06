@@ -11,7 +11,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Modal } from '../../components/modals/Modal';
 import './VaulPage.css';
 import { useSession } from '../../context/SessionContext';
-import { TrashIcon, PromoteIcon } from '../../components/common/Icons';
+import { TrashIcon, PromoteIcon, PlusIcon } from '../../components/common/Icons';
 
 const VaulTask = ({ task, onDelete, onPromote }) => {
     const [isDeleting, setIsDeleting] = useState(false);
@@ -105,7 +105,7 @@ export function VaulPage({ open, onClose, onPromote }) {
                     handleSubmit(currentTitleTask)
                 }} >
                     <input className='form-input' type="text" placeholder='ej. planear vacaciones' name='title-task' value={currentTitleTask} onChange={e => setCurrentTitleTask(e.target.value)} />
-                    <button type='submit' className='btn-primary create-vaul-task'>+</button>
+                    <button type='submit' className='btn-primary create-vaul-task'><PlusIcon /></button>
                 </form>
                 <hr className='divider' />
                 <main className='vaul-tasks'>

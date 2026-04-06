@@ -307,7 +307,10 @@
     padding-bottom: 24px;
   }
   #notes-new-btn{
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-items: center;
+    gap: 1svh;
   }
 
   .notes-grid-area {

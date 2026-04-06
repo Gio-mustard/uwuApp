@@ -13,6 +13,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useSession } from '../../context/SessionContext';
+import { PlusIcon } from '../common/Icons';
 import './TagInput.css';
 
 // Soft pastel palette for auto-assigning tag colors
@@ -237,7 +238,7 @@ export function TagInput({ availableTags = [], selectedTags = [], onChange, onCr
               onMouseDown={(e) => { e.preventDefault(); handleCreate(); }}
               disabled={creating}
             >
-              <span className="tag-input__create-icon">+</span>
+              <span className="tag-input__create-icon"><PlusIcon /></span>
               Crear «{query.trim()}»
             </button>
           )}
