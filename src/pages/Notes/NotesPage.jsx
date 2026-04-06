@@ -63,7 +63,7 @@ export function NotesPage() {
     <AppShell>
       <div className="notes-page">
         {/* ── Page Header ────────────────────────────────────────────────── */}
-        <header className="notes-header">
+        <header className="notes-header history-header">
           <div className="notes-header__top">
             <h1 className="notes-header__title">Notas</h1>
             <button
@@ -102,9 +102,8 @@ export function NotesPage() {
               >×</button>
             )}
           </div>
-        </header>
-
-        {/* ── Filters bar ────────────────────────────────────────────────── */}
+          <hr className='divider'/>
+          {/* ── Filters bar ────────────────────────────────────────────────── */}
         <div className="notes-filters">
           <div className="notes-filters__sort">
             <select
@@ -170,6 +169,9 @@ export function NotesPage() {
             </div>
           )}
         </div>
+        </header>
+
+        
 
         {/* ── Notes grid ─────────────────────────────────────────────────── */}
         <main className="notes-grid-area">
