@@ -1,48 +1,55 @@
 /**
- * @fileoverview NoteEditorView — Mobile-first custom Markdown editor.
+ * @fileoverview NoteEditorView — Mobile-first note editor with 4 modes.
  *
- * Three modes (cycled with the top-right button):
- *  - 'write'   → textarea only (default)
- *  - 'split'   → textarea + live preview side by side (desktop) / stacked (mobile)
- *  - 'preview' → rendered preview only
+ * Modes (cycled by the top-right button):
+ *  write   → plain textarea  +  minimal markdown toolbar
+ *  split   → textarea (left/top) + live HTML preview (right/bottom)
+ *  wysiwyg → Tiptap WYSIWYG: inline rendering while writing (Notion-style)
+ *  preview → read-only rendered HTML view
  *
- * Auto-save: debounce 800ms + flush on back navigation.
+ * Auto-save: debounce 800 ms on any content change + flush on back navigation.
+ * Markdown storage: content is always persisted as a markdown string.
  */
 
 import { useState, useRef, useCallback, useEffect, useId } from 'react';
-import { marked } from 'marked';
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import { Markdown } from '@tiptap/markdown';
+import Placeholder from '@tiptap/extension-placeholder';
+import { marked, Marked } from 'marked';
+import TaskItem from '@tiptap/extension-task-item';
+import TaskList from '@tiptap/extension-task-list';
 import { TagInput } from './TagInput';
+import { EDITOR_MODES, MODE_META } from './NoteEditorConstants';
 import './NoteEditorView.css';
 
 const AUTOSAVE_DELAY = 800;
 
-marked.setOptions({ breaks: true, gfm: true });
+// Isolated marked instance for rendering pure previews without tiptap's tokenizer pollution
+const editorMarked = new Marked({ breaks: true, gfm: true });
 
-const MODES = ['write', 'split', 'preview'];
-
-// ─── Toolbar actions ──────────────────────────────────────────────────────────
-const ACTIONS = [
-  { id: 'bold',   title: 'Negrita',   label: 'B',  style: 'bold',   apply: (s) => `**${s || 'texto'}**` },
-  { id: 'italic', title: 'Itálica',   label: 'I',  style: 'italic', apply: (s) => `*${s || 'texto'}*` },
-  { id: 'h2',     title: 'Encabezado',label: 'H',  apply: (s) => `## ${s || 'Título'}`, linePrefix: true },
-  { id: 'ul',     title: 'Lista',     label: '≡',  apply: (s) => `- ${s || 'ítem'}`, linePrefix: true },
-  { id: 'code',   title: 'Código',    label: '<>', apply: (s) => `\`${s || 'código'}\`` },
-  { id: 'quote',  title: 'Cita',      label: '❝', apply: (s) => `> ${s || 'cita'}`, linePrefix: true },
-  { id: 'hr',     title: 'Separador', label: '—',  apply: () => '\n---\n' },
-  { id: 'link',   title: 'Enlace',    label: '⎘',  apply: (s) => `[${s || 'texto'}](url)` },
+// ─── Shared toolbar actions (for write/split panes) ───────────────────────────
+const WRITE_ACTIONS = [
+  { id: 'bold',   title: 'Negrita',    label: 'B',  style: 'bold',   apply: (s) => `**${s || 'texto'}**` },
+  { id: 'italic', title: 'Itálica',    label: 'I',  style: 'italic', apply: (s) => `*${s || 'texto'}*` },
+  { id: 'h2',     title: 'Encabezado', label: 'H',  apply: (s) => `## ${s || 'Título'}`, linePrefix: true },
+  { id: 'ul',     title: 'Lista',      label: '≡',  apply: (s) => `- ${s || 'ítem'}`, linePrefix: true },
+  { id: 'code',   title: 'Código',     label: '<>', apply: (s) => `\`${s || 'código'}\`` },
+  { id: 'quote',  title: 'Cita',       label: '❝', apply: (s) => `> ${s || 'cita'}`, linePrefix: true },
+  { id: 'hr',     title: 'Separador',  label: '—',  apply: () => '\n---\n' },
+  { id: 'link',   title: 'Enlace',     label: '⎘',  apply: (s) => `[${s || 'texto'}](url)` },
 ];
 
-function EditorToolbar({ textareaRef, onContentChange }) {
-  const applyAction = useCallback((action) => {
+// ─── Write-mode toolbar (inserts markdown syntax in textarea) ─────────────────
+function WriteToolbar({ textareaRef, onContentChange }) {
+  const apply = useCallback((action) => {
     const el = textareaRef.current;
     if (!el) return;
-
     const start = el.selectionStart;
     const end   = el.selectionEnd;
     const val   = el.value;
     const sel   = val.slice(start, end);
     const insert = action.apply(sel);
-
     let newVal, newCursor;
     if (action.linePrefix) {
       const lineStart = val.lastIndexOf('\n', start - 1) + 1;
@@ -52,8 +59,6 @@ function EditorToolbar({ textareaRef, onContentChange }) {
       newVal    = val.slice(0, start) + insert + val.slice(end);
       newCursor = start + insert.length;
     }
-
-    // Update value without losing React controlled state
     const setter = Object.getOwnPropertyDescriptor(
       window.HTMLTextAreaElement.prototype, 'value'
     ).set;
@@ -66,15 +71,15 @@ function EditorToolbar({ textareaRef, onContentChange }) {
 
   return (
     <div className="nev-toolbar" role="toolbar" aria-label="Formato">
-      {ACTIONS.map((a) => (
+      {WRITE_ACTIONS.map((a) => (
         <button
           key={a.id}
           className={`nev-toolbar__btn${a.style ? ` nev-toolbar__btn--${a.style}` : ''}`}
           title={a.title}
           aria-label={a.title}
           type="button"
-          onMouseDown={(e) => { e.preventDefault(); applyAction(a); }}
-          onTouchStart={(e) => { e.preventDefault(); applyAction(a); }}
+          onMouseDown={(e) => { e.preventDefault(); apply(a); }}
+          onTouchStart={(e) => { e.preventDefault(); apply(a); }}
         >
           {a.label}
         </button>
@@ -83,54 +88,124 @@ function EditorToolbar({ textareaRef, onContentChange }) {
   );
 }
 
-// ─── Mode cycle button ────────────────────────────────────────────────────────
-const MODE_META = {
-  write: {
-    next: 'split',
-    icon: (
-      // "split" icon — two vertical panels
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-        strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="3" width="18" height="18" rx="2" />
-        <line x1="12" y1="3" x2="12" y2="21" />
-      </svg>
-    ),
-    label: 'Split',
-  },
-  split: {
-    next: 'preview',
-    icon: (
-      // "eye" icon — preview only
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-        strokeLinecap="round" strokeLinejoin="round">
-        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-        <circle cx="12" cy="12" r="3" />
-      </svg>
-    ),
-    label: 'Preview',
-  },
-  preview: {
-    next: 'write',
-    icon: (
-      // "edit" icon — back to write
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-        strokeLinecap="round" strokeLinejoin="round">
-        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-      </svg>
-    ),
-    label: 'Editar',
-  },
-};
+// ─── WYSIWYG toolbar (uses Tiptap chain commands) ─────────────────────────────
+const WYSIWYG_ACTIONS = [
+  { id: 'bold',    title: 'Negrita',    label: 'B',  style: 'bold',   cmd: (e) => e.chain().focus().toggleBold().run() },
+  { id: 'italic',  title: 'Itálica',    label: 'I',  style: 'italic', cmd: (e) => e.chain().focus().toggleItalic().run() },
+  { id: 'strike',  title: 'Tachado',    label: 'S̶',  cmd: (e) => e.chain().focus().toggleStrike().run() },
+  { id: 'h2',      title: 'Encabezado', label: 'H2', cmd: (e) => e.chain().focus().toggleHeading({ level: 2 }).run(), active: (e) => e.isActive('heading', { level: 2 }) },
+  { id: 'h3',      title: 'Subtítulo',  label: 'H3', cmd: (e) => e.chain().focus().toggleHeading({ level: 3 }).run(), active: (e) => e.isActive('heading', { level: 3 }) },
+  { id: 'ul',      title: 'Lista',      label: '≡',  cmd: (e) => e.chain().focus().toggleBulletList().run(), active: (e) => e.isActive('bulletList') },
+  { id: 'ol',      title: 'Lista núm.', label: '1.', cmd: (e) => e.chain().focus().toggleOrderedList().run(), active: (e) => e.isActive('orderedList') },
+  { id: 'code',    title: 'Código',     label: '<>', cmd: (e) => e.chain().focus().toggleCode().run(), active: (e) => e.isActive('code') },
+  { id: 'quote',   title: 'Cita',       label: '❝', cmd: (e) => e.chain().focus().toggleBlockquote().run(), active: (e) => e.isActive('blockquote') },
+  { id: 'hr',      title: 'Separador',  label: '—',  cmd: (e) => e.chain().focus().setHorizontalRule().run() },
+];
+
+function WysiwygToolbar({ editor }) {
+  if (!editor) return null;
+  return (
+    <div className="nev-toolbar" role="toolbar" aria-label="Formato">
+      {WYSIWYG_ACTIONS.map((a) => {
+        const isActive = a.active ? a.active(editor) : editor.isActive(a.id);
+        return (
+          <button
+            key={a.id}
+            className={`nev-toolbar__btn${a.style ? ` nev-toolbar__btn--${a.style}` : ''}${isActive ? ' nev-toolbar__btn--on' : ''}`}
+            title={a.title}
+            aria-label={a.title}
+            aria-pressed={isActive}
+            type="button"
+            onMouseDown={(e) => { e.preventDefault(); a.cmd(editor); }}
+            onTouchStart={(e) => { e.preventDefault(); a.cmd(editor); }}
+          >
+            {a.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─── WYSIWYG Pane (Tiptap editor) ────────────────────────────────────────────
+/**
+ * Isolated component so useEditor lifecycle matches the wysiwyg pane mount.
+ * iniContent is readonly after mount — changes come out via onUpdate only.
+ */
+function WysiwygPane({ initialContent, onContentChange }) {
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      TaskList,
+      TaskItem,
+      Markdown.configure({
+        html: false,
+        tightLists: false,
+        bulletListMarker: '-',
+        breaks: true,
+        transformPastedText: true,
+        transformCopiedText: true,
+      }),
+      Placeholder.configure({
+        placeholder: 'Escribe tu nota aquí… Usa # encabezados, **negrita**, - listas',
+        emptyNodeClass: 'nev-wysiwyg__placeholder',
+      }),
+    ],
+    content: initialContent,
+    contentType: 'markdown',
+    onUpdate({ editor }) {
+      try {
+        const md = editor.getMarkdown();
+        onContentChange(md);
+      } catch (e) {
+        console.error("Markdown serialization error:", e);
+      }
+    },
+    editorProps: {
+      attributes: {
+        class: 'nev__wysiwyg-content',
+        spellcheck: 'true',
+        autocapitalize: 'sentences',
+      },
+    },
+  });
+
+  useEffect(() => {
+    if (editor) {
+      window.tiptapEditor = editor;
+    }
+    return () => { window.tiptapEditor = null; };
+  }, [editor]);
+
+  return (
+    <div className="nev__wysiwyg-pane">
+      <WysiwygToolbar editor={editor} />
+      <div className="nev__wysiwyg-scroll">
+        <EditorContent editor={editor} />
+      </div>
+    </div>
+  );
+}
+
 
 // ─── Main component ───────────────────────────────────────────────────────────
-export function NoteEditorView({ note, onBack, onSave, tags, onCreateTag }) {
+export function NoteEditorView({ 
+  note, 
+  onBack, 
+  onSave, 
+  tags, 
+  onCreateTag,
+  availableModes = Object.values(EDITOR_MODES),
+  initialMode
+}) {
   const titleId = useId();
+
+  const startMode = initialMode && availableModes.includes(initialMode) ? initialMode : availableModes[0];
 
   const [title,   setTitle]   = useState(note?.title   ?? '');
   const [content, setContent] = useState(note?.content ?? '');
   const [selTags, setSelTags] = useState(note?.tags    ?? []);
-  const [mode,    setMode]    = useState('write');
+  const [mode,    setMode]    = useState(startMode);
   const [saving,  setSaving]  = useState(false);
   const [saved,   setSaved]   = useState(false);
 
@@ -139,28 +214,16 @@ export function NoteEditorView({ note, onBack, onSave, tags, onCreateTag }) {
   const isLeaving    = useRef(false);
   const textareaRef  = useRef(null);
 
-  // Reset when note changes
+  // Reset state when note prop changes
   useEffect(() => {
     isLeaving.current = false;
     setTitle(note?.title   ?? '');
     setContent(note?.content ?? '');
     setSelTags(note?.tags   ?? []);
-    setMode('write');
+    setMode(startMode);
     setSaved(false);
     savedNoteRef.current = note ?? null;
-  }, [note?.id]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Auto-focus
-  useEffect(() => {
-    const t = setTimeout(() => {
-      if (!title) {
-        document.getElementById(titleId)?.focus();
-      } else {
-        textareaRef.current?.focus();
-      }
-    }, 80);
-    return () => clearTimeout(t);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [note?.id, startMode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ─── Save ──────────────────────────────────────────────────────────────────
   const performSave = useCallback(async (t, c, tg) => {
@@ -192,19 +255,6 @@ export function NoteEditorView({ note, onBack, onSave, tags, onCreateTag }) {
     return () => { if (pendingSave.current) clearTimeout(pendingSave.current); };
   }, [title, content, selTags]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Cmd/Ctrl + S
-  useEffect(() => {
-    const h = (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
-        e.preventDefault();
-        if (pendingSave.current) clearTimeout(pendingSave.current);
-        performSave(title, content, selTags);
-      }
-    };
-    document.addEventListener('keydown', h);
-    return () => document.removeEventListener('keydown', h);
-  }, [title, content, selTags, performSave]);
-
   const handleBack = useCallback(async () => {
     if (isLeaving.current) return;
     isLeaving.current = true;
@@ -213,11 +263,33 @@ export function NoteEditorView({ note, onBack, onSave, tags, onCreateTag }) {
     onBack();
   }, [title, content, selTags, performSave, onBack]);
 
-  const cycleMode = () => setMode((m) => MODE_META[m].next);
+  // Global keydown listeners for shortcuts
+  useEffect(() => {
+    const h = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+        e.preventDefault();
+        if (pendingSave.current) clearTimeout(pendingSave.current);
+        performSave(title, content, selTags);
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        handleBack();
+      }
+    };
+    document.addEventListener('keydown', h);
+    return () => document.removeEventListener('keydown', h);
+  }, [title, content, selTags, performSave, handleBack]);
 
-  const showWrite   = mode === 'write' || mode === 'split';
-  const showPreview = mode === 'preview' || mode === 'split';
-  const previewHtml = showPreview ? marked.parse(content || '*Sin contenido*') : '';
+  const cycleMode = () => setMode((m) => {
+    const idx = availableModes.indexOf(m);
+    return availableModes[(idx + 1) % availableModes.length] || availableModes[0];
+  });
+
+  const nextModeIndex = (availableModes.indexOf(mode) + 1) % availableModes.length;
+  const nextMode = availableModes[nextModeIndex] || mode;
+
+  const showWrite   = mode === EDITOR_MODES.WRITE || mode === EDITOR_MODES.SPLIT;
+  const showHtmlPre = mode === EDITOR_MODES.PREVIEW || mode === EDITOR_MODES.SPLIT;
+  const previewHtml = showHtmlPre ? editorMarked.parse(content || '*Sin contenido*') : '';
 
   return (
     <div className="nev" data-mode={mode}>
@@ -237,15 +309,17 @@ export function NoteEditorView({ note, onBack, onSave, tags, onCreateTag }) {
           {saved && !saving && <span className="nev__saved">✓ Guardado</span>}
         </div>
 
-        <button
-          className={`nev__mode-btn nev__mode-btn--${MODE_META[mode].next}`}
-          onClick={cycleMode}
-          aria-label={MODE_META[mode].label}
-          title={MODE_META[mode].label}
-        >
-          {MODE_META[mode].icon}
-          <span>{MODE_META[mode].label}</span>
-        </button>
+        {availableModes.length > 1 && (
+          <button
+            className="nev__mode-btn"
+            onClick={cycleMode}
+            aria-label={MODE_META[nextMode]?.label}
+            title={`Cambiar a: ${MODE_META[nextMode]?.label}`}
+          >
+            {MODE_META[nextMode]?.icon}
+            <span>{MODE_META[nextMode]?.label}</span>
+          </button>
+        )}
       </div>
 
       {/* ── Meta: title + tags ──────────────────────────────────────────── */}
@@ -270,10 +344,10 @@ export function NoteEditorView({ note, onBack, onSave, tags, onCreateTag }) {
       {/* ── Body ────────────────────────────────────────────────────────── */}
       <div className="nev__body">
 
-        {/* Write pane */}
+        {/* Write pane (raw markdown textarea) */}
         {showWrite && (
           <div className="nev__write-pane">
-            <EditorToolbar textareaRef={textareaRef} onContentChange={setContent} />
+            <WriteToolbar textareaRef={textareaRef} onContentChange={setContent} />
             <textarea
               ref={textareaRef}
               className="nev__textarea"
@@ -286,11 +360,20 @@ export function NoteEditorView({ note, onBack, onSave, tags, onCreateTag }) {
           </div>
         )}
 
-        {/* Preview pane */}
-        {showPreview && (
+        {/* HTML Preview pane */}
+        {showHtmlPre && (
           <div
             className="nev__preview-pane"
             dangerouslySetInnerHTML={{ __html: previewHtml }}
+          />
+        )}
+
+        {/* WYSIWYG pane — remounted when switching into wysiwyg mode */}
+        {mode === EDITOR_MODES.WYSIWYG && (
+          <WysiwygPane
+            key={`wysiwyg-${note?.id ?? 'new'}`}
+            initialContent={content}
+            onContentChange={setContent}
           />
         )}
 

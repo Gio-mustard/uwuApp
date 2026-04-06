@@ -11,6 +11,8 @@ import { useSession } from '../../context/SessionContext';
 import { AppShell } from '../../components/layout/AppShell';
 import { NoteCard } from './NoteCard';
 import { NoteEditorView } from '../../components/notes/NoteEditorView';
+import { EDITOR_MODES } from '../../components/notes/NoteEditorConstants';
+import { Modal } from '../../components/modals/Modal';
 import './NotesPage.css';
 
 export function NotesPage() {
@@ -21,6 +23,8 @@ export function NotesPage() {
   const [view,       setView]       = useState('list');
   const [activeNote, setActiveNote] = useState(null);
   const [filterTagsOpen, setFilterTagsOpen] = useState(false);
+  const [noteToDelete, setNoteToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const activeTagIds = filters.tagIds ?? [];
 
@@ -53,6 +57,8 @@ export function NotesPage() {
           onSave={saveNote}
           tags={tags}
           onCreateTag={saveTag}
+          availableModes={[EDITOR_MODES.WYSIWYG]}
+          initialMode={EDITOR_MODES.WYSIWYG}
         />
       </AppShell>
     );
@@ -201,7 +207,10 @@ export function NotesPage() {
                   key={note.id ?? i}
                   note={note}
                   onClick={() => openEditor(note)}
-                  onDelete={deleteNote}
+                  onDelete={(id) => {
+                    const targetNote = notes.find((n) => n.id === id);
+                    if (targetNote) setNoteToDelete(targetNote);
+                  }}
                 />
               ))}
             </div>
@@ -218,6 +227,44 @@ export function NotesPage() {
           +
         </button>
       </div>
+
+      <Modal
+        open={!!noteToDelete}
+        onClose={() => setNoteToDelete(null)}
+        drawerContentClass="confirm-vaul-content"
+        handleClass="modal-vaul-handle"
+        overlayClass="modal-vaul-overlay"
+      >
+        <div className="confirm-vaul-body">
+          <h3 className='confirmation-message'>¿Quieres <b>eliminar</b> esta <b>nota?</b></h3>
+          <h2 className='confirmation-task-title'>{noteToDelete?.title || 'Sin título'}</h2>
+          <footer className="confirm-vaul-footer">
+            <button
+              disabled={isDeleting}
+              onClick={async () => {
+                if (!noteToDelete) return;
+                setIsDeleting(true);
+                await deleteNote(noteToDelete.id);
+                setNoteToDelete(null);
+                setIsDeleting(false);
+              }}
+              className='modal__type-btn btn-primary confirm-vaul-btn'
+            >
+              {isDeleting ? 'Eliminando...' : 'Eliminar'}
+              {isDeleting && (
+                <span className="loader" style={{ width: 14, height: 14, borderLeftColor: 'currentColor' }} />
+              )}
+            </button>
+            <button
+              disabled={isDeleting}
+              onClick={() => setNoteToDelete(null)}
+              className='modal__type-btn notes-cancel-btn'
+            >
+              Cancelar
+            </button>
+          </footer>
+        </div>
+      </Modal>
     </AppShell>
   );
 }

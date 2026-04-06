@@ -2,7 +2,12 @@
  * @fileoverview NoteCard — Card preview for a single note in the notes grid.
  */
 
+import { marked, Marked } from 'marked';
 import './NoteCard.css';
+import { useEffect, useState } from 'react';
+
+// Create an isolated instance of Marked so @tiptap/markdown doesn't pollute the tokenizers globally
+const cardMarked = new Marked({ breaks: true, gfm: true });
 
 /**
  * @param {{
@@ -12,16 +17,22 @@ import './NoteCard.css';
  * }} props
  */
 export function NoteCard({ note, onClick, onDelete }) {
-  const preview = stripMarkdown(note.content).slice(0, 140);
-  const updatedDate = note.updatedAt
+  const [updatedDate,setUpdatedDate] = useState(note.updatedAt
     ? formatDate(note.updatedAt)
-    : formatDate(note.createdAt);
+    : formatDate(note.createdAt));
 
   function handleDelete(e) {
     e.stopPropagation();
     onDelete(note.id);
   }
 
+  const [previewHtml, setPreviewHtml] = useState("");
+
+  useEffect(() => {
+    if (!note) return;
+    // marked.parse is synchronous since we have no async extensions loaded
+    setPreviewHtml(cardMarked.parse(note.content || ""));
+  }, [note]);
   return (
     <article className="note-card" onClick={onClick} tabIndex={0} role="button"
       onKeyDown={(e) => e.key === 'Enter' && onClick()}>
@@ -45,8 +56,11 @@ export function NoteCard({ note, onClick, onDelete }) {
         </button>
       </header>
 
-      {preview && (
-        <p className="note-card__preview">{preview}{note.content.length > 140 ? '…' : ''}</p>
+      {note.content && (
+        <div 
+          className="note-card__preview nev__prose" 
+          dangerouslySetInnerHTML={{ __html: previewHtml }} 
+        />
       )}
 
       {note.tags.length > 0 && (
@@ -69,6 +83,10 @@ export function NoteCard({ note, onClick, onDelete }) {
 
       <footer className="note-card__footer">
         <time className="note-card__date">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
           {updatedDate}
         </time>
       </footer>
@@ -77,18 +95,6 @@ export function NoteCard({ note, onClick, onDelete }) {
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function stripMarkdown(md = '') {
-  return md
-    .replace(/#{1,6}\s?/g, '')
-    .replace(/(\*\*|__)(.*?)\1/g, '$2')
-    .replace(/(\*|_)(.*?)\1/g, '$2')
-    .replace(/`{1,3}[^`]*`{1,3}/g, '')
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-    .replace(/^\s*[-*+>]\s+/gm, '')
-    .replace(/\n{2,}/g, ' ')
-    .trim();
-}
 
 function formatDate(iso) {
   if (!iso) return '';
