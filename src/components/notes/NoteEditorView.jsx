@@ -26,7 +26,7 @@ import { getEasterEggMarkedExtension } from './eastereggs';
 import { exportNoteToPDF } from '../../services/NotesService';
 import './NoteEditorView.css';
 
-const AUTOSAVE_DELAY = 800;
+const AUTOSAVE_DELAY = 200;
 
 // Isolated marked instance for rendering pure previews without tiptap's tokenizer pollution
 const editorMarked = new Marked({ breaks: true, gfm: true });
@@ -233,10 +233,17 @@ export function NoteEditorView({
   // ─── Save ──────────────────────────────────────────────────────────────────
   const performSave = useCallback(async (t, c, tg) => {
     if (!t.trim() && !c.trim()) return;
+
+    const prev = savedNoteRef.current;
+    if (prev && prev.title === t && prev.content === c && JSON.stringify(prev.tags) === JSON.stringify(tg)) {
+      // Bailout if absolutely nothing changed
+      return;
+    }
+
     setSaving(true);
     try {
       const result = await onSave({
-        id:      savedNoteRef.current?.id ?? null,
+        id:      prev?.id ?? null,
         title:   t,
         content: c,
         tags:    tg,
