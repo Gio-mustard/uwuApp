@@ -51,6 +51,7 @@ export function NotesPage() {
   if (view === 'editor') {
     return (
       <AppShell>
+
         <NoteEditorView
           note={activeNote}
           onBack={closeEditor}
@@ -59,7 +60,7 @@ export function NotesPage() {
           onCreateTag={saveTag}
           availableModes={[EDITOR_MODES.WYSIWYG]}
           initialMode={EDITOR_MODES.WYSIWYG}
-        />
+          />
       </AppShell>
     );
   }

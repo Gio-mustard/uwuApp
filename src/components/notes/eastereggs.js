@@ -7,6 +7,8 @@ export const EASTER_EGGS = {
   'gemini': '#3b82f6',
   'antigravity': '#22d3ee',
   'magia': '#ffb020',
+  'sexo anal':'#009472',
+  'sexoanal':'#009472'
 };
 
 // Extensión para "Marked" que detecta y colorea las palabras de easteregg en la previsualización
