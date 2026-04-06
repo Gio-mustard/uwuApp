@@ -12,6 +12,7 @@
  */
 
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useSession } from '../../context/SessionContext';
 import './TagInput.css';
 
 // Soft pastel palette for auto-assigning tag colors
@@ -34,9 +35,14 @@ function getTagColor(name) {
  * }} props
  */
 export function TagInput({ availableTags = [], selectedTags = [], onChange, onCreate }) {
+  const { useNotes } = useSession();
+  const { saveTag, deleteTag } = useNotes();
+
   const [query, setQuery]       = useState('');
   const [open, setOpen]         = useState(false);
   const [creating, setCreating] = useState(false);
+  const [editingTag, setEditingTag] = useState(null);
+  
   const inputRef = useRef(null);
   const wrapperRef = useRef(null);
 
@@ -141,16 +147,89 @@ export function TagInput({ availableTags = [], selectedTags = [], onChange, onCr
 
       {open && (suggestions.length > 0 || canCreate) && (
         <div className="tag-input__dropdown">
-          {suggestions.map((tag) => (
-            <button
-              key={tag.id}
-              className="tag-input__option"
-              onMouseDown={(e) => { e.preventDefault(); handleSelect(tag); }}
-            >
-              <span className="tag-chip__dot" style={{ background: tag.color ?? '#6b7280' }} />
-              {tag.name}
-            </button>
-          ))}
+          {suggestions.map((tag) => {
+            const isEditing = editingTag?.id === tag.id;
+            return (
+              <div
+                key={tag.id}
+                className="tag-input__option-wrapper"
+              >
+                <button
+                  className="tag-input__option"
+                  style={{ flexWrap: 'wrap', cursor: isEditing ? 'default' : 'pointer' }}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    if (!isEditing) handleSelect(tag);
+                  }}
+                >
+                  <div style={{ display: 'flex', width: '100%', alignItems: 'center', gap: '8px' }}>
+                    <span className="tag-chip__dot" style={{ background: tag.color ?? '#6b7280' }} />
+                    <span style={{ flex: 1, textAlign: 'left' }}>{tag.name}</span>
+                    
+                    <span
+                      className="tag-input__edit-btn"
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setEditingTag(isEditing ? null : { ...tag });
+                      }}
+                      title="Editar etiqueta"
+                    >
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                      </svg>
+                    </span>
+                  </div>
+
+                  {isEditing && (
+                    <div className="tag-input__edit-modal" onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
+                      <input
+                        className="tag-input__edit-input"
+                        value={editingTag.name}
+                        onChange={(e) => setEditingTag({ ...editingTag, name: e.target.value })}
+                        onClick={(e) => e.stopPropagation()}
+                        autoFocus
+                      />
+                      <div className="tag-input__edit-colors">
+                        {TAG_COLORS.map(c => (
+                          <div
+                            key={c}
+                            className={`tag-input__color-swatch ${editingTag.color === c ? 'active' : ''}`}
+                            style={{ background: c }}
+                            onClick={(e) => { e.stopPropagation(); setEditingTag({ ...editingTag, color: c }); }}
+                          />
+                        ))}
+                      </div>
+                      <div className="tag-input__edit-actions">
+                        <span
+                          className="tag-input__edit-btn-save"
+                          onClick={async (e) => {
+                            e.stopPropagation();
+                            if (!editingTag.name) return;
+                            await saveTag(editingTag);
+                            setEditingTag(null);
+                          }}
+                        >
+                          Guardar
+                        </span>
+                        <span
+                          className="tag-input__edit-btn-delete"
+                          onClick={async (e) => {
+                            e.stopPropagation();
+                            await deleteTag(tag.id);
+                            setEditingTag(null);
+                            handleRemove(tag.id);
+                          }}
+                        >
+                          Eliminar
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </button>
+              </div>
+            );
+          })}
 
           {canCreate && (
             <button

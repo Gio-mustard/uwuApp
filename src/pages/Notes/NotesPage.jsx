@@ -6,7 +6,7 @@
  *  - 'editor' → full-page NoteEditorView (replaces page content)
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useSession } from '../../context/SessionContext';
 import { AppShell } from '../../components/layout/AppShell';
 import { NoteCard } from './NoteCard';
@@ -25,6 +25,18 @@ export function NotesPage() {
   const [filterTagsOpen, setFilterTagsOpen] = useState(false);
   const [noteToDelete, setNoteToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const [localSearch, setLocalSearch] = useState(filters.search || '');
+
+  // Debounce search by 100ms
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (filters.search !== localSearch) {
+        setFilters({ search: localSearch });
+      }
+    }, 100);
+    return () => clearTimeout(handler);
+  }, [localSearch, setFilters, filters.search]);
 
   const activeTagIds = filters.tagIds ?? [];
 
@@ -97,14 +109,14 @@ export function NotesPage() {
               className="notes-search__input"
               type="search"
               placeholder="Buscar por título…"
-              value={filters.search}
-              onChange={(e) => setFilters({ search: e.target.value })}
+              value={localSearch}
+              onChange={(e) => setLocalSearch(e.target.value)}
               aria-label="Buscar notas"
             />
-            {filters.search && (
+            {localSearch && (
               <button
                 className="notes-search__clear"
-                onClick={() => setFilters({ search: '' })}
+                onClick={() => setLocalSearch('')}
                 aria-label="Limpiar búsqueda"
               >×</button>
             )}

@@ -69,6 +69,8 @@
   align-items: center;
   justify-content: center;
   opacity: 1;
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-danger);
   transition: opacity 150ms, background 150ms, color 150ms;
 }
 
@@ -81,10 +83,7 @@
   opacity: 1;
 }
 
-.note-card__delete:hover {
-  background: rgba(239, 68, 68, 0.1);
-  color: var(--color-danger);
-}
+
 
 /* ─── Preview ──────────────────────────────────────────────────────────────── */
 
@@ -160,5 +159,10 @@
 @media (min-width: 768px) {
   .note-card__delete{
     opacity: 0;
+    background: transparent;
+  }
+  .note-card__delete:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--color-danger);
   }
 }

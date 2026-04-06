@@ -132,3 +132,103 @@
   line-height: 1;
   font-weight: 400;
 }
+
+/* ─── Inline Edit Module ─────────────────────────────────────────────────── */
+
+.tag-input__option-wrapper {
+  border-bottom: 1px solid var(--color-surface-2);
+}
+
+.tag-input__edit-btn {
+  color: var(--color-text-muted);
+  font-size: 0.9em;
+  padding: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 120ms;
+}
+.tag-input__edit-btn:hover {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+}
+
+.tag-input__edit-modal {
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px;
+  background: var(--color-surface-3);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: fade-down 0.15s ease-out;
+}
+
+.tag-input__edit-input {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--color-text);
+  background: var(--color-surface);
+  outline: none;
+}
+.tag-input__edit-input:focus {
+  border-color: var(--color-primary);
+}
+
+.tag-input__edit-colors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag-input__color-swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 100ms;
+}
+.tag-input__color-swatch:hover {
+  transform: scale(1.15);
+}
+.tag-input__color-swatch.active {
+  border-color: var(--color-text);
+}
+
+.tag-input__edit-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.tag-input__edit-btn-save,
+.tag-input__edit-btn-delete {
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: opacity 120ms;
+}
+.tag-input__edit-btn-save {
+  background: var(--color-primary);
+  color: #fff;
+}
+.tag-input__edit-btn-save:hover { opacity: 0.8; }
+
+.tag-input__edit-btn-delete {
+  background: transparent;
+  color: var(--color-danger);
+}
+.tag-input__edit-btn-delete:hover {
+  background: color-mix(in srgb, var(--color-danger) 15%, transparent);
+}
