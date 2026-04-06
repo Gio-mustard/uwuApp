@@ -1,0 +1,168 @@
+/* ─── NoteCard ─────────────────────────────────────────────────────────────── */
+
+.note-card {
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: 16px;
+  padding: 16px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 180ms, transform 180ms, border-color 180ms;
+  animation: fade-up 0.22s cubic-bezier(0.4, 0, 0.2, 1) both;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+}
+
+.note-card:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.10);
+  transform: translateY(-2px);
+  border-color: var(--color-border-strong);
+}
+
+.note-card:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ─── Header ────────────────────────────────────────────────────────────────── */
+
+.note-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.note-card__title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.3;
+  flex: 1;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.note-card__untitled {
+  color: var(--color-text-muted);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.note-card__delete {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-danger);
+  transition: opacity 150ms, background 150ms, color 150ms;
+}
+
+.note-card__delete svg {
+  width: 14px;
+  height: 14px;
+}
+
+.note-card:hover .note-card__delete {
+  opacity: 1;
+}
+
+
+
+/* ─── Preview ──────────────────────────────────────────────────────────────── */
+
+.note-card__preview {
+  font-size: 0.8rem;
+  color: var(--color-description);
+  line-height: 1.55;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+/* Reset typography inside the card preview to avoid exploding the clamp */
+.note-card__preview * {
+  margin: 0 !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  color: inherit !important;
+}
+
+.note-card__preview ul,
+.note-card__preview ol {
+  padding-left: 1.2em;
+}
+
+/* ─── Tags ─────────────────────────────────────────────────────────────────── */
+
+.note-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.tag-chip--sm {
+  font-size: 0.7rem !important;
+  padding: 2px 7px 2px 5px !important;
+}
+
+.note-card__more-tags {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  padding: 2px 6px;
+  background: var(--color-surface-2);
+  border-radius: 100px;
+  border: 1px solid var(--color-border);
+}
+
+/* ─── Footer ───────────────────────────────────────────────────────────────── */
+
+.note-card__footer {
+  margin-top: auto;
+  padding-top: 4px;
+  border-top: 1px solid var(--color-border);
+}
+
+.note-card__date {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
+.note-card__date svg {
+  width: 12px;
+  height: 12px;
+  opacity: 0.8;
+}
+
+/* ─── Desktop — hide  delete button ───────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .note-card__delete{
+    opacity: 0;
+    background: transparent;
+  }
+  .note-card__delete:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--color-danger);
+  }
+}

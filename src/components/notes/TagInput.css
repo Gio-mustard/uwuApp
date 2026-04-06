@@ -1,0 +1,249 @@
+/* ─── TagInput ─────────────────────────────────────────────────────────────── */
+
+.tag-input {
+  position: relative;
+  width: 100%;
+}
+
+.tag-input__field {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface);
+  cursor: text;
+  transition: border-color 150ms;
+}
+
+.tag-input__field:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 12%, transparent);
+}
+
+.tag-input__text {
+  flex: 1;
+  min-width: 80px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  color: var(--color-text);
+  user-select: text;
+}
+
+.tag-input__text::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* ─── Chip ─────────────────────────────────────────────────────────────────── */
+
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px 3px 6px;
+  border-radius: 100px;
+  background: color-mix(in srgb, var(--chip-color, #6b7280) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--chip-color, #6b7280) 30%, transparent);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text);
+  white-space: nowrap;
+  animation: chip-pop 0.15s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes chip-pop {
+  from { opacity: 0; transform: scale(0.8); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.tag-chip__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--chip-color, #6b7280);
+  flex-shrink: 0;
+}
+
+.tag-chip__remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  line-height: 1;
+  color: color-mix(in srgb, var(--chip-color, #6b7280) 80%, black);
+  padding: 0;
+  margin-left: 1px;
+  opacity: 0.7;
+  transition: opacity 120ms;
+}
+
+.tag-chip__remove:hover { opacity: 1; }
+
+/* ─── Dropdown ─────────────────────────────────────────────────────────────── */
+
+.tag-input__dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10), 0 2px 6px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  animation: fade-up 0.14s ease both;
+}
+
+.tag-input__option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 14px;
+  background: none;
+  border: none;
+  font-family: var(--font-body);
+  font-size: 0.83rem;
+  color: var(--color-text);
+  cursor: pointer;
+  text-align: left;
+  transition: background 100ms;
+}
+
+.tag-input__option:hover {
+  background: var(--color-surface-2);
+}
+
+.tag-input__option--create {
+  color: var(--color-primary);
+  font-weight: 600;
+  border-top: 1px solid var(--color-border);
+}
+
+.tag-input__create-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+  font-weight: 400;
+}
+
+/* ─── Inline Edit Module ─────────────────────────────────────────────────── */
+
+.tag-input__option-wrapper {
+  border-bottom: 1px solid var(--color-surface-2);
+}
+
+.tag-input__edit-btn {
+  color: var(--color-text-muted);
+  font-size: 0.9em;
+  padding: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 120ms;
+}
+.tag-input__edit-btn:hover {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+}
+
+.tag-input__edit-modal {
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px;
+  background: var(--color-surface-3);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: fade-down 0.15s ease-out;
+}
+
+.tag-input__edit-input {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--color-text);
+  background: var(--color-surface);
+  outline: none;
+}
+.tag-input__edit-input:focus {
+  border-color: var(--color-primary);
+}
+
+.tag-input__edit-colors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag-input__edit-custom-color{
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.tag-input__edit-input.custom-color{
+  width: 15lvw;
+}
+.tag-input__edit-input.custom-color:disabled{
+  opacity: .5;
+}
+
+.tag-input__color-swatch {
+  min-width: 18px;
+  min-height: 18px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 100ms;
+}
+.tag-input__color-swatch:hover {
+  transform: scale(1.15);
+  box-shadow: var(--shadow-btn);
+}
+.tag-input__color-swatch.active {
+  box-shadow: var(--shadow-btn);
+  transform: scale(1.2);
+}
+
+.tag-input__edit-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.tag-input__edit-btn-save,
+.tag-input__edit-btn-delete {
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: opacity 120ms;
+}
+.tag-input__edit-btn-save {
+  background: var(--color-primary);
+  color: #fff;
+}
+.tag-input__edit-btn-save:hover { opacity: 0.8; }
+
+.tag-input__edit-btn-delete {
+  background: transparent;
+  color: var(--color-danger);
+}
+.tag-input__edit-btn-delete:hover {
+  background: color-mix(in srgb, var(--color-danger) 15%, transparent);
+}

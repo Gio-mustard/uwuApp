@@ -1,0 +1,523 @@
+/* ─── NoteEditorView — Mobile-first custom editor ─────────────────────────── */
+
+.nev {
+  display: flex;
+  flex-direction: column;
+  min-height: 91lvh;
+  background: var(--color-surface);  
+  animation: nev-in 0.18s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes nev-in {
+  from { opacity: 0; transform: translateX(14px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ─── Top bar ────────────────────────────────────────────────────────────── */
+
+.nev__topbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1.5px solid var(--color-border);
+  flex-shrink: 0;
+  background: var(--color-surface);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.nev__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 10px 6px 4px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  cursor: pointer;
+  transition: background 120ms;
+  flex-shrink: 0;
+  user-select: none;
+}
+.nev__back svg { width: 18px; height: 18px; }
+.nev__back:hover,
+.nev__back:active { background: color-mix(in srgb, var(--color-primary) 10%, transparent); }
+
+.nev__status {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  font-size: 0.74rem;
+  pointer-events: none;
+}
+
+.nev__saving {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--color-text-muted);
+}
+
+.nev__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  animation: nev-pulse 1s ease-in-out infinite;
+}
+
+@keyframes nev-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.25; }
+}
+
+.nev__saved { color: var(--color-success); font-weight: 600; }
+
+/* ─── Mode button ────────────────────────────────────────────────────────── */
+
+.nev__mode-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: none;
+  border: 1.5px solid var(--color-border);
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background 120ms, border-color 120ms, color 120ms;
+  flex-shrink: 0;
+  user-select: none;
+}
+.nev__mode-btn svg { width: 13px; height: 13px; }
+.nev__mode-btn:hover { border-color: var(--color-border-strong); color: var(--color-text); }
+
+.hidden-mobile { display: none; }
+@media (min-width: 768px) {
+  .hidden-mobile { display: inline; }
+}
+
+/* Active state when split is visible */
+.nev[data-mode="split"] .nev__mode-btn {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+}
+
+/* ─── Meta: title + tags ─────────────────────────────────────────────────── */
+
+.nev__meta {
+  flex-shrink: 0;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.nev__title {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: clamp(1.3rem, 4vw, 1.6rem);
+  font-weight: 800;
+  color: var(--color-text);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  user-select: text;
+  caret-color: var(--color-primary);
+  color: var(--color-primary);
+}
+.nev__title::placeholder {
+  color: var(--color-text-muted);
+  opacity: 0.4;
+}
+
+/* ─── Body: contains write-pane and/or preview-pane ─────────────────────── */
+
+.nev__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;   /* mobile: stacked */
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ─── Write pane ─────────────────────────────────────────────────────────── */
+
+.nev__write-pane {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  border-right: none; /* overridden in split below */
+}
+
+/* In split mode on mobile: write pane takes 55%, preview 45% */
+.nev[data-mode="split"] .nev__write-pane {
+  flex: 55;
+  border-bottom: 1.5px solid var(--color-border);
+}
+
+/* ─── Toolbar ────────────────────────────────────────────────────────────── */
+
+.nev-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 5px 10px;
+  background: var(--color-surface-2);
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nev-toolbar::-webkit-scrollbar { display: none; }
+
+.nev-toolbar__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 30px;
+  padding: 0 7px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background 100ms, color 100ms;
+  flex-shrink: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+.nev-toolbar__btn--bold   { font-weight: 800; }
+.nev-toolbar__btn--italic { font-style: italic; }
+.nev-toolbar__btn:hover,
+.nev-toolbar__btn:active {
+  background: var(--color-surface-3);
+  color: var(--color-text);
+}
+
+/* ─── Textarea ───────────────────────────────────────────────────────────── */
+
+.nev__textarea {
+  flex: 1;
+  width: 100%;
+  padding: 14px 16px;
+  border: none;
+  outline: none;
+  resize: none;
+  background: transparent;
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  /* Prevent iOS zoom (must be ≥ 16px) */
+  font-size: max(16px, 0.88rem);
+  line-height: 1.7;
+  color: var(--color-text);
+  caret-color: var(--color-primary);
+  user-select: text;
+  -webkit-user-select: text;
+  overflow-y: auto;
+}
+.nev__textarea::placeholder {
+  color: var(--color-text-muted);
+  opacity: 0.6;
+  font-family: var(--font-body);
+  font-style: italic;
+  line-height: 1.8;
+}
+
+/* ─── Preview pane ───────────────────────────────────────────────────────── */
+
+.nev__preview-pane {
+  flex: 1;
+  padding: 14px 16px;
+  overflow-y: auto;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  line-height: 1.8;
+  color: var(--color-text);
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/* In split mode on mobile: preview gets 45% */
+.nev[data-mode="split"] .nev__preview-pane {
+  flex: 45;
+}
+
+/* Markdown rendered styles */
+.nev__preview-pane h1,
+.nev__preview-pane h2,
+.nev__preview-pane h3 {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--color-text);
+  line-height: 1.3;
+  margin: 1.1em 0 0.4em;
+}
+.nev__preview-pane h1:first-child,
+.nev__preview-pane h2:first-child,
+.nev__preview-pane h3:first-child { margin-top: 0; }
+.nev__preview-pane h1 { font-size: 1.4rem; }
+.nev__preview-pane h2 { font-size: 1.15rem; }
+.nev__preview-pane h3 { font-size: 1rem; }
+.nev__preview-pane p  { margin: 0 0 0.85em; }
+.nev__preview-pane ul,
+.nev__preview-pane ol { margin: 0 0 0.85em; padding-left: 1.3em; }
+.nev__preview-pane li { margin-bottom: 0.25em; }
+.nev__preview-pane code {
+  font-family: 'Menlo', 'Monaco', monospace;
+  font-size: 0.84em;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+.nev__preview-pane pre {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  overflow-x: auto;
+  margin: 0 0 1em;
+}
+.nev__preview-pane pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.87rem;
+}
+.nev__preview-pane blockquote {
+  margin: 0 0 1em;
+  padding: 3px 0 3px 12px;
+  border-left: 3px solid var(--color-primary);
+  color: var(--color-description);
+}
+.nev__preview-pane a   { color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; }
+.nev__preview-pane hr  { border: none; border-top: 1.5px solid var(--color-border); margin: 1em 0; }
+.nev__preview-pane strong { font-weight: 700; }
+.nev__preview-pane em    { font-style: italic; }
+
+/* ─── DESKTOP — split side by side ──────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .nev__topbar { padding: 12px 24px; }
+  .nev__meta   { padding: 18px 24px 14px; }
+
+  /* In split mode: horizontal layout */
+  .nev[data-mode="split"] .nev__body {
+    flex-direction: row;
+  }
+
+  .nev[data-mode="split"] .nev__write-pane {
+    flex: 1;
+    border-bottom: none;
+    border-right: 1.5px solid var(--color-border);
+  }
+
+  .nev[data-mode="split"] .nev__preview-pane {
+    flex: 1;
+  }
+
+  .nev__textarea        { padding: 18px 22px; font-size: 0.9rem; }
+  .nev__preview-pane    { padding: 18px 22px; }
+  .nev-toolbar          { padding: 5px 18px; }
+  .nev__wysiwyg-content { padding: 20px 24px; }
+}
+
+/* ─── Active toolbar button state ────────────────────────────────────────── */
+
+.nev-toolbar__btn--on {
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  color: var(--color-primary);
+}
+
+/* ─── WYSIWYG (Tiptap) pane ──────────────────────────────────────────────── */
+
+.nev__wysiwyg-pane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.nev__wysiwyg-scroll {
+  flex: 1;
+  overflow-y: auto;
+  /* Extra bottom padding so content doesn't hide behind mobile nav */
+  padding-bottom: 24px;
+}
+
+/* The actual Tiptap editable div */
+.nev__wysiwyg-content {
+  outline: none;
+  padding: 16px;
+  min-height: 100%;
+  font-family: var(--font-body);
+  font-size: max(16px, 0.93rem);
+  line-height: 1.8;
+  color: var(--color-text);
+  caret-color: var(--color-primary);
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/* Placeholder */
+.nev__wysiwyg-content .nev-wysiwyg__placeholder::before,
+.nev__wysiwyg-content p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: var(--color-text-muted);
+  opacity: 0.55;
+  font-style: italic;
+  pointer-events: none;
+  float: left;
+  height: 0;
+}
+
+/* ── Block styles — rendered inline as you type ── */
+
+.nev__wysiwyg-content h1,
+.nev__wysiwyg-content h2,
+.nev__wysiwyg-content h3 {
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--color-text);
+  line-height: 1.3;
+  margin: 1em 0 0.3em;
+}
+
+.nev__wysiwyg-content h1:first-child,
+.nev__wysiwyg-content h2:first-child,
+.nev__wysiwyg-content h3:first-child { margin-top: 0; }
+
+.nev__wysiwyg-content h1 { font-size: 1.55rem; }
+.nev__wysiwyg-content h2 { font-size: 1.2rem; }
+.nev__wysiwyg-content h3 { font-size: 1rem; }
+
+.nev__wysiwyg-content p {
+  margin: 0 0 0.6em;
+}
+.nev__wysiwyg-content p:last-child { margin-bottom: 0; }
+
+.nev__wysiwyg-content ul,
+.nev__wysiwyg-content ol {
+  margin: 0 0 0.7em;
+  padding-left: 1.4em;
+}
+.nev__wysiwyg-content li { margin-bottom: 0.2em; }
+
+/* List markers */
+.nev__wysiwyg-content ul li { list-style: disc; }
+.nev__wysiwyg-content ol li { list-style: decimal; }
+
+/* Task Lists (Checkboxes) */
+.nev__wysiwyg-content ul[data-type="taskList"] {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.7em 0;
+}
+.nev__wysiwyg-content ul[data-type="taskList"] li {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 0.3em;
+  list-style: none; /* override the generic ul li */
+}
+.nev__wysiwyg-content ul[data-type="taskList"] li > label {
+  flex: 0 0 auto;
+  margin-right: 0.5rem;
+  user-select: none;
+}
+.nev__wysiwyg-content ul[data-type="taskList"] li > div {
+  flex: 1 1 auto;
+}
+.nev__wysiwyg-content ul[data-type="taskList"] input[type="checkbox"] {
+  cursor: pointer;
+  width: 14px;
+  height: 14px;
+  margin: 0.3em 0 0; /* align with text */
+  accent-color: var(--color-primary);
+}
+.nev__wysiwyg-content ul[data-type="taskList"] li[data-checked="true"] > div {
+  text-decoration: line-through;
+  color: var(--color-text-muted);
+}
+
+
+.nev__wysiwyg-content strong { font-weight: 700; }
+.nev__wysiwyg-content em     { font-style: italic; }
+
+.nev__wysiwyg-content s,
+.nev__wysiwyg-content del    { text-decoration: line-through; color: var(--color-text-muted); }
+
+.nev__wysiwyg-content code {
+  font-family: 'Menlo', 'Monaco', monospace;
+  font-size: 0.84em;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+.nev__wysiwyg-content pre {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  overflow-x: auto;
+  margin: 0 0 0.8em;
+}
+.nev__wysiwyg-content pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.87rem;
+}
+
+.nev__wysiwyg-content blockquote {
+  margin: 0 0 0.8em;
+  padding: 3px 0 3px 14px;
+  border-left: 3px solid var(--color-primary);
+  color: var(--color-description);
+}
+
+.nev__wysiwyg-content hr {
+  border: none;
+  border-top: 1.5px solid var(--color-border);
+  margin: 1em 0;
+}
+
+.nev__wysiwyg-content a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Tiptap selection highlight */
+.nev__wysiwyg-content ::selection {
+  background: color-mix(in srgb, var(--color-primary) 18%, transparent);
+}
+
+/* Mode indicator — highlight the button when in wysiwyg */
+.nev[data-mode="wysiwyg"] .nev__mode-btn {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+}
+

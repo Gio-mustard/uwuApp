@@ -4,6 +4,7 @@
   max-width: 800px;
   margin: 0 auto;
   animation: fadeIn 0.3s ease-out forwards;
+  padding-bottom: 80px;
 }
 .settings-content{
   padding: 24px;
