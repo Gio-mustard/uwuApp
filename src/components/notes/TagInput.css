@@ -188,9 +188,22 @@
   gap: 6px;
 }
 
+.tag-input__edit-custom-color{
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.tag-input__edit-input.custom-color{
+  width: 15lvw;
+}
+.tag-input__edit-input.custom-color:disabled{
+  opacity: .5;
+}
+
 .tag-input__color-swatch {
-  width: 18px;
-  height: 18px;
+  min-width: 18px;
+  min-height: 18px;
   border-radius: 50%;
   cursor: pointer;
   border: 2px solid transparent;
@@ -198,9 +211,11 @@
 }
 .tag-input__color-swatch:hover {
   transform: scale(1.15);
+  box-shadow: var(--shadow-btn);
 }
 .tag-input__color-swatch.active {
-  border-color: var(--color-text);
+  box-shadow: var(--shadow-btn);
+  transform: scale(1.2);
 }
 
 .tag-input__edit-actions {

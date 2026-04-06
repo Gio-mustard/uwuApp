@@ -43,6 +43,8 @@ export function TagInput({ availableTags = [], selectedTags = [], onChange, onCr
   const [open, setOpen]         = useState(false);
   const [creating, setCreating] = useState(false);
   const [editingTag, setEditingTag] = useState(null);
+  const [customColor,setCustomColor] = useState('#fff');
+  const [customColorSelected,setCustomColorSelected] = useState(false);
   
   const inputRef = useRef(null);
   const wrapperRef = useRef(null);
@@ -112,6 +114,12 @@ export function TagInput({ availableTags = [], selectedTags = [], onChange, onCr
       setOpen(false);
     }
   }
+
+
+  useEffect(()=>{
+    if (!customColorSelected) return;
+    setEditingTag({ ...editingTag, color: customColor })
+  },[customColor,customColorSelected])
 
   return (
     <div className="tag-input" ref={wrapperRef}>
@@ -183,6 +191,7 @@ export function TagInput({ availableTags = [], selectedTags = [], onChange, onCr
                   </div>
 
                   {isEditing && (
+                    // TODO : We need to use our Modal
                     <div className="tag-input__edit-modal" onMouseDown={(e) => e.stopPropagation()} onClick={(e) => e.stopPropagation()}>
                       <input
                         className="tag-input__edit-input"
@@ -197,9 +206,26 @@ export function TagInput({ availableTags = [], selectedTags = [], onChange, onCr
                             key={c}
                             className={`tag-input__color-swatch ${editingTag.color === c ? 'active' : ''}`}
                             style={{ background: c }}
-                            onClick={(e) => { e.stopPropagation(); setEditingTag({ ...editingTag, color: c }); }}
+                            onClick={(e) => { e.stopPropagation(); setEditingTag({ ...editingTag, color: c });setCustomColorSelected(false) }}
                           />
+                          
                         ))}
+                        <div className='tag-input__edit-custom-color'>
+                          <br />
+                          <span style={{minWidth:'100%',color:'var(--dark-color-primary)'}}>personalizado</span>
+                          
+                          <div
+
+                            className={`tag-input__color-swatch ${customColorSelected ? 'active' : ''}`}
+                            style={{ background: customColor }}
+                            onClick={(e) => { e.stopPropagation(); setCustomColorSelected(true) }}
+                          />
+                          <input type="text" disabled={!customColorSelected} className='tag-input__edit-input custom-color' value={customColor} onInput={(e)=>{
+                            setCustomColor(e.target.value===' '?'#fff':e.target.value)
+                            
+                            }}/>
+
+                        </div>
                       </div>
                       <div className="tag-input__edit-actions">
                         <span
