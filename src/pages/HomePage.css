@@ -318,3 +318,7 @@
 .section-card__subtitle > b{
   color: var(--dark-color-primary);
 }
+.section-card.vaul > .btn-primary:hover{
+  background-color: transparent;
+  box-shadow: none;
+}
