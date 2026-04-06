@@ -202,7 +202,7 @@ export function NotesPage() {
             </div>
           ) : notes.length === 0 ? (
             <div className="notes-empty">
-              <div className="notes-empty__icon">📝</div>
+              <div className="notes-empty__icon"> <PlusIcon/> </div>
               <h2 className="notes-empty__title">
                 {filters.search || activeTagIds.length > 0
                   ? 'Sin resultados'
@@ -211,7 +211,7 @@ export function NotesPage() {
               <p className="notes-empty__body">
                 {filters.search || activeTagIds.length > 0
                   ? 'Intenta con otra búsqueda o filtro.'
-                  : 'Crea tu primera nota con el botón de arriba.'}
+                  : 'Crea tu primera nota con el botón de crear nota (lo juro).'}
               </p>
             </div>
           ) : (
