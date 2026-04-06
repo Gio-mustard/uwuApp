@@ -23,6 +23,7 @@ import { TagInput } from './TagInput';
 import { EDITOR_MODES, MODE_META } from './NoteEditorConstants';
 import { EasterEggExtension } from './extensions/EasterEggExtension';
 import { getEasterEggMarkedExtension } from './eastereggs';
+import { exportNoteToPDF } from '../../services/NotesService';
 import './NoteEditorView.css';
 
 const AUTOSAVE_DELAY = 800;
@@ -267,6 +268,11 @@ export function NoteEditorView({
     onBack();
   }, [title, content, selTags, performSave, onBack]);
 
+  const handleExportPDF = useCallback(() => {
+    const htmlContent = editorMarked.parse(content || '*Sin contenido*');
+    exportNoteToPDF(title, htmlContent);
+  }, [title, content]);
+
   // Global keydown listeners for shortcuts
   useEffect(() => {
     const h = (e) => {
@@ -312,6 +318,20 @@ export function NoteEditorView({
           {saving && <span className="nev__saving"><span className="nev__dot" /> Guardando</span>}
           {saved && !saving && <span className="nev__saved">✓ Guardado</span>}
         </div>
+
+        <button
+          className="nev__mode-btn"
+          onClick={handleExportPDF}
+          title="Exportar a PDF"
+          aria-label="Exportar a PDF"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 14, height: 14 }}>
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          <span className="hidden-mobile">PDF</span>
+        </button>
 
         {availableModes.length > 1 && (
           <button
