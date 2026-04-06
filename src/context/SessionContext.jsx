@@ -18,6 +18,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { AuthProvider, useAuth } from './AuthContext';
 import { TaskProvider, useTasks } from './TaskContext';
+import { NoteProvider, useNotes } from './NoteContext';
 import { LoginPage } from '../pages/LoginPage';
 
 
@@ -52,49 +53,57 @@ function SessionLoader() {
 // ─── Inner gateway (needs access to AuthContext) ──────────────────────────────
 
 /**
- * Reads auth state and conditionally mounts the TaskProvider + children.
- * This component must be rendered inside an {AuthProvider}.
- *
  * @param {{
  *   children: React.ReactNode,
  *   taskRepositoryFactory: (user: import('../domain/models/User').User) => import('../repositories/ITaskRepository').ITaskRepository,
+ *   noteRepositoryFactory: (user: import('../domain/models/User').User) => import('../repositories/INoteRepository').INoteRepository,
  * }} props
  */
-function SessionGateway({ children, taskRepositoryFactory }) {
+function SessionGateway({ children, taskRepositoryFactory, noteRepositoryFactory }) {
   const { user, loading } = useAuth();
   const [taskRepository, setTaskRepository] = useState(null);
+  const [noteRepository, setNoteRepository] = useState(null);
   const [repoLoading, setRepoLoading] = useState(false);
 
   useEffect(() => {
     if (!user) {
       setTaskRepository(null);
+      setNoteRepository(null);
       return;
     }
 
     let cancelled = false;
     setRepoLoading(true);
 
-    taskRepositoryFactory(user)
-      .then((repo) => {
-        if (!cancelled) setTaskRepository(repo);
+    Promise.all([
+      taskRepositoryFactory(user),
+      Promise.resolve(noteRepositoryFactory(user)),
+    ])
+      .then(([taskRepo, noteRepo]) => {
+        if (!cancelled) {
+          setTaskRepository(taskRepo);
+          setNoteRepository(noteRepo);
+        }
       })
       .catch((err) => {
-        console.error('Failed to initialize task repository:', err);
+        console.error('Failed to initialize repositories:', err);
       })
       .finally(() => {
         if (!cancelled) setRepoLoading(false);
       });
 
     return () => { cancelled = true; };
-  }, [user?.id]);
+  }, [user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loading || repoLoading) return <SessionLoader />;
   if (!user) return <LoginPage />;
-  if (!taskRepository) return <SessionLoader />;
+  if (!taskRepository || !noteRepository) return <SessionLoader />;
 
   return (
     <TaskProvider repository={taskRepository}>
-      {children}
+      <NoteProvider repository={noteRepository}>
+        {children}
+      </NoteProvider>
     </TaskProvider>
   );
 }
@@ -102,19 +111,17 @@ function SessionGateway({ children, taskRepositoryFactory }) {
 // ─── Public API ──────────────────────────────────────────────────────────────
 
 /**
- * Mounts all session-scoped providers.
- * Place this at the root of the authenticated app (typically inside {BrowserRouter}).
- *
  * @param {{
  *   children: React.ReactNode,
  *   authRepository: import('../repositories/IAuthRepository').IAuthRepository,
  *   taskRepositoryFactory: (user: import('../domain/models/User').User) => import('../repositories/ITaskRepository').ITaskRepository,
+ *   noteRepositoryFactory: (user: import('../domain/models/User').User) => import('../repositories/INoteRepository').INoteRepository,
  * }} props
  */
-export function SessionProvider({ children, authRepository, taskRepositoryFactory }) {
+export function SessionProvider({ children, authRepository, taskRepositoryFactory, noteRepositoryFactory }) {
   return (
     <AuthProvider repository={authRepository}>
-      <SessionGateway taskRepositoryFactory={taskRepositoryFactory}>
+      <SessionGateway taskRepositoryFactory={taskRepositoryFactory} noteRepositoryFactory={noteRepositoryFactory}>
         {children}
       </SessionGateway>
     </AuthProvider>
@@ -143,7 +150,5 @@ export function SessionProvider({ children, authRepository, taskRepositoryFactor
  * const { dailyTasks } = useTasks();
  */
 export function useSession() {
-  // Zero-cost: just returns references to existing hooks.
-  // No useContext() call here — each sub-hook does its own subscription.
-  return { useAuth, useTasks };
+  return { useAuth, useTasks, useNotes };
 }

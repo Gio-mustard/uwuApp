@@ -18,20 +18,24 @@ import './index.css';
 import { App } from './App';
 import { SupabaseAuthRepository } from './repositories/supabase/SupabaseAuthRepository';
 import { SupabaseTaskRepository } from './repositories/supabase/SupabaseTaskRepository';
+import { SupabaseNoteRepository } from './repositories/supabase/SupabaseNoteRepository';
 import { bootstrapWeek } from './services/WeekService';
 
 // ── Instantiate auth repository (stateless, created once) ─────────────────────
 const authRepository = new SupabaseAuthRepository();
 
 // ── Task repository factory (called per login with the authenticated user) ─────
-// The SessionProvider calls this when a user logs in, ensuring a scoped boundary.
 const taskRepositoryFactory = (user) => bootstrapWeek(user);
+
+// ── Note repository factory ────────────────────────────────────────────────────
+const noteRepositoryFactory = (user) => new SupabaseNoteRepository(user);
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <App
       authRepository={authRepository}
       taskRepositoryFactory={taskRepositoryFactory}
+      noteRepositoryFactory={noteRepositoryFactory}
     />
   </StrictMode>,
 );

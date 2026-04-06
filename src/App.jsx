@@ -17,18 +17,21 @@ import { HomePage } from './pages/HomePage';
 import { HistoryPage } from './pages/HistoryPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { VaulPage } from './pages/Baul/VaulPage';
+import { NotesPage } from './pages/Notes/NotesPage';
 
 /**
  * @param {{
  *   authRepository: import('./repositories/IAuthRepository').IAuthRepository,
  *   taskRepositoryFactory: (user: import('./domain/models/User').User) => import('./repositories/ITaskRepository').ITaskRepository,
+ *   noteRepositoryFactory: (user: import('./domain/models/User').User) => import('./repositories/INoteRepository').INoteRepository,
  * }} props
  */
-export function App({ authRepository, taskRepositoryFactory }) {
+export function App({ authRepository, taskRepositoryFactory, noteRepositoryFactory }) {
   return (
     <SessionProvider
       authRepository={authRepository}
       taskRepositoryFactory={taskRepositoryFactory}
+      noteRepositoryFactory={noteRepositoryFactory}
     >
       <BrowserRouter>
         <Routes>
@@ -36,6 +39,7 @@ export function App({ authRepository, taskRepositoryFactory }) {
           <Route path={ROUTES.HISTORY} element={<HistoryPage />} />
           <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
           <Route path={ROUTES.Baul} element={<VaulPage />} />
+          <Route path={ROUTES.NOTES} element={<NotesPage />} />
           <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
         </Routes>
       </BrowserRouter>

@@ -21,6 +21,9 @@
 
 .app-shell__inner {
   width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ── Desktop layout (≥ 768px) ─────────────────────────────────────────────── */

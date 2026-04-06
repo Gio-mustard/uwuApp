@@ -1,0 +1,253 @@
+/* ─── NoteEditorView — Full-page in-place editor ──────────────────────────── */
+
+.note-editor-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 100%;
+  background: var(--color-surface);
+  animation: nev-slide-in 0.22s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes nev-slide-in {
+  from { opacity: 0; transform: translateX(18px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ─── Top bar ─────────────────────────────────────────────────────────────── */
+
+.nev-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1.5px solid var(--color-border);
+  flex-shrink: 0;
+  background: var(--color-surface);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.nev-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px 6px 6px;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  cursor: pointer;
+  transition: background 150ms;
+}
+
+.nev-back-btn svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.nev-back-btn:hover {
+  background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+}
+
+/* ─── Save status ────────────────────────────────────────────────────────── */
+
+.nev-status {
+  font-size: 0.78rem;
+  min-width: 90px;
+  text-align: right;
+}
+
+.nev-status__saving {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-muted);
+}
+
+.nev-status__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  animation: nev-pulse 1s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes nev-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+.nev-status__saved {
+  color: var(--color-success);
+  font-weight: 600;
+  animation: fade-in 0.2s ease;
+}
+
+/* ─── Content area ────────────────────────────────────────────────────────── */
+
+.nev-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
+}
+
+/* ─── Title ──────────────────────────────────────────────────────────────── */
+
+.nev-title {
+  width: 100%;
+  padding: 22px 20px 8px;
+  border: none;
+  outline: none;
+  font-family: var(--font-body);
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--color-text);
+  background: transparent;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  user-select: text;
+  flex-shrink: 0;
+}
+
+.nev-title::placeholder {
+  color: var(--color-text-muted);
+  font-weight: 700;
+  opacity: 0.45;
+}
+
+/* ─── Tags row ─────────────────────────────────────────────────────────────── */
+
+.nev-tags {
+  padding: 0 16px 14px;
+  flex-shrink: 0;
+}
+
+/* ─── MD Editor ─────────────────────────────────────────────────────────────── */
+
+.nev-editor {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--color-border);
+}
+
+.nev-editor .w-md-editor {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  height: 100% !important;
+  font-family: var(--font-body) !important;
+  flex: 1;
+}
+
+.nev-editor .w-md-editor-toolbar {
+  background: var(--color-surface-2) !important;
+  border-bottom: 1px solid var(--color-border) !important;
+  padding: 4px 14px !important;
+}
+
+.nev-editor .w-md-editor-toolbar li > button {
+  color: var(--color-text-muted) !important;
+  border-radius: 6px !important;
+  transition: background 120ms, color 120ms !important;
+}
+
+.nev-editor .w-md-editor-toolbar li > button:hover {
+  background: var(--color-surface-3) !important;
+  color: var(--color-text) !important;
+}
+
+.nev-editor .w-md-editor-content {
+  overflow-y: auto !important;
+  flex: 1;
+}
+
+.nev-editor .w-md-editor-text-input,
+.nev-editor .w-md-editor-text {
+  font-family: var(--font-body) !important;
+  font-size: 0.94rem !important;
+  line-height: 1.75 !important;
+  color: var(--color-text) !important;
+  user-select: text !important;
+  caret-color: var(--color-primary) !important;
+}
+
+.nev-editor .wmde-markdown {
+  font-family: var(--font-body) !important;
+  font-size: 0.94rem !important;
+  line-height: 1.8 !important;
+  color: var(--color-text) !important;
+  background: transparent !important;
+  padding: 16px 22px !important;
+  user-select: text !important;
+}
+
+.nev-editor .wmde-markdown h1,
+.nev-editor .wmde-markdown h2,
+.nev-editor .wmde-markdown h3 {
+  color: var(--color-text) !important;
+  font-weight: 700 !important;
+  margin-top: 1.2em !important;
+  margin-bottom: 0.4em !important;
+}
+
+.nev-editor .wmde-markdown h1 { font-size: 1.6rem !important; }
+.nev-editor .wmde-markdown h2 { font-size: 1.25rem !important; }
+.nev-editor .wmde-markdown h3 { font-size: 1.05rem !important; }
+
+.nev-editor .wmde-markdown code {
+  background: var(--color-surface-2) !important;
+  border-radius: 5px !important;
+  padding: 2px 6px !important;
+  font-size: 0.88em !important;
+}
+
+.nev-editor .wmde-markdown pre > code {
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+.nev-editor .wmde-markdown pre {
+  background: var(--color-surface-2) !important;
+  border-radius: 10px !important;
+  padding: 14px 18px !important;
+  overflow-x: auto !important;
+}
+
+.nev-editor .wmde-markdown blockquote {
+  border-left: 3px solid var(--color-primary) !important;
+  margin-left: 0 !important;
+  padding-left: 16px !important;
+  color: var(--color-description) !important;
+}
+
+.nev-editor .wmde-markdown a {
+  color: var(--color-primary) !important;
+}
+
+/* ─── Desktop ─────────────────────────────────────────────────────────────── */
+
+@media (min-width: 768px) {
+  .nev-topbar {
+    padding: 16px 28px;
+  }
+
+  .nev-title {
+    padding: 28px 28px 10px;
+    font-size: 2rem;
+  }
+
+  .nev-tags {
+    padding: 0 24px 16px;
+  }
+}

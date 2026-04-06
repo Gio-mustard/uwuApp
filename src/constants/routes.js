@@ -17,6 +17,8 @@ export const ROUTES = {
   HISTORY: '/historial',
   /** Configuration page */
   SETTINGS: '/configuracion',
-  /* Baul page*/
-  Baul: '/Baul'
+  /** Baul page */
+  Baul: '/Baul',
+  /** Notes page */
+  NOTES: '/notas',
 };
