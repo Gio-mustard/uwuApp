@@ -16,8 +16,8 @@ import { TrashIcon } from '../common/Icons';
  * @param {{
  *   task: import('../../domain/models/WeeklyTask').WeeklyTask,
  *   weekId: string,
- *   onToggle: (taskId: string, increment: boolean) => void,
- *   onEdit : (task:import('../../domain/models/DailyTask').DailyTask)=>void
+ *   onToggle: (taskId: string, increment: boolean) => Promise<void>,
+ *   onEdit : (task:import('../../domain/models/DailyTask').DailyTask)=>Promise<void> | void
  * }} props
  */
 export function WeeklyTaskItem({ task, weekId, onToggle, onEdit, onDelete = (task) => { } }) {
@@ -94,9 +94,9 @@ export function WeeklyTaskItem({ task, weekId, onToggle, onEdit, onDelete = (tas
             className="weekly-counter__btn"
             aria-label={`Restar completado de ${task.title}`}
             disabled={!canDecrement}
-            onClick={() => {
+            onClick={async () => {
               setInternalCount(internalCount - 1);
-              onToggle(task.id, false)
+              await onToggle(task.id, false);
             }}
           >
             −
@@ -109,9 +109,9 @@ export function WeeklyTaskItem({ task, weekId, onToggle, onEdit, onDelete = (tas
             className="weekly-counter__btn"
             aria-label={`Sumar completado de ${task.title}`}
             disabled={!canIncrement}
-            onClick={() => {
-              setInternalCount(internalCount + 1)
-              onToggle(task.id, true)
+            onClick={async () => {
+              setInternalCount(internalCount + 1);
+              await onToggle(task.id, true);
             }}
           >
             +

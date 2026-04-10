@@ -10,6 +10,7 @@ import { isDailyTaskDoneOnDay, isDailyTaskInteractable } from '../../services/Ta
 import { TrashIcon } from '../common/Icons';
 import { formatTime12h } from '../../utils/timeUtils';
 import './TaskItem.css';
+import { useCallback, useEffect, useState } from 'react';
 
 /**
  * @param {{
@@ -17,13 +18,34 @@ import './TaskItem.css';
  *   weekId: string,
  *   selectedDay: number,
  *   todayDay: number,
- *   onToggle: (taskId: string, day: number) => void,
- *   onEdit : (task:import('../../domain/models/DailyTask').DailyTask)=>void
+ *   onToggle: (taskId: string, day: number) => Promise<void>,
+ *   onEdit : (task:import('../../domain/models/DailyTask').DailyTask)=>Promise<void>,
+ *   onDelete: (task:import('../../domain/models/DailyTask').DailyTask)=>Promise<void>
  * }} props
  */
-export function DailyTaskItem({ task, weekId, selectedDay, todayDay, onToggle, onEdit,onDelete }) {
-  const done = isDailyTaskDoneOnDay(task, weekId, selectedDay);
-  const interactable = isDailyTaskInteractable(task, selectedDay, todayDay);
+export function DailyTaskItem({ task, weekId, selectedDay, todayDay, onToggle, onEdit, onDelete }) {
+  const [done, setIsDone] = useState(isDailyTaskDoneOnDay(task, weekId, selectedDay));
+  const [interactable, setInteractable] = useState(isDailyTaskInteractable(task, selectedDay, todayDay));
+  const [isToggling, setIsToggling] = useState(false);
+
+  useEffect(() => {
+    setIsDone(isDailyTaskDoneOnDay(task, weekId, selectedDay));
+    setInteractable(isDailyTaskInteractable(task, selectedDay, todayDay));
+  }, [task, weekId, selectedDay, todayDay]);
+
+  const handleToggle = useCallback(async (e) => {
+    e.stopPropagation();
+    if (!interactable || isToggling) return;
+
+    setIsToggling(true);
+    try {
+      await onToggle(task.id, selectedDay);
+    } catch (error) {
+      console.error("Failed to toggle task:", error);
+    } finally {
+      setIsToggling(false);
+    }
+  }, [interactable, isToggling, onToggle, task.id, selectedDay]);
   
   return (
     <div 
@@ -31,15 +53,13 @@ export function DailyTaskItem({ task, weekId, selectedDay, todayDay, onToggle, o
       
       >
       <button
-        
         id={`daily-task-check-${task.id}`}
-        className="task-item__check"
+        className={`task-item__check${isToggling ? ' task-item__check--loading' : ''}`}
         role="checkbox"
         aria-checked={done}
         aria-label={`Completar ${task.title}`}
-        disabled={!interactable}
-        onClick={(e) => {interactable && onToggle(task.id, selectedDay)}}
-
+        disabled={!interactable || isToggling}
+        onClick={handleToggle}
       >
         {done ? <CheckIcon /> : <EmptyCheckIcon />}
       </button>
