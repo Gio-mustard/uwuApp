@@ -29,7 +29,16 @@ subscribePdfHandlers();
 pdfPageStyleRegistry
   .register('default', `
     /* default: no overrides — base styles in buildPdfTemplate() apply */
-  `, { background: '#ffffff' })
+  `, { 
+    background: '#ffffff',
+    label: 'Clásico',
+    preview: { 
+      bg: 'var(--color-surface, #ffffff)', 
+      text: 'var(--color-text, #334155)', 
+      accent: 'var(--color-primary, #E85D5D)', 
+      header: 'color-mix(in srgb, var(--color-primary) 40%, transparent)' 
+    }
+  })
   .register('cover', `
     .pdf-container.cover .pdf-content {
       display: flex;
@@ -49,7 +58,17 @@ pdfPageStyleRegistry
       font-size: 1.1em;
       opacity: 0.75;
     }
-  `, { background: '#ffffff' })
+  `, { 
+    background: '#ffffff',
+    label: 'Portada',
+    preview: { 
+      bg: 'var(--color-surface, #ffffff)', 
+      text: 'var(--color-text, #334155)', 
+      accent: 'var(--color-primary, #E85D5D)', 
+      header: 'color-mix(in srgb, var(--color-primary) 40%, transparent)',
+      align: 'center'
+    }
+  })
   .register('dark', `
     .pdf-container.dark {
       background-color: #1e1e2e;
@@ -80,7 +99,16 @@ pdfPageStyleRegistry
     .pdf-container.dark .pdf-content hr {
       border-top-color: #313244;
     }
-  `, { background: '#1e1e2e' })
+  `, { 
+    background: '#1e1e2e',
+    label: 'Oscuro',
+    preview: { 
+      bg: '#1e1e2e', 
+      text: '#cdd6f4', 
+      accent: '#cba6f7', 
+      header: '#cba6f740' 
+    }
+  })
   .register('minimal', `
     .pdf-container.minimal { padding: 40px 32px; }
     .pdf-container.minimal .pdf-header {
@@ -90,7 +118,16 @@ pdfPageStyleRegistry
     }
     .pdf-container.minimal .pdf-title { font-size: 28px; }
     .pdf-container.minimal .pdf-content { font-size: 14px; }
-  `, { background: '#ffffff' });
+  `, { 
+    background: '#ffffff',
+    label: 'Minimalista',
+    preview: { 
+      bg: 'var(--color-surface, #ffffff)', 
+      text: 'var(--color-text, #334155)', 
+      accent: 'var(--color-text, #1a1917)', 
+      header: 'transparent' 
+    }
+  });
 
 // ── Re-export public API ───────────────────────────────────────────────────
 export { pdfEventBus } from './PdfEventBus.js';

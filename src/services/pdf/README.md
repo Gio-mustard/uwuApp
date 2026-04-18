@@ -191,10 +191,17 @@ pdfPageStyleRegistry.register('mi-tema', `
   .pdf-container.mi-tema .pdf-title { color: #0ea5e9; }
   .pdf-container.mi-tema .pdf-content h1,
   .pdf-container.mi-tema .pdf-content h2 { color: #0284c7; }
-`, { background: '#f0f9ff' });
-//   ↑ background: MISMO color que background-color del CSS
-//   html2canvas usa esto para rellenar las páginas jsPDF 2, 3...
-//   Si no lo defines, las páginas más allá del contenido serán blancas.
+`, { 
+  background: '#f0f9ff', // Para que html2canvas rellene las páginas completas (jsPDF)
+  label: 'Mi Tema Especial', // Muestra en el selector UI
+  preview: {             // Colores para estilizar la miniatura
+     bg: '#f0f9ff',
+     text: '#0c4a6e',
+     accent: '#0ea5e9',
+     header: '#0ea5e980'
+  }
+});
+// La tarjeta de preview en PdfStylePickerModal aparecerá automáticamente.
 ```
 
 > [!IMPORTANT]

@@ -19,8 +19,9 @@ import {
 /**
  * @param {string} title       - Note title
  * @param {string} htmlContent - Note content as HTML (from editor.getHTML() or other)
+ * @param {string} [theme='default'] - The chosen PDF visual theme
  */
-export async function exportNoteToPDF(title, htmlContent) {
+export async function exportNoteToPDF(title, htmlContent, theme = 'default') {
 
   // ── 1. Load renderer ───────────────────────────────────────────────────────
   const { default: html2pdf } = await import('html2pdf.js');
@@ -35,7 +36,7 @@ export async function exportNoteToPDF(title, htmlContent) {
 
   // ── 2. Build element ───────────────────────────────────────────────────────
   const element = document.createElement('div');
-  element.innerHTML = buildPdfTemplate(title, htmlContent, colors);
+  element.innerHTML = buildPdfTemplate(title, htmlContent, colors, theme);
 
   // ── 3. Fire processing events ──────────────────────────────────────────────
   const contentEl = element.querySelector('.pdf-content');
@@ -69,9 +70,10 @@ export async function exportNoteToPDF(title, htmlContent) {
  * @param {string} title
  * @param {string} htmlContent
  * @param {{ primary: string, surface: string, text: string, border: string }} colors
+ * @param {string} theme
  * @returns {string} innerHTML string
  */
-function buildPdfTemplate(title, htmlContent, { primary, surface, text, border }) {
+function buildPdfTemplate(title, htmlContent, { primary, surface, text, border }, theme) {
   return `
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Inter:wght@400;600;800&display=swap');
@@ -174,7 +176,7 @@ function buildPdfTemplate(title, htmlContent, { primary, surface, text, border }
         background: #f1f5f9;
       }
     </style>
-    <div class="pdf-container dark">
+    <div class="pdf-container ${theme}">
       <header class="pdf-header">
         <h1 class="pdf-title">${title || 'Nota sin título'}</h1>
       </header>

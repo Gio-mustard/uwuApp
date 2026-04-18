@@ -3,25 +3,30 @@
  *
  * Each style has:
  *   - A CSS block (injected into the <style> tag via PdfStylesInjected)
- *   - Optional metadata (e.g. background color used by html2canvas)
+ *   - Renderer metadata: background color for html2canvas
+ *   - UI metadata: label and preview colors for the style picker modal
  *
  * Usage:
  *   import { pdfPageStyleRegistry } from './pdf';
  *   pdfPageStyleRegistry.register('mi-tema', `.pdf-container.mi-tema { ... }`, {
  *     background: '#1e1e2e',
+ *     label: 'Oscuro',
+ *     preview: { bg: '#1e1e2e', text: '#cdd6f4', accent: '#cba6f7', header: '#cba6f740' },
  *   });
- *
- * The background is read by NotesService after dispatching events and passed
- * to html2canvas as `backgroundColor` so jsPDF pages use the correct fill.
  */
 class PdfPageStyleRegistry {
   /** @type {Map<string, string>} name → raw CSS string */
   #styles = new Map();
 
   /**
-   * @type {Map<string, { background?: string }>}
-   * name → renderer metadata
+   * @typedef {{
+   *   background?: string,
+   *   label?: string,
+   *   preview?: { bg: string, text: string, accent: string, header: string },
+   * }} StyleMeta
    */
+
+  /** @type {Map<string, StyleMeta>} name → metadata */
   #meta = new Map();
 
   /**
@@ -30,9 +35,7 @@ class PdfPageStyleRegistry {
    *
    * @param {string} name    - Theme identifier, e.g. 'dark', 'cover'
    * @param {string} css     - Raw CSS string (write full selectors)
-   * @param {{ background?: string }} [options]
-   *   background: color string passed to html2canvas.backgroundColor so
-   *               jsPDF page fills match the theme (default: '#ffffff')
+   * @param {StyleMeta} [options]
    * @returns {this} Chainable
    */
   register(name, css, options = {}) {
@@ -58,7 +61,29 @@ class PdfPageStyleRegistry {
    * @returns {string} CSS color string
    */
   getBackground(name) {
-    return this.#meta.get(name)?.background ?? '#ec0e0eff';
+    return this.#meta.get(name)?.background ?? '#ffffff';
+  }
+
+  /**
+   * Get full metadata for a single style.
+   * @param {string} name
+   * @returns {StyleMeta | undefined}
+   */
+  getMeta(name) {
+    return this.#meta.get(name);
+  }
+
+  /**
+   * Get all registered styles with their metadata.
+   * Used by the UI style picker to build preview cards dynamically.
+   *
+   * @returns {Array<{ name: string } & StyleMeta>}
+   */
+  getAll() {
+    return [...this.#meta.entries()].map(([name, meta]) => ({
+      name,
+      ...meta,
+    }));
   }
 
   /**

@@ -25,6 +25,7 @@ import { EasterEggExtension } from './extensions/EasterEggExtension';
 import { PageBreak } from './extensions/PageBreakExtension.jsx';
 import { getEasterEggMarkedExtension } from './eastereggs';
 import { exportNoteToPDF } from '../../services/NotesService';
+import { PdfStylePickerModal } from './PdfStylePickerModal.jsx';
 import './NoteEditorView.css';
 
 const AUTOSAVE_DELAY = 200;
@@ -217,6 +218,7 @@ export function NoteEditorView({
   const [mode,    setMode]    = useState(startMode);
   const [saving,  setSaving]  = useState(false);
   const [saved,   setSaved]   = useState(false);
+  const [showStylePicker, setShowStylePicker] = useState(false);
 
   const savedNoteRef = useRef(note ?? null);
   const pendingSave  = useRef(null);
@@ -280,8 +282,12 @@ export function NoteEditorView({
   }, [title, content, selTags, performSave, onBack]);
 
   const handleExportPDF = useCallback(() => {
+    setShowStylePicker(true);
+  }, []);
+
+  const handleExportWithTheme = useCallback((theme) => {
     const htmlContent = editorMarked.parse( content ) || '<p><em>Sin contenido</em></p>'; // better compability
-    exportNoteToPDF(title, htmlContent);
+    exportNoteToPDF(title, htmlContent, theme);
   }, [title, content]);
 
   // Global keydown listeners for shortcuts
@@ -413,6 +419,14 @@ export function NoteEditorView({
         )}
 
       </div>
+      <PdfStylePickerModal
+        open={showStylePicker}
+        onClose={() => setShowStylePicker(false)}
+        onExport={handleExportWithTheme}
+        noteTitle={title}
+        noteContent={content}
+        noteId={note?.id}
+      />
     </div>
   );
 }
