@@ -1,0 +1,134 @@
+/* Base theme card */
+.pdf-theme-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border: 1.5px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  text-align: left;
+}
+
+div.pdf-theme-card {
+  cursor: default;
+}
+
+button.pdf-theme-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.pdf-theme-card--active {
+  border-color: transparent !important;
+}
+
+/* preview content */
+.pdf-theme-card__mini {
+  flex: 1;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pdf-theme-card__header {
+  /* height: 4px; */
+  width: 30%;
+  border-bottom: 2px solid transparent;
+  margin-bottom: 4px;
+}
+
+.pdf-theme-card__fake-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-wrap: nowrap;
+}
+
+.pdf-theme-card__fake-text {
+  font-size: 0.5rem;
+  line-height: 1.4;
+  opacity: 0.8;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.pdf-theme-card__fake-text * {
+  margin: 0;
+  padding: 0;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+/* Etiqueta inferior */
+.pdf-theme-card__label {
+  padding: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text);
+  border-top: 1px solid var(--color-border);
+  text-align: center;
+  background: var(--color-surface);
+}
+
+/* --massive modifier (for large modal preview) -- */
+.pdf-theme-card--massive {
+  width: 100%;
+  max-width: 280px;
+  height: 380px;
+  aspect-ratio: 1 / 1.414;
+  cursor: default;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  transform: none !important;
+}
+
+.pdf-theme-card--massive .pdf-theme-card__mini {
+  padding: 24px;
+}
+
+.pdf-theme-card--massive .pdf-theme-card__header {
+  height: 8px;
+  border-width: 4px;
+  margin-bottom: 12px;
+}
+
+.pdf-theme-card--massive .pdf-theme-card__fake-title {
+  font-size: 1.5rem;
+  margin-bottom: 24px;
+}
+
+.pdf-theme-card--massive .pdf-theme-card__fake-text {
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* --custom modifier (for delete button) -- */
+.pdf-theme-card--custom .pdf-theme-card__delete {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  background: rgba(0,0,0,0.4);
+  color: #fff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: opacity 0.2s, background 0.2s;
+}
+
+
+.pdf-theme-card--custom .pdf-theme-card__delete:hover {
+  background: red;
+}

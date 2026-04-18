@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Modal } from '../modals/Modal';
 import { pdfPageStyleRegistry } from '../../services/pdf';
 import { marked } from 'marked';
+import { PdfThemeCard } from './PdfThemeCard';
 import './PdfStylePickerModal.css';
 
 /**
@@ -72,33 +73,15 @@ export function PdfStylePickerModal({
             const preview = theme.preview || { bg: '#fff', text: '#000', accent: '#000', header: 'transparent' };
             
             return (
-              <button
+              <PdfThemeCard
                 key={theme.name}
-                className={`pdf-theme-card ${isSelected ? 'pdf-theme-card--active' : ''}`}
+                preview={preview}
+                label={theme.label || theme.name}
+                title={titleSnippet}
+                contentHtml={parsedHtml}
+                active={isSelected}
                 onClick={() => setSelected(theme.name)}
-                style={{
-                  backgroundColor: preview.bg,
-                  color: preview.text,
-                  boxShadow: isSelected ? '0 0 0 2px var(--color-primary)' : 'none',
-                  borderColor: isSelected ? 'transparent' : 'var(--color-border)'
-                }}
-              >
-                <div className="pdf-theme-card__mini" style={{ alignItems: preview.align === 'center' ? 'center' : 'flex-start', textAlign: preview.align || 'left' }}>
-                  <div className="pdf-theme-card__header" style={{ borderBottomColor: preview.header }}>
-      
-                  <div className="pdf-theme-card__fake-title" style={{ color: preview.accent }}>
-                    {titleSnippet}
-                  </div>
-                  </div>
-                  <div 
-                    className="pdf-theme-card__fake-text" 
-                    dangerouslySetInnerHTML={{ __html: parsedHtml }}
-                  />
-                </div>
-                <div className="pdf-theme-card__label">
-                  {theme.label || theme.name}
-                </div>
-              </button>
+              />
             );
           })}
         </div>

@@ -45,6 +45,17 @@ class PdfPageStyleRegistry {
   }
 
   /**
+   * Unregister a style.
+   * @param {string} name 
+   * @returns {this} Chainable
+   */
+  unregister(name) {
+    this.#styles.delete(name);
+    this.#meta.delete(name);
+    return this;
+  }
+
+  /**
    * Get the CSS for a single style by name.
    * @param {string} name
    * @returns {string} CSS string, or '' if not found

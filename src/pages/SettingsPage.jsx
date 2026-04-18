@@ -8,6 +8,7 @@
 import { useSession } from '../context/SessionContext';
 import { AppShell } from '../components/layout/AppShell';
 import { Avatar } from '../components/common/Avatar';
+import { CustomPdfStyleBuilder } from '../components/settings/CustomPdfStyleBuilder';
 import './SettingsPage.css';
 import './Settings__profile.css'
 import ColorPallete from '../components/common/ColorPalete';
@@ -104,6 +105,19 @@ export function SettingsPage() {
               </div>
               <br />
               <ColorPallete />
+            </div>
+
+            <hr className="settings-divider" />
+            
+            <div className="settings-option" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+              <div className="settings-option__info">
+                <h4>Estilos para tus notas</h4>
+                <p>Crea estilos personalizados para exportar tus notas a PDF</p>
+              </div>
+              <br />
+              <div style={{ width: '100%' }}>
+                <CustomPdfStyleBuilder />
+              </div>
             </div>
             {/*             
               <hr className="settings-divider" />

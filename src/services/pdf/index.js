@@ -13,6 +13,7 @@
 
 import { pdfPageStyleRegistry } from './PdfPageStyleRegistry.js';
 import { subscribePdfHandlers } from './PdfProcessingHandlers.js';
+import { loadCustomStylesIntoRegistry } from './CustomPdfStyles.js';
 
 // ── Subscribe all handlers exactly once on module load ─────────────────────
 subscribePdfHandlers();
@@ -128,6 +129,8 @@ pdfPageStyleRegistry
       header: 'transparent' 
     }
   });
+
+loadCustomStylesIntoRegistry();
 
 // ── Re-export public API ───────────────────────────────────────────────────
 export { pdfEventBus } from './PdfEventBus.js';
