@@ -22,6 +22,7 @@ import TaskList from '@tiptap/extension-task-list';
 import { TagInput } from './TagInput';
 import { EDITOR_MODES, MODE_META } from './NoteEditorConstants';
 import { EasterEggExtension } from './extensions/EasterEggExtension';
+import { PageBreak } from './extensions/PageBreakExtension.jsx';
 import { getEasterEggMarkedExtension } from './eastereggs';
 import { exportNoteToPDF } from '../../services/NotesService';
 import './NoteEditorView.css';
@@ -42,6 +43,7 @@ const WRITE_ACTIONS = [
   { id: 'quote',  title: 'Cita',       label: '❝', apply: (s) => `> ${s || 'cita'}`, linePrefix: true },
   { id: 'hr',     title: 'Separador',  label: '—',  apply: () => '\n---\n' },
   { id: 'link',   title: 'Enlace',     label: '⎘',  apply: (s) => `[${s || 'texto'}](url)` },
+  {id:'break page',title:"Nueva Pagina",label:"Pg",style:'red',apply:(s)=>'\n---\n'  }
 ];
 
 // ─── Write-mode toolbar (inserts markdown syntax in textarea) ─────────────────
@@ -104,6 +106,7 @@ const WYSIWYG_ACTIONS = [
   { id: 'code',    title: 'Código',     label: '<>', cmd: (e) => e.chain().focus().toggleCode().run(), active: (e) => e.isActive('code') },
   { id: 'quote',   title: 'Cita',       label: '❝', cmd: (e) => e.chain().focus().toggleBlockquote().run(), active: (e) => e.isActive('blockquote') },
   { id: 'hr',      title: 'Separador',  label: '—',  cmd: (e) => e.chain().focus().setHorizontalRule().run() },
+  {id:'break page',title:"Nueva Página",label:"Pg",style:'break-page',cmd:(e)=>e.chain().focus().insertPageBreak().run(),active:(e)=>e.isActive("blockquote")}
 ];
 
 function WysiwygToolbar({ editor }) {
@@ -140,10 +143,11 @@ function WysiwygPane({ initialContent, onContentChange }) {
   const editor = useEditor({
     extensions: [
       StarterKit,
+      PageBreak,
       TaskList,
       TaskItem,
       Markdown.configure({
-        html: false,
+        html: true,
         tightLists: false,
         bulletListMarker: '-',
         breaks: true,
@@ -160,7 +164,7 @@ function WysiwygPane({ initialContent, onContentChange }) {
     contentType: 'markdown',
     onUpdate({ editor }) {
       try {
-        const md = editor.getMarkdown();
+        const md = editor.getHTML();
         onContentChange(md);
       } catch (e) {
         console.error("Markdown serialization error:", e);
@@ -276,7 +280,7 @@ export function NoteEditorView({
   }, [title, content, selTags, performSave, onBack]);
 
   const handleExportPDF = useCallback(() => {
-    const htmlContent = editorMarked.parse(content || '*Sin contenido*');
+    const htmlContent = editorMarked.parse( content ) || '<p><em>Sin contenido</em></p>'; // better compability
     exportNoteToPDF(title, htmlContent);
   }, [title, content]);
 

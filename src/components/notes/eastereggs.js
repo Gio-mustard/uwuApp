@@ -39,3 +39,8 @@ export function getEasterEggMarkedExtension() {
     }
   };
 }
+
+
+export function getBreakPageExtension(){
+  
+}

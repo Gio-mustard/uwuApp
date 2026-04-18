@@ -213,7 +213,10 @@
   background: var(--color-surface-3);
   color: var(--color-text);
 }
-
+.nev-toolbar__btn--break-page{
+  border-color: red;
+  color: red;
+}
 /* ─── Textarea ───────────────────────────────────────────────────────────── */
 
 .nev__textarea {
@@ -503,6 +506,75 @@
   margin: 1em 0;
 }
 
+/* ── Page break node (editor visual) ── */
+.nev-page-break {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 1.5em 0;
+  padding: 6px 0;
+  border-top: 2px dashed color-mix(in srgb, var(--color-primary) 55%, transparent);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  border-radius: 0;
+  transition: border-color 150ms, opacity 150ms;
+  page-break-before: always;
+  break-before: page;
+}
+.nev-page-break:hover {
+  border-color: var(--color-primary);
+  opacity: 1;
+}
+.nev-page-break--selected {
+  border-color: var(--color-primary);
+  outline: 2px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+.nev-page-break__label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-primary) 70%, transparent);
+  background: var(--color-surface);
+  padding: 2px 10px;
+  border-radius: 20px;
+  border: 1.5px dashed color-mix(in srgb, var(--color-primary) 55%, transparent);
+  pointer-events: none;
+  transition: color 150ms, border-color 150ms;
+}
+.nev-page-break:hover .nev-page-break__label,
+.nev-page-break--selected .nev-page-break__label {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+.nev-page-break__delete {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--color-primary) 50%, transparent);
+  background: var(--color-surface);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 150ms, transform 150ms, color 150ms;
+  pointer-events: none;
+}
+.nev-page-break:hover .nev-page-break__delete {
+  opacity: 1;
+  transform: scale(1);
+  color: var(--color-primary);
+}
+
 .nev__wysiwyg-content a {
   color: var(--color-primary);
   text-decoration: underline;
@@ -519,5 +591,44 @@
   border-color: var(--color-primary);
   color: var(--color-primary);
   background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+}
+
+/* ── Page break — preview pane ── */
+.nev__preview-pane div[data-page-break] {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1.5em 0;
+  border-top: 2px dashed color-mix(in srgb, var(--color-primary) 50%, transparent);
+}
+.nev__preview-pane div[data-page-break]::before {
+  content: 'Nueva p\00e1gina';
+  background: var(--color-surface);
+  color: color-mix(in srgb, var(--color-primary) 70%, transparent);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2px 10px;
+  border-radius: 20px;
+  border: 1.5px dashed color-mix(in srgb, var(--color-primary) 50%, transparent);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ── Print / PDF export ── */
+@media print {
+  div[data-page-break] {
+    display: block;
+    page-break-before: always;
+    break-before: page;
+    border: none !important;
+    margin: 0 !important;
+    height: 0 !important;
+  }
+  div[data-page-break]::before {
+    display: none !important;
+  }
 }
 
