@@ -11,7 +11,7 @@
  * Markdown storage: content is always persisted as a markdown string.
  */
 
-import { useState, useRef, useCallback, useEffect, useId } from 'react';
+import { useState, useRef, useCallback, useEffect, useId, createElement } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { Markdown } from '@tiptap/markdown';
@@ -28,7 +28,7 @@ import { exportNoteToPDF } from '../../services/NotesService';
 import { PdfStylePickerModal } from './PdfStylePickerModal.jsx';
 import './NoteEditorView.css';
 
-const AUTOSAVE_DELAY = 200;
+const AUTOSAVE_DELAY = 1000;
 
 // Isolated marked instance for rendering pure previews without tiptap's tokenizer pollution
 const editorMarked = new Marked({ breaks: true, gfm: true });
@@ -165,8 +165,9 @@ function WysiwygPane({ initialContent, onContentChange }) {
     contentType: 'markdown',
     onUpdate({ editor }) {
       try {
-        const md = editor.getHTML();
-        onContentChange(md);
+        const html = editor.getHTML();
+        console.log(html)
+        onContentChange(html);
       } catch (e) {
         console.error("Markdown serialization error:", e);
       }
@@ -224,6 +225,12 @@ export function NoteEditorView({
   const pendingSave  = useRef(null);
   const isLeaving    = useRef(false);
   const textareaRef  = useRef(null);
+
+  // listener for custom elements
+  useEffect(()=>{
+    
+    if (content) return
+  },[content])
 
   // Reset state when note prop changes
   useEffect(() => {

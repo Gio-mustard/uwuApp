@@ -6,6 +6,7 @@
   min-height: 91lvh;
   background: var(--color-surface);  
   animation: nev-in 0.18s cubic-bezier(0.4, 0, 0.2, 1) both;
+  padding-bottom: 20lvh;
 }
 
 @keyframes nev-in {
@@ -213,10 +214,7 @@
   background: var(--color-surface-3);
   color: var(--color-text);
 }
-.nev-toolbar__btn--break-page{
-  border-color: red;
-  color: red;
-}
+
 /* ─── Textarea ───────────────────────────────────────────────────────────── */
 
 .nev__textarea {
@@ -515,7 +513,6 @@
   gap: 8px;
   margin: 1.5em 0;
   padding: 6px 0;
-  border-top: 2px dashed color-mix(in srgb, var(--color-primary) 55%, transparent);
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
@@ -523,6 +520,13 @@
   transition: border-color 150ms, opacity 150ms;
   page-break-before: always;
   break-before: page;
+}
+.nev-page-break::after{
+  content: "";
+  width: 100%;
+  border-top: 2px dashed color-mix(in srgb, var(--color-primary) 55%, transparent);
+  position: absolute;
+  z-index: -1;
 }
 .nev-page-break:hover {
   border-color: var(--color-primary);
@@ -547,6 +551,8 @@
   pointer-events: none;
   transition: color 150ms, border-color 150ms;
 }
+
+
 .nev-page-break:hover .nev-page-break__label,
 .nev-page-break--selected .nev-page-break__label {
   color: var(--color-primary);
@@ -564,7 +570,7 @@
   align-items: center;
   justify-content: center;
   border: 1px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
-  opacity: 0;
+
   transform: scale(0.8);
   transition: opacity 150ms, transform 150ms, color 150ms;
   pointer-events: none;

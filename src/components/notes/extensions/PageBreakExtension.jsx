@@ -7,9 +7,9 @@
  * • Applies page-break-before: always at print / PDF time.
  */
 
-import { Node, mergeAttributes } from '@tiptap/core';
+import { Node, mergeAttributes, nodeInputRule } from '@tiptap/core';
 import { ReactNodeViewRenderer, NodeViewWrapper } from '@tiptap/react';
-import React from 'react';
+
 
 // ─── React view rendered inside the editor ────────────────────────────────────
 function PageBreakView({ deleteNode, selected }) {
@@ -18,11 +18,9 @@ function PageBreakView({ deleteNode, selected }) {
       <div
         className={`nev-page-break${selected ? ' nev-page-break--selected' : ''}`}
         data-page-break="true"
-        onClick={deleteNode}
-        title="Clic para eliminar salto de página"
       >
-        <span className="nev-page-break__label">Nueva página</span>
-        <span className="nev-page-break__delete" aria-hidden="true">✕</span>
+        <span className="nev-page-break__label" title="Clic para eliminar salto de página">Nueva página</span>
+        <span className="nev-page-break__delete" aria-hidden="true" onClick={deleteNode}>✕</span>
       </div>
     </NodeViewWrapper>
   );
@@ -76,6 +74,22 @@ export const PageBreak = Node.create({
         () =>
         ({ chain }) =>
           chain().insertContent({ type: this.name }).run(),
+    };
+  },
+
+  addInputRules() {
+    return [
+      nodeInputRule({
+        find: /^\/page\s$/,
+        type: this.type,
+      }),
+    ];
+  },
+
+  addKeyboardShortcuts() {
+    // prosemirror-keymap convention
+    return {
+      'Mod-Enter': () => this.editor.commands.insertPageBreak(),
     };
   },
 });
