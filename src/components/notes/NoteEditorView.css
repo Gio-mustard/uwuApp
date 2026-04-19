@@ -520,6 +520,7 @@
   transition: border-color 150ms, opacity 150ms;
   page-break-before: always;
   break-before: page;
+  z-index: 10;
 }
 .nev-page-break::after{
   content: "";
@@ -532,12 +533,8 @@
   border-color: var(--color-primary);
   opacity: 1;
 }
-.nev-page-break--selected {
-  border-color: var(--color-primary);
-  outline: 2px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
-  outline-offset: 4px;
-  border-radius: 4px;
-}
+
+
 .nev-page-break__label {
   font-size: 0.68rem;
   font-weight: 700;
@@ -549,9 +546,16 @@
   border-radius: 20px;
   border: 1.5px dashed color-mix(in srgb, var(--color-primary) 55%, transparent);
   pointer-events: none;
-  transition: color 150ms, border-color 150ms;
+  transition: color 150ms, border-color 150ms,background-color 150ms,outline 150ms;
 }
-
+.nev-page-break--selected > .nev-page-break__label{
+  border-color: var(--color-primary);
+  outline: 2px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
+  outline-offset: 4px;
+  
+  background-color: var(--ligth-color-primary);
+  color: var(--dark-color-primary) !important;
+}
 
 .nev-page-break:hover .nev-page-break__label,
 .nev-page-break--selected .nev-page-break__label {
@@ -573,12 +577,19 @@
 
   transform: scale(0.8);
   transition: opacity 150ms, transform 150ms, color 150ms;
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: pointer;
+  z-index: 15;
+  position: relative;
+  
 }
 .nev-page-break:hover .nev-page-break__delete {
   opacity: 1;
   transform: scale(1);
-  color: var(--color-primary);
+}
+.nev-page-break__delete:hover {
+  color: #ff4d4f; /* Feedback visual rojo para eliminar */
+  border-color: #ff4d4f;
 }
 
 .nev__wysiwyg-content a {

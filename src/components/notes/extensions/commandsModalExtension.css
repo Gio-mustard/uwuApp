@@ -1,0 +1,26 @@
+.commads-modal-view-overlay{
+    background:none ;
+    backdrop-filter: none;
+    position: relative;
+    
+    padding: 0;
+    width: 25lvh;
+}
+
+.commads-modal-view{
+    width: 100%;
+    height: 30lvh;
+    overflow-y: auto;
+    padding: 20px 6px;
+    
+}
+
+.commads-modal-view .btn-command:hover, .commads-modal-view .btn-command:active, .commads-modal-view .btn-command.selected {
+    background-color: var(--ligth-color-primary);
+    color: var(--dark-color-primary);
+}
+
+
+.commads-modal-view .btn-command  *{
+    color: inherit;
+}

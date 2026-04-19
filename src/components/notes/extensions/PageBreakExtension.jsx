@@ -20,7 +20,9 @@ function PageBreakView({ deleteNode, selected }) {
         data-page-break="true"
       >
         <span className="nev-page-break__label" title="Clic para eliminar salto de página">Nueva página</span>
-        <span className="nev-page-break__delete" aria-hidden="true" onClick={deleteNode}>✕</span>
+        <span className="nev-page-break__delete"  onClick={()=>{
+          deleteNode()
+          }}>✕</span>
       </div>
     </NodeViewWrapper>
   );

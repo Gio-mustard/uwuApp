@@ -27,6 +27,8 @@ import { getEasterEggMarkedExtension } from './eastereggs';
 import { exportNoteToPDF } from '../../services/NotesService';
 import { PdfStylePickerModal } from './PdfStylePickerModal.jsx';
 import './NoteEditorView.css';
+import { CommandsModal } from './extensions/CommandsModalExtension.jsx';
+import editor_commands from './extensions/commands.js';
 
 const AUTOSAVE_DELAY = 1000;
 
@@ -36,15 +38,15 @@ editorMarked.use({ extensions: [getEasterEggMarkedExtension()] });
 
 // ─── Shared toolbar actions (for write/split panes) ───────────────────────────
 const WRITE_ACTIONS = [
-  { id: 'bold',   title: 'Negrita',    label: 'B',  style: 'bold',   apply: (s) => `**${s || 'texto'}**` },
-  { id: 'italic', title: 'Itálica',    label: 'I',  style: 'italic', apply: (s) => `*${s || 'texto'}*` },
-  { id: 'h2',     title: 'Encabezado', label: 'H',  apply: (s) => `## ${s || 'Título'}`, linePrefix: true },
-  { id: 'ul',     title: 'Lista',      label: '≡',  apply: (s) => `- ${s || 'ítem'}`, linePrefix: true },
-  { id: 'code',   title: 'Código',     label: '<>', apply: (s) => `\`${s || 'código'}\`` },
-  { id: 'quote',  title: 'Cita',       label: '❝', apply: (s) => `> ${s || 'cita'}`, linePrefix: true },
-  { id: 'hr',     title: 'Separador',  label: '—',  apply: () => '\n---\n' },
-  { id: 'link',   title: 'Enlace',     label: '⎘',  apply: (s) => `[${s || 'texto'}](url)` },
-  {id:'break page',title:"Nueva Pagina",label:"Pg",style:'red',apply:(s)=>'\n---\n'  }
+  { id: 'bold', title: 'Negrita', label: 'B', style: 'bold', apply: (s) => `**${s || 'texto'}**` },
+  { id: 'italic', title: 'Itálica', label: 'I', style: 'italic', apply: (s) => `*${s || 'texto'}*` },
+  { id: 'h2', title: 'Encabezado', label: 'H', apply: (s) => `## ${s || 'Título'}`, linePrefix: true },
+  { id: 'ul', title: 'Lista', label: '≡', apply: (s) => `- ${s || 'ítem'}`, linePrefix: true },
+  { id: 'code', title: 'Código', label: '<>', apply: (s) => `\`${s || 'código'}\`` },
+  { id: 'quote', title: 'Cita', label: '❝', apply: (s) => `> ${s || 'cita'}`, linePrefix: true },
+  { id: 'hr', title: 'Separador', label: '—', apply: () => '\n---\n' },
+  { id: 'link', title: 'Enlace', label: '⎘', apply: (s) => `[${s || 'texto'}](url)` },
+  { id: 'break page', title: "Nueva Pagina", label: "Pg", style: 'red', apply: (s) => '\n---\n' }
 ];
 
 // ─── Write-mode toolbar (inserts markdown syntax in textarea) ─────────────────
@@ -53,17 +55,17 @@ function WriteToolbar({ textareaRef, onContentChange }) {
     const el = textareaRef.current;
     if (!el) return;
     const start = el.selectionStart;
-    const end   = el.selectionEnd;
-    const val   = el.value;
-    const sel   = val.slice(start, end);
+    const end = el.selectionEnd;
+    const val = el.value;
+    const sel = val.slice(start, end);
     const insert = action.apply(sel);
     let newVal, newCursor;
     if (action.linePrefix) {
       const lineStart = val.lastIndexOf('\n', start - 1) + 1;
-      newVal    = val.slice(0, lineStart) + insert + val.slice(end);
+      newVal = val.slice(0, lineStart) + insert + val.slice(end);
       newCursor = lineStart + insert.length;
     } else {
-      newVal    = val.slice(0, start) + insert + val.slice(end);
+      newVal = val.slice(0, start) + insert + val.slice(end);
       newCursor = start + insert.length;
     }
     const setter = Object.getOwnPropertyDescriptor(
@@ -95,26 +97,13 @@ function WriteToolbar({ textareaRef, onContentChange }) {
   );
 }
 
-// ─── WYSIWYG toolbar (uses Tiptap chain commands) ─────────────────────────────
-const WYSIWYG_ACTIONS = [
-  { id: 'bold',    title: 'Negrita',    label: 'B',  style: 'bold',   cmd: (e) => e.chain().focus().toggleBold().run() },
-  { id: 'italic',  title: 'Itálica',    label: 'I',  style: 'italic', cmd: (e) => e.chain().focus().toggleItalic().run() },
-  { id: 'strike',  title: 'Tachado',    label: 'S̶',  cmd: (e) => e.chain().focus().toggleStrike().run() },
-  { id: 'h2',      title: 'Encabezado', label: 'H2', cmd: (e) => e.chain().focus().toggleHeading({ level: 2 }).run(), active: (e) => e.isActive('heading', { level: 2 }) },
-  { id: 'h3',      title: 'Subtítulo',  label: 'H3', cmd: (e) => e.chain().focus().toggleHeading({ level: 3 }).run(), active: (e) => e.isActive('heading', { level: 3 }) },
-  { id: 'ul',      title: 'Lista',      label: '≡',  cmd: (e) => e.chain().focus().toggleBulletList().run(), active: (e) => e.isActive('bulletList') },
-  { id: 'ol',      title: 'Lista núm.', label: '1.', cmd: (e) => e.chain().focus().toggleOrderedList().run(), active: (e) => e.isActive('orderedList') },
-  { id: 'code',    title: 'Código',     label: '<>', cmd: (e) => e.chain().focus().toggleCode().run(), active: (e) => e.isActive('code') },
-  { id: 'quote',   title: 'Cita',       label: '❝', cmd: (e) => e.chain().focus().toggleBlockquote().run(), active: (e) => e.isActive('blockquote') },
-  { id: 'hr',      title: 'Separador',  label: '—',  cmd: (e) => e.chain().focus().setHorizontalRule().run() },
-  {id:'break page',title:"Nueva Página",label:"Pg",style:'break-page',cmd:(e)=>e.chain().focus().insertPageBreak().run(),active:(e)=>e.isActive("blockquote")}
-];
+
 
 function WysiwygToolbar({ editor }) {
   if (!editor) return null;
   return (
     <div className="nev-toolbar" role="toolbar" aria-label="Formato">
-      {WYSIWYG_ACTIONS.map((a) => {
+      {editor_commands.map((a) => {
         const isActive = a.active ? a.active(editor) : editor.isActive(a.id);
         return (
           <button
@@ -124,8 +113,8 @@ function WysiwygToolbar({ editor }) {
             aria-label={a.title}
             aria-pressed={isActive}
             type="button"
-            onMouseDown={(e) => { e.preventDefault(); a.cmd(editor); }}
-            onTouchStart={(e) => { e.preventDefault(); a.cmd(editor); }}
+            onMouseDown={(e) => { e.preventDefault(); a.action(editor); }}
+            onTouchStart={(e) => { e.preventDefault(); a.action(editor); }}
           >
             {a.label}
           </button>
@@ -147,6 +136,7 @@ function WysiwygPane({ initialContent, onContentChange }) {
       PageBreak,
       TaskList,
       TaskItem,
+      CommandsModal,
       Markdown.configure({
         html: true,
         tightLists: false,
@@ -166,7 +156,6 @@ function WysiwygPane({ initialContent, onContentChange }) {
     onUpdate({ editor }) {
       try {
         const html = editor.getHTML();
-        console.log(html)
         onContentChange(html);
       } catch (e) {
         console.error("Markdown serialization error:", e);
@@ -200,11 +189,11 @@ function WysiwygPane({ initialContent, onContentChange }) {
 
 
 // ─── Main component ───────────────────────────────────────────────────────────
-export function NoteEditorView({ 
-  note, 
-  onBack, 
-  onSave, 
-  tags, 
+export function NoteEditorView({
+  note,
+  onBack,
+  onSave,
+  tags,
   onCreateTag,
   availableModes = Object.values(EDITOR_MODES),
   initialMode
@@ -213,31 +202,31 @@ export function NoteEditorView({
 
   const startMode = initialMode && availableModes.includes(initialMode) ? initialMode : availableModes[0];
 
-  const [title,   setTitle]   = useState(note?.title   ?? '');
+  const [title, setTitle] = useState(note?.title ?? '');
   const [content, setContent] = useState(note?.content ?? '');
-  const [selTags, setSelTags] = useState(note?.tags    ?? []);
-  const [mode,    setMode]    = useState(startMode);
-  const [saving,  setSaving]  = useState(false);
-  const [saved,   setSaved]   = useState(false);
+  const [selTags, setSelTags] = useState(note?.tags ?? []);
+  const [mode, setMode] = useState(startMode);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [showStylePicker, setShowStylePicker] = useState(false);
 
   const savedNoteRef = useRef(note ?? null);
-  const pendingSave  = useRef(null);
-  const isLeaving    = useRef(false);
-  const textareaRef  = useRef(null);
+  const pendingSave = useRef(null);
+  const isLeaving = useRef(false);
+  const textareaRef = useRef(null);
 
   // listener for custom elements
-  useEffect(()=>{
-    
+  useEffect(() => {
+
     if (content) return
-  },[content])
+  }, [content])
 
   // Reset state when note prop changes
   useEffect(() => {
     isLeaving.current = false;
-    setTitle(note?.title   ?? '');
+    setTitle(note?.title ?? '');
     setContent(note?.content ?? '');
-    setSelTags(note?.tags   ?? []);
+    setSelTags(note?.tags ?? []);
     setMode(startMode);
     setSaved(false);
     savedNoteRef.current = note ?? null;
@@ -256,10 +245,10 @@ export function NoteEditorView({
     setSaving(true);
     try {
       const result = await onSave({
-        id:      prev?.id ?? null,
-        title:   t,
+        id: prev?.id ?? null,
+        title: t,
         content: c,
-        tags:    tg,
+        tags: tg,
       });
       savedNoteRef.current = result;
       setSaved(true);
@@ -293,7 +282,7 @@ export function NoteEditorView({
   }, []);
 
   const handleExportWithTheme = useCallback((theme) => {
-    const htmlContent = editorMarked.parse( content ) || '<p><em>Sin contenido</em></p>'; // better compability
+    const htmlContent = editorMarked.parse(content) || '<p><em>Sin contenido</em></p>'; // better compability
     exportNoteToPDF(title, htmlContent, theme);
   }, [title, content]);
 
@@ -304,9 +293,6 @@ export function NoteEditorView({
         e.preventDefault();
         if (pendingSave.current) clearTimeout(pendingSave.current);
         performSave(title, content, selTags);
-      } else if (e.key === 'Escape') {
-        e.preventDefault();
-        handleBack();
       }
     };
     document.addEventListener('keydown', h);
@@ -321,7 +307,7 @@ export function NoteEditorView({
   const nextModeIndex = (availableModes.indexOf(mode) + 1) % availableModes.length;
   const nextMode = availableModes[nextModeIndex] || mode;
 
-  const showWrite   = mode === EDITOR_MODES.WRITE || mode === EDITOR_MODES.SPLIT;
+  const showWrite = mode === EDITOR_MODES.WRITE || mode === EDITOR_MODES.SPLIT;
   const showHtmlPre = mode === EDITOR_MODES.PREVIEW || mode === EDITOR_MODES.SPLIT;
   const previewHtml = showHtmlPre ? editorMarked.parse(content || '*Sin contenido*') : '';
 
