@@ -2,13 +2,13 @@
     background:none ;
     backdrop-filter: none;
     position: relative;
-    
     padding: 0;
-    width: 25lvh;
+    width: min(78lvw,300px);
+    display: flex;
+    justify-content: stretch;
 }
 
 .commads-modal-view{
-    width: 100%;
     height: 30lvh;
     overflow-y: auto;
     padding: 20px 6px;

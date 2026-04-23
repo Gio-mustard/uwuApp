@@ -10,6 +10,13 @@ function CommandsModalView({ editor, deleteNode }) {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const listRef = useRef(null);
 
+    // Auto blur component on destroy
+    useEffect(() => {
+        if (document.activeElement && typeof document.activeElement.blur === 'function') {
+            document.activeElement.blur();
+        }
+    }, []);
+
     const handleCommand = (commandFn) => {
         deleteNode();
         if (commandFn) commandFn(editor);
